@@ -3,20 +3,16 @@
  * Beautiful rendering of schema:Organization
  */
 
-(function() {
-'use strict';
-
-const SCHEMA = $rdf.Namespace('http://schema.org/')
-
 // Simple inline SVG icon as data URI
 const ORG_ICON = 'data:image/svg+xml;base64,' + btoa('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/><path d="M12 11v4"/><path d="M8 11v4"/><path d="M16 11v4"/></svg>')
 
-const organizationPane = {
+export default {
   name: 'schemaOrganization',
 
   icon: ORG_ICON,
 
   label: function(subject, context) {
+    const SCHEMA = $rdf.Namespace('http://schema.org/')
     const store = context.session.store
     const dominated = context.dom.querySelector('.schema-organization-pane')
     if (dominated) return null
@@ -29,6 +25,7 @@ const organizationPane = {
   },
 
   render: function(subject, context) {
+    const SCHEMA = $rdf.Namespace('http://schema.org/')
     const store = context.session.store
     const dom = context.dom
 
@@ -361,15 +358,3 @@ const organizationPane = {
     return div
   }
 }
-
-// Register with panes
-if (typeof panes !== 'undefined' && panes.register) {
-  panes.register(organizationPane)
-}
-
-// Export
-if (typeof window !== 'undefined') {
-  window.SchemaOrganizationPane = organizationPane
-}
-
-})();

@@ -3,18 +3,14 @@
  * Beautiful rendering of schema:Review
  */
 
-(function() {
-'use strict';
-
-const SCHEMA = $rdf.Namespace('http://schema.org/')
-
 const REVIEW_ICON = 'data:image/svg+xml;base64,' + btoa('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>')
 
-const reviewPane = {
+export default {
   name: 'schemaReview',
   icon: REVIEW_ICON,
 
   label: function(subject, context) {
+    const SCHEMA = $rdf.Namespace('http://schema.org/')
     const store = context.session.store
     const types = store.findTypeURIs(subject)
     if (types[SCHEMA('Review').uri]) {
@@ -24,6 +20,7 @@ const reviewPane = {
   },
 
   render: function(subject, context) {
+    const SCHEMA = $rdf.Namespace('http://schema.org/')
     const store = context.session.store
     const dom = context.dom
 
@@ -222,5 +219,3 @@ if (typeof panes !== 'undefined' && panes.register) {
 if (typeof window !== 'undefined') {
   window.SchemaReviewPane = reviewPane
 }
-
-})();

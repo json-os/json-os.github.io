@@ -3,20 +3,16 @@
  * Beautiful rendering of schema:Person
  */
 
-(function() {
-'use strict';
-
-const SCHEMA = $rdf.Namespace('http://schema.org/')
-
 // Simple inline SVG icon as data URI
 const PERSON_ICON = 'data:image/svg+xml;base64,' + btoa('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>')
 
-const personPane = {
+export default {
   name: 'schemaPerson',
 
   icon: PERSON_ICON,
 
   label: function(subject, context) {
+    const SCHEMA = $rdf.Namespace('http://schema.org/')
     const store = context.session.store
     const types = store.findTypeURIs(subject)
 
@@ -27,6 +23,7 @@ const personPane = {
   },
 
   render: function(subject, context) {
+    const SCHEMA = $rdf.Namespace('http://schema.org/')
     const store = context.session.store
     const dom = context.dom
 
@@ -233,15 +230,3 @@ const personPane = {
     return div
   }
 }
-
-// Register with panes
-if (typeof panes !== 'undefined' && panes.register) {
-  panes.register(personPane)
-}
-
-// Export
-if (typeof window !== 'undefined') {
-  window.SchemaPersonPane = personPane
-}
-
-})();

@@ -39,12 +39,11 @@
 }
 </script>
 
-<script src="src/shared.js"></script>
-<script>
-  SchemaShared.init({
-    pane: 'src/panes/musicrecording.js',
-    subject: '#album'
-  });
+<script type="module">
+import { init } from './src/shared.js';
+import pane from './src/panes/musicrecording.js';
+
+init({ pane, subject: '#album' });
 </script>
 
 </body>

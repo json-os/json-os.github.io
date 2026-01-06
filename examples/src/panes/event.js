@@ -3,20 +3,16 @@
  * Beautiful rendering of schema:Event
  */
 
-(function() {
-'use strict';
-
-const SCHEMA = $rdf.Namespace('http://schema.org/')
-
 // Simple inline SVG icon as data URI
 const EVENT_ICON = 'data:image/svg+xml;base64,' + btoa('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01M16 18h.01"/></svg>')
 
-const eventPane = {
+export default {
   name: 'schemaEvent',
 
   icon: EVENT_ICON,
 
   label: function(subject, context) {
+    const SCHEMA = $rdf.Namespace('http://schema.org/')
     const store = context.session.store
     const dominated = context.dom.querySelector('.schema-event-pane')
     if (dominated) return null
@@ -29,6 +25,7 @@ const eventPane = {
   },
 
   render: function(subject, context) {
+    const SCHEMA = $rdf.Namespace('http://schema.org/')
     const store = context.session.store
     const dom = context.dom
 
@@ -304,15 +301,3 @@ const eventPane = {
     return div
   }
 }
-
-// Register with panes
-if (typeof panes !== 'undefined' && panes.register) {
-  panes.register(eventPane)
-}
-
-// Export
-if (typeof window !== 'undefined') {
-  window.SchemaEventPane = eventPane
-}
-
-})();

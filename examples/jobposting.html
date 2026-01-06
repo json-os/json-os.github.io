@@ -47,12 +47,11 @@
 }
 </script>
 
-<script src="src/shared.js"></script>
-<script>
-  SchemaShared.init({
-    pane: 'src/panes/jobposting.js',
-    subject: '#job'
-  });
+<script type="module">
+import { init } from './src/shared.js';
+import pane from './src/panes/jobposting.js';
+
+init({ pane, subject: '#job' });
 </script>
 
 </body>

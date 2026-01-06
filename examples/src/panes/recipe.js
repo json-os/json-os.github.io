@@ -3,20 +3,16 @@
  * Beautiful rendering of schema:Recipe
  */
 
-(function() {
-'use strict';
-
-const SCHEMA = $rdf.Namespace('http://schema.org/')
-
 // Simple inline SVG icon as data URI
 const RECIPE_ICON = 'data:image/svg+xml;base64,' + btoa('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 13.87A4 4 0 0 1 7.41 6a5.11 5.11 0 0 1 1.05-1.54 5 5 0 0 1 7.08 0A5.11 5.11 0 0 1 16.59 6 4 4 0 0 1 18 13.87V21H6z"/><line x1="6" y1="17" x2="18" y2="17"/></svg>')
 
-const recipePane = {
+export default {
   name: 'schemaRecipe',
 
   icon: RECIPE_ICON,
 
   label: function(subject, context) {
+    const SCHEMA = $rdf.Namespace('http://schema.org/')
     const store = context.session.store
     const dominated = context.dom.querySelector('.schema-recipe-pane')
     if (dominated) return null
@@ -29,6 +25,7 @@ const recipePane = {
   },
 
   render: function(subject, context) {
+    const SCHEMA = $rdf.Namespace('http://schema.org/')
     const store = context.session.store
     const dom = context.dom
 
@@ -346,15 +343,3 @@ const recipePane = {
     return div
   }
 }
-
-// Register with panes
-if (typeof panes !== 'undefined' && panes.register) {
-  panes.register(recipePane)
-}
-
-// Export
-if (typeof window !== 'undefined') {
-  window.SchemaRecipePane = recipePane
-}
-
-})();

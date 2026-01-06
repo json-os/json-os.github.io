@@ -3,18 +3,14 @@
  * Generic fallback for creative works that don't match specific types
  */
 
-(function() {
-'use strict';
-
-const SCHEMA = $rdf.Namespace('http://schema.org/')
-
 const WORK_ICON = 'data:image/svg+xml;base64,' + btoa('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>')
 
-const creativeWorkPane = {
+export default {
   name: 'schemaCreativeWork',
   icon: WORK_ICON,
 
   label: function(subject, context) {
+    const SCHEMA = $rdf.Namespace('http://schema.org/')
     const store = context.session.store
     const types = store.findTypeURIs(subject)
     // Generic CreativeWork - lower priority than specific types
@@ -27,6 +23,7 @@ const creativeWorkPane = {
   },
 
   render: function(subject, context) {
+    const SCHEMA = $rdf.Namespace('http://schema.org/')
     const store = context.session.store
     const dom = context.dom
 
@@ -336,5 +333,3 @@ if (typeof panes !== 'undefined' && panes.register) {
 if (typeof window !== 'undefined') {
   window.SchemaCreativeWorkPane = creativeWorkPane
 }
-
-})();

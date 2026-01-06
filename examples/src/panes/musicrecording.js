@@ -3,18 +3,14 @@
  * Beautiful rendering of schema:MusicRecording, MusicAlbum
  */
 
-(function() {
-'use strict';
-
-const SCHEMA = $rdf.Namespace('http://schema.org/')
-
 const MUSIC_ICON = 'data:image/svg+xml;base64,' + btoa('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="5.5" cy="17.5" r="2.5"/><circle cx="17.5" cy="15.5" r="2.5"/><path d="M8 17V5l12-2v12"/></svg>')
 
-const musicPane = {
+export default {
   name: 'schemaMusicRecording',
   icon: MUSIC_ICON,
 
   label: function(subject, context) {
+    const SCHEMA = $rdf.Namespace('http://schema.org/')
     const store = context.session.store
     const types = store.findTypeURIs(subject)
     if (types[SCHEMA('MusicRecording').uri] || types[SCHEMA('MusicAlbum').uri]) {
@@ -24,6 +20,7 @@ const musicPane = {
   },
 
   render: function(subject, context) {
+    const SCHEMA = $rdf.Namespace('http://schema.org/')
     const store = context.session.store
     const dom = context.dom
 
@@ -340,5 +337,3 @@ if (typeof panes !== 'undefined' && panes.register) {
 if (typeof window !== 'undefined') {
   window.SchemaMusicRecordingPane = musicPane
 }
-
-})();

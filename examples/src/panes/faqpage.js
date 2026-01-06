@@ -3,18 +3,14 @@
  * Beautiful rendering of schema:FAQPage
  */
 
-(function() {
-'use strict';
-
-const SCHEMA = $rdf.Namespace('http://schema.org/')
-
 const FAQ_ICON = 'data:image/svg+xml;base64,' + btoa('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>')
 
-const faqPane = {
+export default {
   name: 'schemaFAQPage',
   icon: FAQ_ICON,
 
   label: function(subject, context) {
+    const SCHEMA = $rdf.Namespace('http://schema.org/')
     const store = context.session.store
     const types = store.findTypeURIs(subject)
     if (types[SCHEMA('FAQPage').uri]) {
@@ -24,6 +20,7 @@ const faqPane = {
   },
 
   render: function(subject, context) {
+    const SCHEMA = $rdf.Namespace('http://schema.org/')
     const store = context.session.store
     const dom = context.dom
 
@@ -215,5 +212,3 @@ if (typeof panes !== 'undefined' && panes.register) {
 if (typeof window !== 'undefined') {
   window.SchemaFAQPagePane = faqPane
 }
-
-})();

@@ -3,20 +3,16 @@
  * Beautiful rendering of schema:Article
  */
 
-(function() {
-'use strict';
-
-const SCHEMA = $rdf.Namespace('http://schema.org/')
-
 // Simple inline SVG icon as data URI
 const ARTICLE_ICON = 'data:image/svg+xml;base64,' + btoa('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/><path d="M7 8h10M7 12h10M7 16h6"/></svg>')
 
-const articlePane = {
+export default {
   name: 'schemaArticle',
 
   icon: ARTICLE_ICON,
 
   label: function(subject, context) {
+    const SCHEMA = $rdf.Namespace('http://schema.org/')
     const store = context.session.store
     const dominated = context.dom.querySelector('.schema-article-pane')
     if (dominated) return null
@@ -29,6 +25,7 @@ const articlePane = {
   },
 
   render: function(subject, context) {
+    const SCHEMA = $rdf.Namespace('http://schema.org/')
     const store = context.session.store
     const dom = context.dom
 
@@ -333,15 +330,3 @@ const articlePane = {
     return div
   }
 }
-
-// Register with panes
-if (typeof panes !== 'undefined' && panes.register) {
-  panes.register(articlePane)
-}
-
-// Export
-if (typeof window !== 'undefined') {
-  window.SchemaArticlePane = articlePane
-}
-
-})();

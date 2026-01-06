@@ -3,18 +3,14 @@
  * Beautiful rendering of schema:HowTo (tutorials, guides, instructions)
  */
 
-(function() {
-'use strict';
-
-const SCHEMA = $rdf.Namespace('http://schema.org/')
-
 const HOWTO_ICON = 'data:image/svg+xml;base64,' + btoa('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>')
 
-const howtoPane = {
+export default {
   name: 'schemaHowTo',
   icon: HOWTO_ICON,
 
   label: function(subject, context) {
+    const SCHEMA = $rdf.Namespace('http://schema.org/')
     const store = context.session.store
     const types = store.findTypeURIs(subject)
     if (types[SCHEMA('HowTo').uri]) {
@@ -24,6 +20,7 @@ const howtoPane = {
   },
 
   render: function(subject, context) {
+    const SCHEMA = $rdf.Namespace('http://schema.org/')
     const store = context.session.store
     const dom = context.dom
 
@@ -351,5 +348,3 @@ if (typeof panes !== 'undefined' && panes.register) {
 if (typeof window !== 'undefined') {
   window.SchemaHowToPane = howtoPane
 }
-
-})();

@@ -3,18 +3,14 @@
  * Beautiful rendering of schema:LocalBusiness, Restaurant, Store, etc.
  */
 
-(function() {
-'use strict';
-
-const SCHEMA = $rdf.Namespace('http://schema.org/')
-
 const BUSINESS_ICON = 'data:image/svg+xml;base64,' + btoa('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M9 8h1M9 12h1M9 16h1M14 8h1M14 12h1M14 16h1M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16"/></svg>')
 
-const localBusinessPane = {
+export default {
   name: 'schemaLocalBusiness',
   icon: BUSINESS_ICON,
 
   label: function(subject, context) {
+    const SCHEMA = $rdf.Namespace('http://schema.org/')
     const store = context.session.store
     const types = store.findTypeURIs(subject)
     if (types[SCHEMA('LocalBusiness').uri] || types[SCHEMA('Restaurant').uri] ||
@@ -25,6 +21,7 @@ const localBusinessPane = {
   },
 
   render: function(subject, context) {
+    const SCHEMA = $rdf.Namespace('http://schema.org/')
     const store = context.session.store
     const dom = context.dom
 
@@ -285,5 +282,3 @@ if (typeof panes !== 'undefined' && panes.register) {
 if (typeof window !== 'undefined') {
   window.SchemaLocalBusinessPane = localBusinessPane
 }
-
-})();

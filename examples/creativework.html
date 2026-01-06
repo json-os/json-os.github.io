@@ -45,12 +45,11 @@
 }
 </script>
 
-<script src="src/shared.js"></script>
-<script>
-  SchemaShared.init({
-    pane: 'src/panes/creativework.js',
-    subject: '#artwork'
-  });
+<script type="module">
+import { init } from './src/shared.js';
+import pane from './src/panes/creativework.js';
+
+init({ pane, subject: '#artwork' });
 </script>
 
 </body>
