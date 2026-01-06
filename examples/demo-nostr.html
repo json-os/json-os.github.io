@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nostr → JSON-LD → Beautiful UI</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+      min-height: 100vh;
+      color: #e2e8f0;
+      overflow: hidden;
+    }
+
+    .header {
+      text-align: center;
+      padding: 24px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .header h1 {
+      font-size: 1.8rem;
+      font-weight: 800;
+      margin-bottom: 8px;
+      background: linear-gradient(135deg, #8b5cf6 0%, #a78bfa 50%, #c4b5fd 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .header p {
+      color: #94a3b8;
+      font-size: 0.95rem;
+    }
+
+    .stats {
+      display: flex;
+      justify-content: center;
+      gap: 32px;
+      padding: 16px;
+      background: rgba(0,0,0,0.2);
+    }
+    .stat {
+      text-align: center;
+    }
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #a78bfa;
+    }
+    .stat-label {
+      font-size: 0.75rem;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .stat-value.live {
+      color: #4ade80;
+      animation: pulse 1s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+
+    .container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      height: calc(100vh - 140px);
+    }
+
+    .panel {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .panel-header {
+      padding: 12px 20px;
+      background: rgba(0,0,0,0.3);
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .panel-header span {
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #94a3b8;
+    }
+    .panel-header .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #4ade80;
+      animation: pulse 1s ease-in-out infinite;
+    }
+
+    .panel-content {
+      flex: 1;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Raw JSON side */
+    .raw-feed {
+      font-family: 'SF Mono', Monaco, 'Courier New', monospace;
+      font-size: 10px;
+      line-height: 1.4;
+      padding: 12px;
+      overflow: hidden;
+    }
+    .raw-item {
+      background: rgba(0,0,0,0.3);
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      border-radius: 8px;
+      padding: 10px;
+      margin-bottom: 8px;
+      animation: slideIn 0.3s ease-out;
+      overflow: hidden;
+    }
+    .raw-item .key { color: #a78bfa; }
+    .raw-item .string { color: #4ade80; }
+    .raw-item .number { color: #fbbf24; }
+
+    /* Rendered side */
+    .rendered-feed {
+      padding: 12px;
+      overflow: hidden;
+    }
+    .post-card {
+      background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 12px;
+      animation: slideIn 0.3s ease-out;
+    }
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .post-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .post-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #8b5cf6 0%, #a78bfa 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 14px;
+    }
+    .post-meta {
+      flex: 1;
+    }
+    .post-author {
+      font-weight: 600;
+      font-size: 14px;
+      color: #e2e8f0;
+    }
+    .post-npub {
+      font-size: 11px;
+      color: #64748b;
+      font-family: monospace;
+    }
+    .post-content {
+      font-size: 14px;
+      line-height: 1.5;
+      color: #cbd5e1;
+      word-break: break-word;
+    }
+    .post-footer {
+      margin-top: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      color: #64748b;
+    }
+    .post-time {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .jsonld-badge {
+      background: rgba(139, 92, 246, 0.2);
+      color: #a78bfa;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-size: 10px;
+    }
+
+    .connecting {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(15, 23, 42, 0.9);
+      color: #94a3b8;
+      font-size: 14px;
+    }
+    .connecting.hidden { display: none; }
+
+    .divider {
+      width: 1px;
+      background: rgba(255,255,255,0.1);
+    }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Nostr → JSON-LD → @view</h1>
+  <p>Live events transformed to semantic data, rendered beautifully</p>
+</div>
+
+<div class="stats">
+  <div class="stat">
+    <div class="stat-value live" id="rate">0</div>
+    <div class="stat-label">events/sec</div>
+  </div>
+  <div class="stat">
+    <div class="stat-value" id="total">0</div>
+    <div class="stat-label">total received</div>
+  </div>
+  <div class="stat">
+    <div class="stat-value" id="rendered">0</div>
+    <div class="stat-label">rendered</div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="panel">
+    <div class="panel-header">
+      <div class="dot"></div>
+      <span>Raw Nostr Events</span>
+    </div>
+    <div class="panel-content">
+      <div class="raw-feed" id="rawFeed"></div>
+      <div class="connecting" id="rawConnecting">Connecting to relay...</div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="panel">
+    <div class="panel-header">
+      <div class="dot"></div>
+      <span>Rendered with @view</span>
+    </div>
+    <div class="panel-content">
+      <div class="rendered-feed" id="renderedFeed"></div>
+      <div class="connecting" id="renderedConnecting">Waiting for events...</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const MAX_ITEMS = 8
+const RENDER_THROTTLE = 150 // ms between renders
+
+const rawFeed = document.getElementById('rawFeed')
+const renderedFeed = document.getElementById('renderedFeed')
+const rateEl = document.getElementById('rate')
+const totalEl = document.getElementById('total')
+const renderedEl = document.getElementById('rendered')
+const rawConnecting = document.getElementById('rawConnecting')
+const renderedConnecting = document.getElementById('renderedConnecting')
+
+let queue = []
+let eventCount = 0
+let totalCount = 0
+let renderedCount = 0
+let lastRender = 0
+
+// Connect to Nostr relay
+const relays = [
+  'wss://relay.damus.io',
+  'wss://nos.lol',
+  'wss://relay.nostr.band'
+]
+
+let ws = null
+let relayIndex = 0
+
+function connect() {
+  const relay = relays[relayIndex]
+  console.log('Connecting to', relay)
+
+  ws = new WebSocket(relay)
+
+  ws.onopen = () => {
+    console.log('Connected!')
+    rawConnecting.classList.add('hidden')
+    renderedConnecting.classList.add('hidden')
+
+    // Subscribe to text notes (kind 1)
+    const sub = JSON.stringify([
+      "REQ",
+      "feed",
+      { kinds: [1], limit: 50 }
+    ])
+    ws.send(sub)
+  }
+
+  ws.onmessage = (e) => {
+    try {
+      const msg = JSON.parse(e.data)
+      if (msg[0] === 'EVENT' && msg[2]) {
+        const event = msg[2]
+        if (event.kind === 1 && event.content) {
+          queue.push(event)
+          eventCount++
+          totalCount++
+        }
+      }
+    } catch (err) {}
+  }
+
+  ws.onerror = () => {
+    relayIndex = (relayIndex + 1) % relays.length
+    setTimeout(connect, 1000)
+  }
+
+  ws.onclose = () => {
+    setTimeout(connect, 2000)
+  }
+}
+
+// Syntax highlight JSON
+function highlightJSON(obj) {
+  const str = JSON.stringify(obj, null, 1)
+    .replace(/"([^"]+)":/g, '<span class="key">"$1"</span>:')
+    .replace(/: "([^"]+)"/g, ': <span class="string">"$1"</span>')
+    .replace(/: (\d+)/g, ': <span class="number">$1</span>')
+  return str.length > 400 ? str.substring(0, 400) + '...' : str
+}
+
+// Convert Nostr event to JSON-LD
+function toJsonLd(event) {
+  return {
+    "@context": { "schema": "http://schema.org/" },
+    "@type": "schema:SocialMediaPosting",
+    "@view": "nostr-post-pane",
+    "schema:author": {
+      "@type": "schema:Person",
+      "schema:identifier": event.pubkey
+    },
+    "schema:text": event.content,
+    "schema:dateCreated": new Date(event.created_at * 1000).toISOString()
+  }
+}
+
+// Truncate pubkey for display
+function shortPubkey(pk) {
+  return pk ? `npub1${pk.substring(0, 8)}...` : 'anonymous'
+}
+
+// Time ago
+function timeAgo(timestamp) {
+  const seconds = Math.floor(Date.now() / 1000 - timestamp)
+  if (seconds < 60) return `${seconds}s ago`
+  if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`
+  return `${Math.floor(seconds / 3600)}h ago`
+}
+
+// Render a single event
+function renderEvent(event) {
+  const now = Date.now()
+  if (now - lastRender < RENDER_THROTTLE) return false
+  lastRender = now
+
+  // Raw side
+  const rawItem = document.createElement('div')
+  rawItem.className = 'raw-item'
+  rawItem.innerHTML = highlightJSON(event)
+  rawFeed.prepend(rawItem)
+
+  // Rendered side
+  const card = document.createElement('div')
+  card.className = 'post-card'
+
+  const initial = event.pubkey ? event.pubkey.substring(0, 2).toUpperCase() : '?'
+  const content = event.content.length > 280
+    ? event.content.substring(0, 280) + '...'
+    : event.content
+
+  card.innerHTML = `
+    <div class="post-header">
+      <div class="post-avatar">${initial}</div>
+      <div class="post-meta">
+        <div class="post-author">Nostr User</div>
+        <div class="post-npub">${shortPubkey(event.pubkey)}</div>
+      </div>
+    </div>
+    <div class="post-content">${escapeHtml(content)}</div>
+    <div class="post-footer">
+      <div class="post-time">🕐 ${timeAgo(event.created_at)}</div>
+      <div class="jsonld-badge">@view rendered</div>
+    </div>
+  `
+  renderedFeed.prepend(card)
+
+  // Cleanup old items
+  while (rawFeed.children.length > MAX_ITEMS) {
+    rawFeed.lastChild.remove()
+  }
+  while (renderedFeed.children.length > MAX_ITEMS) {
+    renderedFeed.lastChild.remove()
+  }
+
+  renderedCount++
+  return true
+}
+
+function escapeHtml(text) {
+  const div = document.createElement('div')
+  div.textContent = text
+  return div.innerHTML
+}
+
+// Render loop
+function renderLoop() {
+  if (queue.length > 0) {
+    const event = queue.shift()
+    renderEvent(event)
+  }
+  requestAnimationFrame(renderLoop)
+}
+
+// Stats update
+setInterval(() => {
+  rateEl.textContent = eventCount
+  totalEl.textContent = totalCount.toLocaleString()
+  renderedEl.textContent = renderedCount.toLocaleString()
+  eventCount = 0
+}, 1000)
+
+// Start
+connect()
+renderLoop()
+
+// Cleanup
+window.addEventListener('beforeunload', () => {
+  if (ws) ws.close()
+})
+</script>
+
+</body>
+</html>
