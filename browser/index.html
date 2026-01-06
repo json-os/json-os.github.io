@@ -174,69 +174,45 @@
       transform: translateY(-1px);
     }
 
-    /* Status bar */
-    .status-bar {
-      background: #1e293b;
-      border-bottom: 1px solid #334155;
-      padding: 0.75rem 2rem;
-    }
-    .status-bar-content {
-      max-width: 1400px;
-      margin: 0 auto;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-    }
-    .user-info {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-size: 0.9rem;
-    }
-    .user-info .label { color: #64748b; }
-    #webId {
-      font-family: 'SF Mono', Monaco, monospace;
-      font-size: 0.85rem;
-      color: #a78bfa;
-    }
+    /* Login in nav */
     #loginButtonArea {
       display: flex;
       align-items: center;
     }
     #loginButtonArea input[type="button"],
     #loginButtonArea button {
-      padding: 0.5rem 1.25rem !important;
-      font-size: 0.85rem !important;
-      font-weight: 600 !important;
+      padding: 0.4rem 0.75rem !important;
+      font-size: 0.8rem !important;
+      font-weight: 500 !important;
       background: transparent !important;
-      color: #a78bfa !important;
-      border: 1px solid #a78bfa !important;
-      border-radius: 8px !important;
+      color: #94a3b8 !important;
+      border: none !important;
       cursor: pointer !important;
       transition: all 0.2s;
-      margin: 0 0.25rem !important;
+      margin: 0 !important;
     }
     #loginButtonArea input[type="button"]:hover,
     #loginButtonArea button:hover {
-      background: rgba(167, 139, 250, 0.1) !important;
+      color: #e2e8f0 !important;
     }
     #loginButtonArea a {
-      padding: 0.5rem 1.25rem !important;
-      font-size: 0.85rem !important;
-      font-weight: 600 !important;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
-      color: white !important;
+      padding: 0.4rem 0.75rem !important;
+      font-size: 0.8rem !important;
+      font-weight: 500 !important;
+      background: transparent !important;
+      color: #94a3b8 !important;
       border: none !important;
-      border-radius: 8px !important;
       text-decoration: none !important;
-      margin: 0 0.25rem !important;
+      margin: 0 !important;
       transition: all 0.2s;
     }
     #loginButtonArea a:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+      color: #e2e8f0 !important;
+    }
+    #webId {
+      font-size: 0.8rem;
+      color: #a78bfa;
+      margin-right: 0.5rem;
     }
 
     /* Browser container */
@@ -320,6 +296,8 @@
     <a href="/examples/">Examples</a>
     <a href="/examples/editor.html">Editor</a>
     <a href="https://github.com/json-os" class="btn-secondary">GitHub</a>
+    <span id="webId"></span>
+    <span id="loginButtonArea"></span>
   </div>
 </nav>
 
@@ -348,16 +326,6 @@
     </div>
   </div>
 </section>
-
-<div class="status-bar">
-  <div class="status-bar-content">
-    <div class="user-info">
-      <span class="label">Logged in as:</span>
-      <span id="webId">Not logged in</span>
-    </div>
-    <div id="loginButtonArea"></div>
-  </div>
-</div>
 
 <main class="browser-container">
   <div class="card">
@@ -434,13 +402,13 @@ document.addEventListener('DOMContentLoaded', function() {
     loginButtonArea.innerHTML = ''
     loginButtonArea.appendChild(UI.login.loginStatusBox(document, null, {}))
 
+    // Hide sign up buttons, simplify
     setTimeout(() => {
       const signupLinks = loginButtonArea.querySelectorAll('a')
       signupLinks.forEach(link => {
         const text = link.textContent.toLowerCase()
         if (text.includes('sign') || text.includes('register') || text.includes('pod')) {
-          link.href = 'https://solidproject.org/get_a_pod'
-          link.target = '_blank'
+          link.style.display = 'none'
         }
       })
 
@@ -448,27 +416,18 @@ document.addEventListener('DOMContentLoaded', function() {
       buttons.forEach(btn => {
         const text = (btn.value || btn.textContent || '').toLowerCase()
         if (text.includes('sign up')) {
-          const newBtn = btn.cloneNode(true)
-          btn.parentNode.replaceChild(newBtn, btn)
-          newBtn.addEventListener('click', (e) => {
-            e.preventDefault()
-            e.stopPropagation()
-            window.open('https://solidproject.org/get_a_pod', '_blank')
-          })
+          btn.style.display = 'none'
         }
       })
     }, 100)
 
     const me = authn.currentUser()
     if (me) {
-      const shortId = me.value.length > 50
-        ? me.value.substring(0, 47) + '...'
-        : me.value
+      const shortId = me.value.split('/').pop().replace('#me', '') || 'You'
       webIdArea.textContent = shortId
       webIdArea.title = me.value
     } else {
-      webIdArea.textContent = 'Not logged in'
-      webIdArea.title = ''
+      webIdArea.textContent = ''
     }
   }
 
