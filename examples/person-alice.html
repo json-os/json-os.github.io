@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Alice Johnson - jsonos Example</title>
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+    }
+  </style>
+</head>
+<body>
+
+<script type="application/ld+json">
+{
+  "@context": {"schema": "http://schema.org/"},
+  "@id": "#alice",
+  "@type": "schema:Person",
+  "@view": "https://jsonos.com/examples/src/panes/person.js",
+  "schema:name": "Alice Johnson",
+  "schema:jobTitle": "Senior Software Engineer",
+  "schema:worksFor": {
+    "@type": "schema:Organization",
+    "schema:name": "W3C"
+  },
+  "schema:description": "Building the future of the decentralized web. Core contributor to Solid, Verifiable Credentials, and JSON-LD specifications. Passionate about self-sovereign identity and data portability.",
+  "schema:image": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop&crop=face",
+  "schema:url": "https://alice.solidcommunity.net",
+  "schema:email": "alice@w3.org",
+  "schema:address": {
+    "@type": "schema:PostalAddress",
+    "schema:addressLocality": "Cambridge",
+    "schema:addressRegion": "MA"
+  },
+  "schema:sameAs": [
+    "https://github.com/alice-w3c",
+    "https://twitter.com/alice_w3c"
+  ]
+}
+</script>
+
+<script src="https://unpkg.com/solid-shim/dist/mashlib.min.js"></script>
+
+</body>
+</html>

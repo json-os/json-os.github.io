@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portable Identity - jsonos Demo</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+      min-height: 100vh;
+      color: #e2e8f0;
+    }
+
+    .header {
+      text-align: center;
+      padding: 48px 24px 32px;
+    }
+    .header h1 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      margin-bottom: 12px;
+      background: linear-gradient(135deg, #667eea 0%, #a78bfa 50%, #f472b6 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .header p {
+      color: #94a3b8;
+      font-size: 1.1rem;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .demo-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 32px 64px;
+    }
+
+    @media (max-width: 900px) {
+      .demo-container {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .pane-wrapper {
+      position: relative;
+    }
+
+    .pane-label {
+      text-align: center;
+      margin-bottom: 16px;
+    }
+    .pane-label span {
+      background: rgba(102, 126, 234, 0.2);
+      color: #a78bfa;
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .pane-frame {
+      border-radius: 20px;
+      overflow: hidden;
+      background: rgba(15, 23, 42, 0.5);
+      border: 1px solid rgba(102, 126, 234, 0.2);
+      min-height: 400px;
+    }
+
+    .pane-frame iframe {
+      width: 100%;
+      height: 500px;
+      border: none;
+      background: transparent;
+    }
+
+    .footer {
+      text-align: center;
+      padding: 32px;
+      border-top: 1px solid rgba(255,255,255,0.1);
+    }
+    .footer p {
+      color: #64748b;
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+    .footer code {
+      background: rgba(102, 126, 234, 0.2);
+      color: #a78bfa;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-family: 'SF Mono', Monaco, monospace;
+      font-size: 13px;
+    }
+
+    .insight {
+      max-width: 800px;
+      margin: 0 auto 48px;
+      padding: 24px 32px;
+      background: rgba(102, 126, 234, 0.1);
+      border: 1px solid rgba(102, 126, 234, 0.3);
+      border-radius: 16px;
+      text-align: center;
+    }
+    .insight p {
+      font-size: 1.05rem;
+      line-height: 1.7;
+      color: #cbd5e1;
+    }
+    .insight strong {
+      color: #f472b6;
+    }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Portable Identity</h1>
+  <p>Your profile and your credentials — self-describing data that renders itself beautifully, anywhere.</p>
+</div>
+
+<div class="insight">
+  <p>
+    Two pieces of data, each with its own <code>@view</code>.
+    The <strong>Person</strong> knows how to render as a profile card.
+    The <strong>Credential</strong> knows how to render as an achievement badge.
+    No app needed — just data and a single script tag.
+  </p>
+</div>
+
+<div class="demo-container">
+  <div class="pane-wrapper">
+    <div class="pane-label"><span>Who I Am</span></div>
+    <div class="pane-frame">
+      <iframe src="person-alice.html" loading="lazy"></iframe>
+    </div>
+  </div>
+
+  <div class="pane-wrapper">
+    <div class="pane-label"><span>What I've Earned</span></div>
+    <div class="pane-frame">
+      <iframe src="vc-badge.html" loading="lazy"></iframe>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  <p>Each pane is specified by <code>@view</code> in the JSON-LD data itself.</p>
+  <p>Same W3C standards. Completely different presentations. Zero configuration.</p>
+</div>
+
+</body>
+</html>
