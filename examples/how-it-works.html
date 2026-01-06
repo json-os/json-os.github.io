@@ -337,20 +337,29 @@ function addTriples(node, subjectUri) {
 
 <p>After this runs, the store contains the same triples you'd get from fetching Turtle from a pod.</p>
 
-<h3>Backwards Compatibility</h3>
+<h3>Pane Structure (ES Module)</h3>
 
-<p>Existing panes export to <code>window.SchemaPersonPane</code>, etc. shared.js detects these automatically:</p>
+<p>Panes are now ES modules with a default export:</p>
 
-<pre><code>// shared.js detects existing panes by convention
-// 'src/panes/person.js' → looks for window.SchemaPersonPane
-const globalName = 'Schema' + 'Person' + 'Pane';
-if (window[globalName]) {
-  paneRenderer = window[globalName].render;
-}</code></pre>
+<pre><code>// src/panes/person.js
+export default {
+  name: 'schemaPerson',
 
-<p>This means existing panes work without modification.</p>
+  render(subject, context) {
+    const SCHEMA = $rdf.Namespace('http://schema.org/');
+    const store = context.session.store;
+    const dom = context.dom;
 
-<h3>Usage</h3>
+    const div = dom.createElement('div');
+    const name = store.anyValue(subject, SCHEMA('name'));
+    // ... render logic
+    return div;
+  }
+};</code></pre>
+
+<p>Note: <code>SCHEMA</code> is defined inside <code>render()</code> because <code>$rdf</code> isn't available until mashlib loads.</p>
+
+<h3>Usage (ES Modules)</h3>
 
 <p>With shared.js, a complete example is just:</p>
 
@@ -358,15 +367,14 @@ if (window[globalName]) {
 { "@type": "schema:Person", "schema:name": "Marie Curie", ... }
 &lt;/script&gt;
 
-&lt;script src="src/shared.js"&gt;&lt;/script&gt;
-&lt;script&gt;
-  SchemaShared.init({
-    pane: 'src/panes/person.js',
-    subject: '#me'
-  });
+&lt;script type="module"&gt;
+import { init } from './src/shared.js';
+import pane from './src/panes/person.js';
+
+init({ pane, subject: '#me' });
 &lt;/script&gt;</code></pre>
 
-<p>That's it. ~40 lines instead of ~230.</p>
+<p>That's it. ~46 lines instead of ~230.</p>
 
 <h2>Pane Compatibility</h2>
 
