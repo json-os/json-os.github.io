@@ -257,13 +257,40 @@ export default {
 
 <p>The editor lets you modify both JSON-LD and pane code, with live preview:</p>
 
-<pre><code>┌──────────────┬─────────────────────┐
-│   JSON-LD    │                     │
-│   (edit)     │                     │
-├──────────────┤      Preview        │
-│  Pane Code   │      (live)         │
-│   (edit)     │                     │
-└──────────────┴─────────────────────┘</code></pre>
+<svg viewBox="0 0 500 200" style="width: 100%; max-width: 500px; display: block; margin: 1.5rem auto;">
+  <!-- Outer frame -->
+  <rect x="5" y="5" width="490" height="190" rx="8" fill="white" stroke="#e2e8f0" stroke-width="2"/>
+
+  <!-- Left column - JSON-LD -->
+  <rect x="10" y="10" width="190" height="88" rx="6" fill="#1e293b"/>
+  <text x="20" y="32" font-family="system-ui" font-size="11" font-weight="600" fill="#667eea">JSON-LD</text>
+  <text x="20" y="50" font-family="monospace" font-size="9" fill="#94a3b8">{ "@type": "Person",</text>
+  <text x="20" y="62" font-family="monospace" font-size="9" fill="#f472b6">  "@view": "...",</text>
+  <text x="20" y="74" font-family="monospace" font-size="9" fill="#94a3b8">  "name": "Marie" }</text>
+  <text x="160" y="90" font-family="system-ui" font-size="8" fill="#4ade80">editable</text>
+
+  <!-- Left column - Pane Code -->
+  <rect x="10" y="102" width="190" height="88" rx="6" fill="#0a0a14"/>
+  <text x="20" y="124" font-family="system-ui" font-size="11" font-weight="600" fill="#a78bfa">Pane Code</text>
+  <text x="20" y="142" font-family="monospace" font-size="9" fill="#64748b">export default {</text>
+  <text x="20" y="154" font-family="monospace" font-size="9" fill="#a5b4fc">  render(subject) {</text>
+  <text x="20" y="166" font-family="monospace" font-size="9" fill="#64748b">    // ...</text>
+  <text x="160" y="182" font-family="system-ui" font-size="8" fill="#4ade80">editable</text>
+
+  <!-- Right column - Preview -->
+  <rect x="205" y="10" width="285" height="180" rx="6" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="215" y="32" font-family="system-ui" font-size="11" font-weight="600" fill="#1e293b">Preview</text>
+
+  <!-- Mock rendered card -->
+  <rect x="220" y="45" width="255" height="130" rx="8" fill="white" stroke="#e2e8f0" stroke-width="1"/>
+  <circle cx="260" cy="85" r="25" fill="#ddd6fe"/>
+  <text x="255" y="90" font-family="system-ui" font-size="14" fill="#7c3aed">M</text>
+  <text x="300" y="80" font-family="system-ui" font-size="13" font-weight="600" fill="#1e293b">Marie Curie</text>
+  <text x="300" y="96" font-family="system-ui" font-size="10" fill="#64748b">Physicist & Chemist</text>
+  <rect x="300" y="108" width="80" height="24" rx="6" fill="#667eea"/>
+  <text x="320" y="124" font-family="system-ui" font-size="9" fill="white">View Profile</text>
+  <text x="400" y="165" font-family="system-ui" font-size="8" fill="#16a34a">live</text>
+</svg>
 
 <a href="editor.html" class="cta">Open Editor →</a>
 
