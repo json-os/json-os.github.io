@@ -272,9 +272,34 @@
       .aha { grid-template-columns: 1fr; }
       .aha-arrow { transform: rotate(90deg); }
     }
+    /* Header nav */
+    .nav {
+      display: flex;
+      gap: 2rem;
+      justify-content: center;
+      padding: 1.5rem 2rem;
+      font-size: 0.9rem;
+    }
+    .nav a {
+      color: #94a3b8;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .nav a:hover { color: #667eea; }
+    .nav .brand {
+      color: #e2e8f0;
+      font-weight: 600;
+    }
   </style>
 </head>
 <body>
+
+<nav class="nav">
+  <a href="https://jsonos.com" class="brand">jsonos</a>
+  <a href="editor.html">Editor</a>
+  <a href="/browser/">Browser</a>
+  <a href="https://github.com/json-os">GitHub</a>
+</nav>
 
 <!-- Hero -->
 <section class="hero">
@@ -319,9 +344,9 @@
 <!-- CTA -->
 <div class="cta">
   <a href="editor.html" class="btn btn-primary">Live Editor</a>
-  <a href="person.html" class="btn btn-secondary">Try Person Example</a>
+  <a href="/browser/" class="btn btn-secondary">Browser</a>
+  <a href="person.html" class="btn btn-secondary">Try Example</a>
   <a href="how-it-works.html" class="btn btn-secondary">How It Works</a>
-  <a href="view.html" class="btn btn-secondary">@view Proposal</a>
 </div>
 
 <!-- Examples Gallery -->
