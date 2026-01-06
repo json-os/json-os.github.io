@@ -522,18 +522,18 @@
     <div class="steps">
       <div class="step">
         <div class="step-num">1</div>
-        <h3>Point to your data</h3>
-        <p>Connect to a Solid pod, local files, or any JSON-LD endpoint</p>
+        <h3>Add your data</h3>
+        <p>Embed JSON-LD in your HTML. Same format Google uses for rich snippets</p>
       </div>
       <div class="step">
         <div class="step-num">2</div>
-        <h3>Import jsonos</h3>
-        <p>One import. Zero config. Works in any modern browser</p>
+        <h3>Specify the view</h3>
+        <p>Add <code style="background:#1e293b;padding:0.2rem 0.4rem;border-radius:4px;">@view</code> to tell it how to render</p>
       </div>
       <div class="step">
         <div class="step-num">3</div>
-        <h3>Build anything</h3>
-        <p>Read, write, and render your data. Apps sync automatically</p>
+        <h3>Include one script</h3>
+        <p>solid-shim auto-detects @view and renders beautifully</p>
       </div>
     </div>
   </div>
@@ -541,24 +541,26 @@
 
 <section class="code-section">
   <div class="code-inner">
-    <h2>Simple, elegant API</h2>
+    <h2>Self-describing data</h2>
     <div class="code-block">
       <div class="code-header">
         <span class="code-dot red"></span>
         <span class="code-dot yellow"></span>
         <span class="code-dot green"></span>
-        <span class="code-title">app.js</span>
+        <span class="code-title">index.html</span>
       </div>
-      <pre><span class="kw">import</span> os <span class="kw">from</span> <span class="str">'jsonos'</span>;
+      <pre><span class="cmt">&lt;!-- Your data with @view --&gt;</span>
+&lt;script type=<span class="str">"application/ld+json"</span>&gt;
+{
+  <span class="prop">"@type"</span>: <span class="str">"schema:Person"</span>,
+  <span class="kw">"@view"</span>: <span class="str">"https://jsonos.com/examples/src/panes/person.js"</span>,
+  <span class="prop">"schema:name"</span>: <span class="str">"Marie Curie"</span>,
+  <span class="prop">"schema:jobTitle"</span>: <span class="str">"Physicist"</span>
+}
+&lt;/script&gt;
 
-<span class="cmt">// Read tasks from a Solid pod</span>
-<span class="kw">const</span> tasks = <span class="kw">await</span> os.read(<span class="str">'https://alice.solidweb.org/tasks.json'</span>);
-
-<span class="cmt">// Add a new task</span>
-tasks.push({ <span class="prop">title</span>: <span class="str">'Learn jsonos'</span>, <span class="prop">done</span>: <span class="kw">false</span> });
-
-<span class="cmt">// Save to your pod</span>
-<span class="kw">await</span> os.write(<span class="str">'/tasks.json'</span>, tasks);</pre>
+<span class="cmt">&lt;!-- One line - auto-renders --&gt;</span>
+&lt;script src=<span class="str">"https://unpkg.com/solid-shim/dist/mashlib.min.js"</span>&gt;&lt;/script&gt;</pre>
     </div>
   </div>
 </section>
