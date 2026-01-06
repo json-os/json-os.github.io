@@ -39,7 +39,7 @@
       gap: 32px;
       max-width: 1200px;
       margin: 0 auto;
-      padding: 0 32px 64px;
+      padding: 0 32px 48px;
     }
 
     @media (max-width: 900px) {
@@ -72,14 +72,52 @@
       overflow: hidden;
       background: rgba(15, 23, 42, 0.5);
       border: 1px solid rgba(102, 126, 234, 0.2);
-      min-height: 400px;
     }
 
-    .pane-frame iframe {
-      width: 100%;
-      height: 500px;
-      border: none;
-      background: transparent;
+    .pane-content {
+      min-height: 200px;
+    }
+
+    /* Article section */
+    .article-section {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 32px 48px;
+    }
+
+    .article-wrapper {
+      position: relative;
+    }
+
+    .article-frame {
+      border-radius: 20px;
+      overflow: hidden;
+      background: rgba(15, 23, 42, 0.5);
+      border: 1px solid rgba(102, 126, 234, 0.2);
+    }
+
+    .insight {
+      max-width: 800px;
+      margin: 0 auto 48px;
+      padding: 24px 32px;
+      background: rgba(102, 126, 234, 0.1);
+      border: 1px solid rgba(102, 126, 234, 0.3);
+      border-radius: 16px;
+      text-align: center;
+    }
+    .insight p {
+      font-size: 1.05rem;
+      line-height: 1.7;
+      color: #cbd5e1;
+    }
+    .insight strong {
+      color: #f472b6;
+    }
+    .insight code {
+      background: rgba(102, 126, 234, 0.3);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: monospace;
     }
 
     .footer {
@@ -100,38 +138,21 @@
       font-family: 'SF Mono', Monaco, monospace;
       font-size: 13px;
     }
-
-    .insight {
-      max-width: 800px;
-      margin: 0 auto 48px;
-      padding: 24px 32px;
-      background: rgba(102, 126, 234, 0.1);
-      border: 1px solid rgba(102, 126, 234, 0.3);
-      border-radius: 16px;
-      text-align: center;
-    }
-    .insight p {
-      font-size: 1.05rem;
-      line-height: 1.7;
-      color: #cbd5e1;
-    }
-    .insight strong {
-      color: #f472b6;
-    }
   </style>
 </head>
 <body>
 
 <div class="header">
   <h1>Portable Identity</h1>
-  <p>Your profile and your credentials — self-describing data that renders itself beautifully, anywhere.</p>
+  <p>Your profile, credentials, and content — self-describing data that renders itself beautifully, anywhere.</p>
 </div>
 
 <div class="insight">
   <p>
-    Two pieces of data, each with its own <code>@view</code>.
-    The <strong>Person</strong> knows how to render as a profile card.
-    The <strong>Credential</strong> knows how to render as an achievement badge.
+    Three pieces of data, each with its own <code>@view</code>.
+    The <strong>Person</strong> renders as a profile card.
+    The <strong>Credential</strong> renders as an achievement badge.
+    The <strong>Article</strong> renders as a blog post.
     No app needed — just data and a single script tag.
   </p>
 </div>
@@ -140,22 +161,119 @@
   <div class="pane-wrapper">
     <div class="pane-label"><span>Who I Am</span></div>
     <div class="pane-frame">
-      <iframe src="person-alice.html" loading="lazy"></iframe>
+      <div class="pane-content" id="person-pane"></div>
     </div>
   </div>
 
   <div class="pane-wrapper">
     <div class="pane-label"><span>What I've Earned</span></div>
     <div class="pane-frame">
-      <iframe src="vc-badge.html" loading="lazy"></iframe>
+      <div class="pane-content" id="badge-pane"></div>
+    </div>
+  </div>
+</div>
+
+<div class="article-section">
+  <div class="article-wrapper">
+    <div class="pane-label"><span>What I've Written</span></div>
+    <div class="article-frame">
+      <div class="pane-content" id="article-pane"></div>
     </div>
   </div>
 </div>
 
 <div class="footer">
   <p>Each pane is specified by <code>@view</code> in the JSON-LD data itself.</p>
-  <p>Same W3C standards. Completely different presentations. Zero configuration.</p>
+  <p>Same W3C standards. Three different presentations. Zero configuration.</p>
 </div>
+
+<!-- Load solid-shim for $rdf -->
+<script src="https://unpkg.com/solid-shim/dist/mashlib.min.js"></script>
+
+<script type="module">
+  // Data for each pane
+  const personData = {
+    "@context": {"schema": "http://schema.org/"},
+    "@id": "#alice",
+    "@type": "schema:Person",
+    "schema:name": "Alice Johnson",
+    "schema:jobTitle": "Senior Software Engineer",
+    "schema:worksFor": {
+      "@type": "schema:Organization",
+      "schema:name": "W3C"
+    },
+    "schema:description": "Building the future of the decentralized web. Core contributor to Solid, Verifiable Credentials, and JSON-LD specifications. Passionate about self-sovereign identity and data portability.",
+    "schema:image": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop&crop=face",
+    "schema:url": "https://alice.solidcommunity.net",
+    "schema:email": "alice@w3.org"
+  }
+
+  const badgeData = {
+    "@context": [
+      "https://www.w3.org/2018/credentials/v1",
+      {"schema": "http://schema.org/"}
+    ],
+    "@id": "#badge",
+    "@type": "https://www.w3.org/2018/credentials#VerifiableCredential",
+    "schema:name": "Open Source Contributor - Gold",
+    "schema:description": "Recognized for outstanding contributions to W3C specification repositories. Over 100 merged pull requests advancing web standards.",
+    "https://www.w3.org/2018/credentials#issuer": {
+      "@id": "https://w3.org"
+    },
+    "https://www.w3.org/2018/credentials#issuanceDate": "2025-01-01T00:00:00Z",
+    "https://www.w3.org/2018/credentials#expirationDate": "2030-01-01T00:00:00Z"
+  }
+
+  const articleData = {
+    "@context": {"schema": "http://schema.org/"},
+    "@id": "#article",
+    "@type": "schema:Article",
+    "schema:headline": "My Journey to 100 Pull Requests: Lessons from Contributing to Web Standards",
+    "schema:author": {
+      "@type": "schema:Person",
+      "schema:name": "Alice Johnson"
+    },
+    "schema:datePublished": "2025-01-05",
+    "schema:image": "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&h=400&fit=crop",
+    "schema:description": "When I submitted my first pull request to a W3C repository three years ago, I never imagined it would lead to where I am today. That initial contribution — a small typo fix in the JSON-LD specification — was terrifying. I triple-checked my commit message, worried about formatting, and refreshed the page obsessively waiting for feedback.",
+    "schema:articleBody": "The web standards community welcomed me with open arms. Senior contributors took time to explain the nuances of the spec, pointed me to related issues, and encouraged me to tackle bigger challenges. What started as fixing typos evolved into implementing features, writing tests, and eventually co-authoring sections of specifications that millions of developers now use.\n\nThe most important lesson I learned: every expert was once a beginner who didn't give up. The intimidating codebases, the complex discussions, the arcane processes — they all become familiar with time and persistence.\n\nTo anyone considering their first open source contribution: start small, ask questions, and remember that the community wants you to succeed. Your unique perspective matters. The web belongs to all of us, and it's built by people just like you taking that first step."
+  }
+
+  // Import panes
+  const personPane = await import('./src/panes/person.js').then(m => m.default)
+  const badgePane = await import('./src/panes/vc-badge.js').then(m => m.default)
+  const articlePane = await import('./src/panes/article.js').then(m => m.default)
+
+  // Helper to render a pane with data
+  function renderPane(pane, data, containerId) {
+    const container = document.getElementById(containerId)
+    const baseUri = window.location.href.split('#')[0]
+
+    // Create a store and parse the data
+    const store = $rdf.graph()
+    const subject = window.solidShim.parseJsonLdToStore(data, baseUri, store)
+
+    // Create context
+    const context = {
+      dom: document,
+      session: { store }
+    }
+
+    // Render
+    try {
+      const rendered = pane.render(subject, context)
+      container.appendChild(rendered)
+    } catch (e) {
+      console.error('Render error:', e)
+      container.innerHTML = `<p style="color: #f87171; padding: 2rem;">Error rendering pane</p>`
+    }
+  }
+
+  // Render all panes
+  renderPane(personPane, personData, 'person-pane')
+  renderPane(badgePane, badgeData, 'badge-pane')
+  renderPane(articlePane, articleData, 'article-pane')
+</script>
 
 </body>
 </html>
