@@ -25,7 +25,7 @@
  */
 
 (async function() {
-  const MASHLIB_URL = 'https://jsonos.com/browser/dist/mashlib.min.js';
+  const MASHLIB_URL = 'https://unpkg.com/solid-shim/dist/mashlib.js';
   const PANES_BASE = 'https://jsonos.com/examples/src/panes/';
   const SHARED_URL = 'https://jsonos.com/examples/src/shared.js';
 
