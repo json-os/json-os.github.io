@@ -5,232 +5,476 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>jsonos Examples - Schema.org Panes</title>
   <style>
-    * { box-sizing: border-box; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: system-ui, -apple-system, sans-serif;
+      background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+      min-height: 100vh;
+      color: #e2e8f0;
+    }
+
+    /* Hero */
+    .hero {
+      padding: 4rem 2rem;
+      text-align: center;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .hero h1 {
+      font-size: 3rem;
+      font-weight: 800;
+      margin-bottom: 1rem;
+      background: linear-gradient(135deg, #667eea 0%, #a78bfa 50%, #f472b6 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero .tagline {
+      font-size: 1.4rem;
+      color: #94a3b8;
+      margin-bottom: 2rem;
+    }
+    .hero .tagline strong {
+      color: #e2e8f0;
+    }
+
+    /* The Aha moment */
+    .aha {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 1.5rem;
+      align-items: center;
+      max-width: 1000px;
+      margin: 0 auto 3rem;
+      padding: 0 1rem;
+    }
+    .aha-code {
+      background: #1e293b;
+      border-radius: 12px;
+      padding: 1.25rem;
+      font-family: 'SF Mono', Monaco, monospace;
+      font-size: 0.75rem;
+      line-height: 1.6;
+      overflow: hidden;
+      border: 1px solid #334155;
+    }
+    .aha-code .comment { color: #64748b; }
+    .aha-code .key { color: #a78bfa; }
+    .aha-code .string { color: #4ade80; }
+    .aha-code .type { color: #f472b6; }
+    .aha-arrow {
+      font-size: 2rem;
+      color: #667eea;
+      animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.6; transform: scale(1.1); }
+    }
+    .aha-preview {
+      background: white;
+      border-radius: 16px;
+      padding: 1.5rem;
+      color: #1e293b;
+      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+    }
+    .aha-preview img {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-bottom: 1rem;
+      border: 3px solid #667eea;
+    }
+    .aha-preview h3 { font-size: 1.25rem; margin-bottom: 0.25rem; }
+    .aha-preview .job { color: #667eea; font-size: 0.9rem; font-weight: 500; }
+    .aha-preview .desc { color: #64748b; font-size: 0.8rem; margin-top: 0.5rem; }
+
+    /* Key insight */
+    .insight {
+      background: rgba(102, 126, 234, 0.1);
+      border: 1px solid rgba(102, 126, 234, 0.3);
+      border-radius: 12px;
+      padding: 1.5rem 2rem;
+      max-width: 700px;
+      margin: 0 auto 3rem;
+      text-align: center;
+    }
+    .insight p {
+      font-size: 1.1rem;
+      line-height: 1.6;
+    }
+    .insight code {
+      background: rgba(167, 139, 250, 0.2);
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      font-family: monospace;
+    }
+
+    /* CTA buttons */
+    .cta {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      margin-bottom: 4rem;
+      flex-wrap: wrap;
+    }
+    .btn {
+      padding: 0.875rem 1.75rem;
+      border-radius: 10px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      box-shadow: 0 4px 14px rgba(102, 126, 234, 0.4);
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+    }
+    .btn-secondary {
+      background: rgba(255,255,255,0.1);
+      color: #e2e8f0;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    .btn-secondary:hover {
+      background: rgba(255,255,255,0.15);
+    }
+
+    /* Examples section */
+    .examples {
+      background: #f8fafc;
+      padding: 4rem 2rem;
+      color: #1e293b;
+    }
+    .examples-inner {
       max-width: 1200px;
       margin: 0 auto;
-      padding: 2rem;
-      background: #f8fafc;
     }
-    h1 { color: #1e293b; margin-bottom: 0.5rem; }
-    p.intro { color: #64748b; font-size: 1.1rem; margin-bottom: 2rem; }
-    h2 {
+    .examples h2 {
+      text-align: center;
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+    .examples .subtitle {
+      text-align: center;
+      color: #64748b;
+      margin-bottom: 3rem;
+    }
+
+    /* Category */
+    .category {
+      margin-bottom: 2.5rem;
+    }
+    .category h3 {
       color: #475569;
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
-      margin: 2rem 0 1rem;
+      letter-spacing: 0.08em;
+      margin-bottom: 1rem;
       padding-bottom: 0.5rem;
-      border-bottom: 1px solid #e2e8f0;
+      border-bottom: 2px solid #e2e8f0;
     }
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
       gap: 1rem;
     }
     .card {
       background: white;
       border-radius: 12px;
       padding: 1.25rem;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
       text-decoration: none;
       color: inherit;
-      transition: transform 0.2s, box-shadow 0.2s;
-      border-left: 4px solid;
+      transition: all 0.2s;
+      border: 1px solid #e2e8f0;
+      display: flex;
+      flex-direction: column;
     }
     .card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+      transform: translateY(-3px);
+      box-shadow: 0 12px 24px -8px rgba(0,0,0,0.15);
+      border-color: transparent;
     }
-    .card h3 {
-      margin: 0 0 0.4rem 0;
-      font-size: 1.1rem;
+    .card-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      margin-bottom: 0.75rem;
+    }
+    .card h4 {
+      font-size: 1rem;
+      margin-bottom: 0.25rem;
     }
     .card p {
-      margin: 0;
       color: #64748b;
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       line-height: 1.4;
+      flex: 1;
     }
     .card .type {
-      margin-top: 0.6rem;
-      font-size: 0.75rem;
+      margin-top: 0.75rem;
+      font-size: 0.7rem;
       color: #94a3b8;
       font-family: monospace;
     }
-    /* Category colors */
-    .people .card { border-color: #667eea; }
-    .people .card h3 { color: #667eea; }
-    .content .card { border-color: #dc2626; }
-    .content .card h3 { color: #dc2626; }
-    .commerce .card { border-color: #0ea5e9; }
-    .commerce .card h3 { color: #0ea5e9; }
-    .places .card { border-color: #16a34a; }
-    .places .card h3 { color: #16a34a; }
-    .media .card { border-color: #8b5cf6; }
-    .media .card h3 { color: #8b5cf6; }
-    .learning .card { border-color: #f59e0b; }
-    .learning .card h3 { color: #f59e0b; }
 
+    /* Category colors */
+    .cat-people .card-icon { background: #eff6ff; color: #667eea; }
+    .cat-people .card:hover { box-shadow: 0 12px 24px -8px rgba(102, 126, 234, 0.3); }
+    .cat-content .card-icon { background: #fef2f2; color: #dc2626; }
+    .cat-content .card:hover { box-shadow: 0 12px 24px -8px rgba(220, 38, 38, 0.2); }
+    .cat-commerce .card-icon { background: #ecfeff; color: #0ea5e9; }
+    .cat-commerce .card:hover { box-shadow: 0 12px 24px -8px rgba(14, 165, 233, 0.2); }
+    .cat-places .card-icon { background: #f0fdf4; color: #16a34a; }
+    .cat-places .card:hover { box-shadow: 0 12px 24px -8px rgba(22, 163, 74, 0.2); }
+    .cat-media .card-icon { background: #faf5ff; color: #8b5cf6; }
+    .cat-media .card:hover { box-shadow: 0 12px 24px -8px rgba(139, 92, 246, 0.2); }
+    .cat-learning .card-icon { background: #fffbeb; color: #f59e0b; }
+    .cat-learning .card:hover { box-shadow: 0 12px 24px -8px rgba(245, 158, 11, 0.2); }
+
+    /* Footer */
     footer {
-      margin-top: 3rem;
+      background: #0f172a;
+      padding: 2rem;
       text-align: center;
-      color: #94a3b8;
-      font-size: 0.85rem;
+      color: #64748b;
+      font-size: 0.9rem;
     }
-    footer a { color: #667eea; }
+    footer a { color: #667eea; text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+
+    /* Responsive */
+    @media (max-width: 800px) {
+      .hero h1 { font-size: 2rem; }
+      .aha { grid-template-columns: 1fr; }
+      .aha-arrow { transform: rotate(90deg); }
+    }
   </style>
 </head>
 <body>
 
-<h1>jsonos Examples</h1>
-<p class="intro">
-  20 beautiful Schema.org panes rendered with the jsonos browser.
-  All examples use native schema.org vocabulary in JSON-LD.
-  <a href="how-it-works.html" style="color: #667eea;">How it works →</a>
-</p>
-
-<section class="people">
-  <h2>People & Organizations</h2>
-  <div class="grid">
-    <a class="card" href="person.html#me">
-      <h3>Person</h3>
-      <p>Profile with photo and contact info</p>
-      <div class="type">schema:Person</div>
-    </a>
-    <a class="card" href="organization.html#org">
-      <h3>Organization</h3>
-      <p>Company with members</p>
-      <div class="type">schema:Organization</div>
-    </a>
-  </div>
+<!-- Hero -->
+<section class="hero">
+  <h1>JSON-LD → Beautiful UI</h1>
+  <p class="tagline">
+    Add <strong>schema.org data</strong> to your HTML.<br>
+    Get a <strong>beautiful rendered view</strong> instantly.
+  </p>
 </section>
 
-<section class="content">
-  <h2>Content & Articles</h2>
-  <div class="grid">
-    <a class="card" href="article.html#article">
-      <h3>Article</h3>
-      <p>Blog post with author and date</p>
-      <div class="type">schema:Article</div>
-    </a>
-    <a class="card" href="review.html#review">
-      <h3>Review</h3>
-      <p>Product review with rating</p>
-      <div class="type">schema:Review</div>
-    </a>
-    <a class="card" href="faqpage.html#faq">
-      <h3>FAQ Page</h3>
-      <p>Questions and answers</p>
-      <div class="type">schema:FAQPage</div>
-    </a>
-    <a class="card" href="creativework.html#artwork">
-      <h3>Creative Work</h3>
-      <p>Digital artwork with creator</p>
-      <div class="type">schema:VisualArtwork</div>
-    </a>
+<!-- The Aha moment - side by side -->
+<div class="aha">
+  <div class="aha-code">
+    <span class="comment">&lt;script type="application/ld+json"&gt;</span><br>
+    {<br>
+    &nbsp;&nbsp;<span class="key">"@type"</span>: <span class="type">"schema:Person"</span>,<br>
+    &nbsp;&nbsp;<span class="key">"name"</span>: <span class="string">"Marie Curie"</span>,<br>
+    &nbsp;&nbsp;<span class="key">"jobTitle"</span>: <span class="string">"Physicist"</span>,<br>
+    &nbsp;&nbsp;<span class="key">"image"</span>: <span class="string">"photo.jpg"</span><br>
+    }<br>
+    <span class="comment">&lt;/script&gt;</span>
   </div>
-</section>
-
-<section class="commerce">
-  <h2>Commerce & Business</h2>
-  <div class="grid">
-    <a class="card" href="product.html#product">
-      <h3>Product</h3>
-      <p>Headphones with price and specs</p>
-      <div class="type">schema:Product</div>
-    </a>
-    <a class="card" href="localbusiness.html#business">
-      <h3>Local Business</h3>
-      <p>Restaurant with hours and rating</p>
-      <div class="type">schema:Restaurant</div>
-    </a>
-    <a class="card" href="service.html#service">
-      <h3>Service</h3>
-      <p>Cloud hosting service</p>
-      <div class="type">schema:Service</div>
-    </a>
-    <a class="card" href="jobposting.html#job">
-      <h3>Job Posting</h3>
-      <p>Developer position with salary</p>
-      <div class="type">schema:JobPosting</div>
-    </a>
-    <a class="card" href="softwareapplication.html#app">
-      <h3>Software App</h3>
-      <p>Mobile app with screenshots</p>
-      <div class="type">schema:SoftwareApplication</div>
-    </a>
+  <div class="aha-arrow">→</div>
+  <div class="aha-preview">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Marie_Curie_c1920.jpg/440px-Marie_Curie_c1920.jpg" alt="Marie Curie">
+    <h3>Marie Curie</h3>
+    <div class="job">Physicist</div>
+    <div class="desc">Nobel Prize winner</div>
   </div>
-</section>
+</div>
 
-<section class="places">
-  <h2>Places & Events</h2>
-  <div class="grid">
-    <a class="card" href="event.html#event">
-      <h3>Event</h3>
-      <p>Conference with date and location</p>
-      <div class="type">schema:Event</div>
-    </a>
-    <a class="card" href="place.html#place">
-      <h3>Place</h3>
-      <p>Tourist attraction with map</p>
-      <div class="type">schema:TouristAttraction</div>
-    </a>
-  </div>
-</section>
+<!-- Key insight -->
+<div class="insight">
+  <p>
+    Same data Google uses for <code>rich snippets</code>.<br>
+    Same tech as <code>SolidOS</code> panes.<br>
+    Works in any HTML page. Zero build step.
+  </p>
+</div>
 
-<section class="media">
-  <h2>Media & Entertainment</h2>
-  <div class="grid">
-    <a class="card" href="video.html#video">
-      <h3>Video</h3>
-      <p>Tutorial video with thumbnail</p>
-      <div class="type">schema:VideoObject</div>
-    </a>
-    <a class="card" href="movie.html#movie">
-      <h3>Movie</h3>
-      <p>Film with cast and trailer</p>
-      <div class="type">schema:Movie</div>
-    </a>
-    <a class="card" href="musicrecording.html#album">
-      <h3>Music Album</h3>
-      <p>Album with track listing</p>
-      <div class="type">schema:MusicAlbum</div>
-    </a>
-    <a class="card" href="book.html#book">
-      <h3>Book</h3>
-      <p>Book with author and ISBN</p>
-      <div class="type">schema:Book</div>
-    </a>
-  </div>
-</section>
+<!-- CTA -->
+<div class="cta">
+  <a href="person.html" class="btn btn-primary">Try Person Example</a>
+  <a href="how-it-works.html" class="btn btn-secondary">How It Works</a>
+</div>
 
-<section class="learning">
-  <h2>Learning & How-To</h2>
-  <div class="grid">
-    <a class="card" href="recipe.html#recipe">
-      <h3>Recipe</h3>
-      <p>Cooking recipe with ingredients</p>
-      <div class="type">schema:Recipe</div>
-    </a>
-    <a class="card" href="howto.html#howto">
-      <h3>How-To</h3>
-      <p>Step-by-step tutorial</p>
-      <div class="type">schema:HowTo</div>
-    </a>
-    <a class="card" href="course.html#course">
-      <h3>Course</h3>
-      <p>Online course with sessions</p>
-      <div class="type">schema:Course</div>
-    </a>
+<!-- Examples Gallery -->
+<section class="examples">
+  <div class="examples-inner">
+    <h2>20 Schema.org Types</h2>
+    <p class="subtitle">Click any card to see it in action</p>
+
+    <div class="category cat-people">
+      <h3>People & Organizations</h3>
+      <div class="grid">
+        <a class="card" href="person.html#me">
+          <div class="card-icon">👤</div>
+          <h4>Person</h4>
+          <p>Profile with photo and contact</p>
+          <div class="type">schema:Person</div>
+        </a>
+        <a class="card" href="organization.html#org">
+          <div class="card-icon">🏢</div>
+          <h4>Organization</h4>
+          <p>Company with team members</p>
+          <div class="type">schema:Organization</div>
+        </a>
+      </div>
+    </div>
+
+    <div class="category cat-content">
+      <h3>Content & Articles</h3>
+      <div class="grid">
+        <a class="card" href="article.html#article">
+          <div class="card-icon">📝</div>
+          <h4>Article</h4>
+          <p>Blog post with author</p>
+          <div class="type">schema:Article</div>
+        </a>
+        <a class="card" href="review.html#review">
+          <div class="card-icon">⭐</div>
+          <h4>Review</h4>
+          <p>Product review with rating</p>
+          <div class="type">schema:Review</div>
+        </a>
+        <a class="card" href="faqpage.html#faq">
+          <div class="card-icon">❓</div>
+          <h4>FAQ</h4>
+          <p>Questions and answers</p>
+          <div class="type">schema:FAQPage</div>
+        </a>
+        <a class="card" href="creativework.html#artwork">
+          <div class="card-icon">🎨</div>
+          <h4>Creative Work</h4>
+          <p>Artwork with creator</p>
+          <div class="type">schema:CreativeWork</div>
+        </a>
+      </div>
+    </div>
+
+    <div class="category cat-commerce">
+      <h3>Commerce & Business</h3>
+      <div class="grid">
+        <a class="card" href="product.html#product">
+          <div class="card-icon">🎧</div>
+          <h4>Product</h4>
+          <p>Item with price and specs</p>
+          <div class="type">schema:Product</div>
+        </a>
+        <a class="card" href="localbusiness.html#business">
+          <div class="card-icon">🍽️</div>
+          <h4>Local Business</h4>
+          <p>Restaurant with hours</p>
+          <div class="type">schema:Restaurant</div>
+        </a>
+        <a class="card" href="service.html#service">
+          <div class="card-icon">☁️</div>
+          <h4>Service</h4>
+          <p>Cloud hosting service</p>
+          <div class="type">schema:Service</div>
+        </a>
+        <a class="card" href="jobposting.html#job">
+          <div class="card-icon">💼</div>
+          <h4>Job Posting</h4>
+          <p>Position with salary</p>
+          <div class="type">schema:JobPosting</div>
+        </a>
+        <a class="card" href="softwareapplication.html#app">
+          <div class="card-icon">📱</div>
+          <h4>Software App</h4>
+          <p>Mobile app listing</p>
+          <div class="type">schema:SoftwareApplication</div>
+        </a>
+      </div>
+    </div>
+
+    <div class="category cat-places">
+      <h3>Places & Events</h3>
+      <div class="grid">
+        <a class="card" href="event.html#event">
+          <div class="card-icon">🎉</div>
+          <h4>Event</h4>
+          <p>Conference with date</p>
+          <div class="type">schema:Event</div>
+        </a>
+        <a class="card" href="place.html#place">
+          <div class="card-icon">📍</div>
+          <h4>Place</h4>
+          <p>Tourist attraction</p>
+          <div class="type">schema:Place</div>
+        </a>
+      </div>
+    </div>
+
+    <div class="category cat-media">
+      <h3>Media & Entertainment</h3>
+      <div class="grid">
+        <a class="card" href="video.html#video">
+          <div class="card-icon">🎬</div>
+          <h4>Video</h4>
+          <p>Tutorial with thumbnail</p>
+          <div class="type">schema:VideoObject</div>
+        </a>
+        <a class="card" href="movie.html#movie">
+          <div class="card-icon">🎞️</div>
+          <h4>Movie</h4>
+          <p>Film with cast</p>
+          <div class="type">schema:Movie</div>
+        </a>
+        <a class="card" href="musicrecording.html#album">
+          <div class="card-icon">🎵</div>
+          <h4>Music</h4>
+          <p>Album with tracks</p>
+          <div class="type">schema:MusicAlbum</div>
+        </a>
+        <a class="card" href="book.html#book">
+          <div class="card-icon">📚</div>
+          <h4>Book</h4>
+          <p>Book with ISBN</p>
+          <div class="type">schema:Book</div>
+        </a>
+      </div>
+    </div>
+
+    <div class="category cat-learning">
+      <h3>Learning & How-To</h3>
+      <div class="grid">
+        <a class="card" href="recipe.html#recipe">
+          <div class="card-icon">🍳</div>
+          <h4>Recipe</h4>
+          <p>Cooking instructions</p>
+          <div class="type">schema:Recipe</div>
+        </a>
+        <a class="card" href="howto.html#howto">
+          <div class="card-icon">📋</div>
+          <h4>How-To</h4>
+          <p>Step-by-step guide</p>
+          <div class="type">schema:HowTo</div>
+        </a>
+        <a class="card" href="course.html#course">
+          <div class="card-icon">🎓</div>
+          <h4>Course</h4>
+          <p>Online course</p>
+          <div class="type">schema:Course</div>
+        </a>
+      </div>
+    </div>
   </div>
 </section>
 
 <footer>
-  <a href="https://jsonos.com">jsonos</a> |
-  <a href="/browser/">Browser</a> |
-  20 Schema.org types rendered as JSON-LD
+  <a href="https://jsonos.com">jsonos</a> ·
+  <a href="/browser/">Browser</a> ·
+  <a href="how-it-works.html">How It Works</a> ·
+  <a href="https://github.com/json-os">GitHub</a>
 </footer>
 
 </body>
