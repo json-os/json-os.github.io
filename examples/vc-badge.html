@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Achievement Badge - jsonos Example</title>
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+    }
+  </style>
+</head>
+<body>
+
+<script type="application/ld+json">
+{
+  "@context": [
+    "https://www.w3.org/2018/credentials/v1",
+    {"schema": "http://schema.org/"}
+  ],
+  "@id": "#badge",
+  "@type": "https://www.w3.org/2018/credentials#VerifiableCredential",
+  "@view": "https://jsonos.com/examples/src/panes/vc.js",
+  "schema:name": "Open Source Contributor - Gold",
+  "schema:description": "Recognized for outstanding contributions to W3C specification repositories. Over 100 merged pull requests advancing web standards.",
+  "https://www.w3.org/2018/credentials#issuer": {
+    "@id": "https://w3.org"
+  },
+  "https://www.w3.org/2018/credentials#issuanceDate": "2025-01-01T00:00:00Z",
+  "https://www.w3.org/2018/credentials#expirationDate": "2030-01-01T00:00:00Z",
+  "https://www.w3.org/2018/credentials#credentialSubject": {
+    "@id": "did:example:contributor456",
+    "@type": "schema:Person"
+  }
+}
+</script>
+
+<script src="https://unpkg.com/solid-shim/dist/mashlib.min.js"></script>
+
+</body>
+</html>
