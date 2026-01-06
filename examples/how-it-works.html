@@ -119,31 +119,44 @@
 
 <p>These examples use the <strong>exact same stack</strong> as SolidOS, just with JSON-LD data embedded in the page instead of fetched from a pod.</p>
 
-<div class="diagram">
-┌─────────────────────────────────────────────────────────────┐
-│  person.html                                                │
-│  ┌───────────────────────────────────────────────────────┐  │
-│  │  &lt;script type="application/ld+json"&gt;                  │  │
-│  │  { "@type": "schema:Person", "schema:name": "..." }   │  │
-│  │  &lt;/script&gt;                          ← JSON-LD data    │  │
-│  └───────────────────────────────────────────────────────┘  │
-│                            ↓                                │
-│                    Parse into store                         │
-│                            ↓                                │
-│  ┌───────────────────────────────────────────────────────┐  │
-│  │  mashlib.min.js (solid-shim)        ← Same as SolidOS │  │
-│  │  ├── rdflib         → $rdf, store                     │  │
-│  │  ├── solid-ui       → UI widgets                      │  │
-│  │  ├── solid-logic    → SolidLogic.store                │  │
-│  │  └── solid-panes    → Pane system                     │  │
-│  └───────────────────────────────────────────────────────┘  │
-│                            ↓                                │
-│  ┌───────────────────────────────────────────────────────┐  │
-│  │  src/panes/person.js                ← Custom pane     │  │
-│  │  Reads from store, renders UI                         │  │
-│  └───────────────────────────────────────────────────────┘  │
-└─────────────────────────────────────────────────────────────┘
-</div>
+<svg viewBox="0 0 500 340" style="width: 100%; max-width: 500px; display: block; margin: 1.5rem auto;">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L9,3 z" fill="#667eea"/>
+    </marker>
+  </defs>
+  <!-- Outer box -->
+  <rect x="10" y="10" width="480" height="320" rx="8" fill="white" stroke="#e2e8f0" stroke-width="2"/>
+  <text x="25" y="35" font-family="system-ui" font-size="14" font-weight="600" fill="#1e293b">person.html</text>
+
+  <!-- JSON-LD box -->
+  <rect x="30" y="50" width="440" height="60" rx="6" fill="#eff6ff" stroke="#667eea" stroke-width="1.5"/>
+  <text x="45" y="72" font-family="monospace" font-size="11" fill="#334155">&lt;script type="application/ld+json"&gt;</text>
+  <text x="45" y="88" font-family="monospace" font-size="11" fill="#334155">{ "@type": "schema:Person", ... }</text>
+  <text x="45" y="104" font-family="monospace" font-size="11" fill="#334155">&lt;/script&gt;</text>
+  <text x="380" y="88" font-family="system-ui" font-size="10" fill="#667eea">JSON-LD data</text>
+
+  <!-- Arrow 1 -->
+  <line x1="250" y1="115" x2="250" y2="135" stroke="#667eea" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="265" y="130" font-family="system-ui" font-size="10" fill="#64748b">Parse into store</text>
+
+  <!-- Mashlib box -->
+  <rect x="30" y="145" width="440" height="80" rx="6" fill="#f0fdf4" stroke="#16a34a" stroke-width="1.5"/>
+  <text x="45" y="167" font-family="system-ui" font-size="12" font-weight="600" fill="#1e293b">mashlib.min.js (solid-shim)</text>
+  <text x="380" y="167" font-family="system-ui" font-size="10" fill="#16a34a">Same as SolidOS</text>
+  <text x="55" y="187" font-family="monospace" font-size="10" fill="#334155">├─ rdflib → $rdf, store</text>
+  <text x="55" y="202" font-family="monospace" font-size="10" fill="#334155">├─ solid-ui → UI widgets</text>
+  <text x="55" y="217" font-family="monospace" font-size="10" fill="#334155">└─ solid-logic → SolidLogic.store</text>
+
+  <!-- Arrow 2 -->
+  <line x1="250" y1="230" x2="250" y2="250" stroke="#667eea" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- Pane box -->
+  <rect x="30" y="260" width="440" height="55" rx="6" fill="#fef3c7" stroke="#f59e0b" stroke-width="1.5"/>
+  <text x="45" y="282" font-family="system-ui" font-size="12" font-weight="600" fill="#1e293b">src/panes/person.js</text>
+  <text x="380" y="282" font-family="system-ui" font-size="10" fill="#f59e0b">Custom pane</text>
+  <text x="45" y="302" font-family="system-ui" font-size="11" fill="#334155">Reads from store, renders UI</text>
+</svg>
 
 <div class="key-point">
   <strong>Key insight:</strong> The panes work identically to SolidOS panes.
@@ -206,23 +219,25 @@ const jobTitle = store.anyValue(subject, SCHEMA('jobTitle'));</code></pre>
 
 <h2>File Structure</h2>
 
-<div class="diagram">
-examples/
-├── index.html              # Gallery
-├── person.html             # Example page
-├── article.html            # Example page
-├── ...                     # 20 schema.org types
-│
-├── how-it-works.html       # This page
-│
-└── src/
-    ├── shared.js           # Common init (loads mashlib, parses data)
-    ├── toolbar.js          # Auth, view switching
-    └── panes/
-        ├── person.js       # Person renderer
-        ├── article.js      # Article renderer
-        └── ...             # 20 panes
-</div>
+<svg viewBox="0 0 400 220" style="width: 100%; max-width: 400px; display: block; margin: 1.5rem auto;">
+  <rect x="5" y="5" width="390" height="210" rx="8" fill="white" stroke="#e2e8f0" stroke-width="2"/>
+  <text x="20" y="30" font-family="monospace" font-size="12" font-weight="600" fill="#1e293b">examples/</text>
+  <text x="35" y="50" font-family="monospace" font-size="11" fill="#334155">├── index.html</text>
+  <text x="200" y="50" font-family="system-ui" font-size="10" fill="#64748b"># Gallery</text>
+  <text x="35" y="68" font-family="monospace" font-size="11" fill="#334155">├── person.html</text>
+  <text x="200" y="68" font-family="system-ui" font-size="10" fill="#64748b"># Example page</text>
+  <text x="35" y="86" font-family="monospace" font-size="11" fill="#334155">├── article.html ...</text>
+  <text x="200" y="86" font-family="system-ui" font-size="10" fill="#64748b"># 20 schema.org types</text>
+  <text x="35" y="104" font-family="monospace" font-size="11" fill="#334155">├── how-it-works.html</text>
+  <text x="200" y="104" font-family="system-ui" font-size="10" fill="#64748b"># This page</text>
+  <text x="35" y="126" font-family="monospace" font-size="11" fill="#334155">└── src/</text>
+  <text x="55" y="146" font-family="monospace" font-size="11" fill="#667eea">├── shared.js</text>
+  <text x="200" y="146" font-family="system-ui" font-size="10" fill="#64748b"># Common init</text>
+  <text x="55" y="164" font-family="monospace" font-size="11" fill="#334155">├── toolbar.js</text>
+  <text x="200" y="164" font-family="system-ui" font-size="10" fill="#64748b"># Auth, views</text>
+  <text x="55" y="182" font-family="monospace" font-size="11" fill="#334155">└── panes/</text>
+  <text x="75" y="200" font-family="monospace" font-size="11" fill="#f59e0b">├── person.js, article.js ...</text>
+</svg>
 
 <h2>shared.js - The Glue</h2>
 
@@ -230,39 +245,67 @@ examples/
 
 <h3>What shared.js Does</h3>
 
-<div class="diagram">
-SchemaShared.init({ pane: 'src/panes/person.js', subject: '#me' })
-                              │
-                              ▼
-┌─────────────────────────────────────────────────────────────┐
-│ 1. Load mashlib.min.js                                      │
-│    └── Brings in $rdf, SolidLogic, pane system              │
-├─────────────────────────────────────────────────────────────┤
-│ 2. Wait for globals                                         │
-│    └── Poll until $rdf and SolidLogic are defined           │
-├─────────────────────────────────────────────────────────────┤
-│ 3. Parse JSON-LD data island                                │
-│    └── Find &lt;script type="application/ld+json"&gt;             │
-│    └── Convert to RDF triples                               │
-│    └── Add to SolidLogic.store                              │
-├─────────────────────────────────────────────────────────────┤
-│ 4. Load toolbar.js                                          │
-│    └── Auth, view switching, actions                        │
-├─────────────────────────────────────────────────────────────┤
-│ 5. Load pane                                                │
-│    └── Detects window.Schema*Pane (backwards compat)        │
-│    └── Or uses SchemaShared.registerPane() (new way)        │
-├─────────────────────────────────────────────────────────────┤
-│ 6. Create views                                             │
-│    └── Profile: pane.render()                               │
-│    └── Data: RDF triples table                              │
-│    └── Source: JSON-LD syntax view                          │
-├─────────────────────────────────────────────────────────────┤
-│ 7. Render                                                   │
-│    └── Add toolbar + content to page                        │
-│    └── Show profile view by default                         │
-└─────────────────────────────────────────────────────────────┘
-</div>
+<svg viewBox="0 0 500 420" style="width: 100%; max-width: 500px; display: block; margin: 1.5rem auto;">
+  <defs>
+    <marker id="arrow2" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L9,3 z" fill="#667eea"/>
+    </marker>
+  </defs>
+  <!-- Header -->
+  <rect x="80" y="5" width="340" height="30" rx="6" fill="#667eea"/>
+  <text x="250" y="25" font-family="monospace" font-size="11" fill="white" text-anchor="middle">SchemaShared.init({ pane: '...', subject: '#me' })</text>
+
+  <!-- Arrow -->
+  <line x1="250" y1="40" x2="250" y2="55" stroke="#667eea" stroke-width="2" marker-end="url(#arrow2)"/>
+
+  <!-- Steps container -->
+  <rect x="10" y="60" width="480" height="350" rx="8" fill="white" stroke="#e2e8f0" stroke-width="2"/>
+
+  <!-- Step 1 -->
+  <rect x="25" y="75" width="450" height="35" rx="4" fill="#eff6ff"/>
+  <text x="40" y="92" font-family="system-ui" font-size="11" font-weight="600" fill="#667eea">1.</text>
+  <text x="60" y="92" font-family="system-ui" font-size="11" font-weight="500" fill="#1e293b">Load mashlib.min.js</text>
+  <text x="60" y="105" font-family="system-ui" font-size="10" fill="#64748b">→ Brings in $rdf, SolidLogic, pane system</text>
+
+  <!-- Step 2 -->
+  <rect x="25" y="118" width="450" height="35" rx="4" fill="#f8fafc"/>
+  <text x="40" y="135" font-family="system-ui" font-size="11" font-weight="600" fill="#667eea">2.</text>
+  <text x="60" y="135" font-family="system-ui" font-size="11" font-weight="500" fill="#1e293b">Wait for globals</text>
+  <text x="60" y="148" font-family="system-ui" font-size="10" fill="#64748b">→ Poll until $rdf and SolidLogic are defined</text>
+
+  <!-- Step 3 -->
+  <rect x="25" y="161" width="450" height="48" rx="4" fill="#eff6ff"/>
+  <text x="40" y="178" font-family="system-ui" font-size="11" font-weight="600" fill="#667eea">3.</text>
+  <text x="60" y="178" font-family="system-ui" font-size="11" font-weight="500" fill="#1e293b">Parse JSON-LD data island</text>
+  <text x="60" y="191" font-family="system-ui" font-size="10" fill="#64748b">→ Find &lt;script type="application/ld+json"&gt;</text>
+  <text x="60" y="204" font-family="system-ui" font-size="10" fill="#64748b">→ Convert to RDF triples, add to SolidLogic.store</text>
+
+  <!-- Step 4 -->
+  <rect x="25" y="217" width="450" height="35" rx="4" fill="#f8fafc"/>
+  <text x="40" y="234" font-family="system-ui" font-size="11" font-weight="600" fill="#667eea">4.</text>
+  <text x="60" y="234" font-family="system-ui" font-size="11" font-weight="500" fill="#1e293b">Load toolbar.js</text>
+  <text x="60" y="247" font-family="system-ui" font-size="10" fill="#64748b">→ Auth, view switching, actions</text>
+
+  <!-- Step 5 -->
+  <rect x="25" y="260" width="450" height="48" rx="4" fill="#eff6ff"/>
+  <text x="40" y="277" font-family="system-ui" font-size="11" font-weight="600" fill="#667eea">5.</text>
+  <text x="60" y="277" font-family="system-ui" font-size="11" font-weight="500" fill="#1e293b">Load pane</text>
+  <text x="60" y="290" font-family="system-ui" font-size="10" fill="#64748b">→ Detects window.Schema*Pane (backwards compat)</text>
+  <text x="60" y="303" font-family="system-ui" font-size="10" fill="#64748b">→ Or uses SchemaShared.registerPane() (new way)</text>
+
+  <!-- Step 6 -->
+  <rect x="25" y="316" width="450" height="48" rx="4" fill="#f8fafc"/>
+  <text x="40" y="333" font-family="system-ui" font-size="11" font-weight="600" fill="#667eea">6.</text>
+  <text x="60" y="333" font-family="system-ui" font-size="11" font-weight="500" fill="#1e293b">Create views</text>
+  <text x="60" y="346" font-family="system-ui" font-size="10" fill="#64748b">→ Profile: pane.render() | Data: RDF table | Source: JSON-LD</text>
+  <text x="60" y="359" font-family="system-ui" font-size="10" fill="#64748b">→ Add toolbar + content to page, show profile view</text>
+
+  <!-- Step 7 -->
+  <rect x="25" y="372" width="450" height="28" rx="4" fill="#f0fdf4"/>
+  <text x="40" y="390" font-family="system-ui" font-size="11" font-weight="600" fill="#16a34a">7.</text>
+  <text x="60" y="390" font-family="system-ui" font-size="11" font-weight="500" fill="#1e293b">Done!</text>
+  <text x="100" y="390" font-family="system-ui" font-size="10" fill="#64748b">Page is interactive</text>
+</svg>
 
 <h3>The JSON-LD Parser</h3>
 
