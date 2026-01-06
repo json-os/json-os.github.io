@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verifiable Credential - jsonos Example</title>
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+    }
+  </style>
+</head>
+<body>
+
+<script type="application/ld+json">
+{
+  "@context": [
+    "https://www.w3.org/2018/credentials/v1",
+    "https://www.w3.org/2018/credentials/examples/v1",
+    {"schema": "https://schema.org/"}
+  ],
+  "@id": "#credential",
+  "@type": ["VerifiableCredential", "UniversityDegreeCredential"],
+  "@view": "https://jsonos.com/examples/src/panes/vc.js",
+  "schema:name": "Bachelor of Science in Computer Science",
+  "schema:description": "Awarded with Honors for exceptional academic achievement in Computer Science, with specialization in Distributed Systems and Web Technologies.",
+  "https://www.w3.org/2018/credentials#issuer": {
+    "@id": "https://mit.edu",
+    "@type": "schema:CollegeOrUniversity",
+    "schema:name": "Massachusetts Institute of Technology",
+    "schema:image": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/MIT_logo.svg/200px-MIT_logo.svg.png"
+  },
+  "https://www.w3.org/2018/credentials#issuanceDate": "2024-05-15T00:00:00Z",
+  "https://www.w3.org/2018/credentials#expirationDate": "2034-05-15T00:00:00Z",
+  "https://www.w3.org/2018/credentials#credentialSubject": {
+    "@id": "did:example:ebfeb1f712ebc6f1c276e12ec21",
+    "@type": "schema:Person",
+    "schema:name": "Alice Johnson",
+    "schema:educationalCredentialAwarded": "Bachelor of Science"
+  }
+}
+</script>
+
+<script src="https://unpkg.com/solid-shim/dist/mashlib.min.js"></script>
+
+</body>
+</html>
