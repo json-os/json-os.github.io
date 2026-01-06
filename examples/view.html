@@ -19,10 +19,17 @@
     }
     a { color: #667eea; text-decoration: none; }
     a:hover { text-decoration: underline; }
-    .back-link {
-      display: inline-block;
+    .nav {
+      display: flex;
+      gap: 1rem;
       margin-bottom: 2rem;
+      font-size: 0.9rem;
     }
+    .nav a {
+      color: #94a3b8;
+      text-decoration: none;
+    }
+    .nav a:hover { color: #667eea; }
     h1 {
       font-size: 2.5rem;
       margin-bottom: 0.5rem;
@@ -117,7 +124,12 @@
 <body>
 
 <div class="container">
-  <a href="/examples/" class="back-link">&larr; Back to Examples</a>
+  <div class="nav">
+    <a href="/examples/">← Examples</a>
+    <a href="editor.html">Editor</a>
+    <a href="/browser/">Browser</a>
+    <a href="https://github.com/json-os">GitHub</a>
+  </div>
 
   <h1>@view</h1>
   <p class="tagline">Self-describing JSON-LD views. Data that knows how to display itself.</p>
@@ -210,9 +222,9 @@ export default {
   <a href="editor.html" class="demo-link">Open Live Editor &rarr;</a>
 
   <p style="margin-top: 3rem; color: #64748b; font-size: 0.9rem;">
-    <a href="view-demo.html">View Demo</a> &middot;
+    <a href="how-it-works.html">How It Works</a> &middot;
     <a href="https://github.com/w3c/json-ld-syntax/issues/384">W3C Issue #384</a> &middot;
-    <a href="embed.html">Embed Docs</a>
+    <a href="https://jsonos.com">jsonos</a>
   </p>
 </div>
 
