@@ -51,17 +51,9 @@
       padding: 0;
       color: inherit;
     }
-    .diagram {
-      background: white;
-      border: 1px solid #e2e8f0;
-      border-radius: 12px;
-      padding: 1.5rem;
-      margin: 1.5rem 0;
-      font-family: 'SF Mono', Monaco, monospace;
-      font-size: 0.85rem;
-      line-height: 1.8;
-      overflow-x: auto;
-    }
+    .highlight { color: #f472b6; }
+    .comment { color: #64748b; }
+    .string { color: #4ade80; }
     .key-point {
       background: #eff6ff;
       border-left: 4px solid #667eea;
@@ -70,18 +62,6 @@
       border-radius: 0 8px 8px 0;
     }
     .key-point strong { color: #667eea; }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin: 1rem 0;
-      font-size: 0.9rem;
-    }
-    th, td {
-      padding: 0.75rem;
-      text-align: left;
-      border-bottom: 1px solid #e2e8f0;
-    }
-    th { background: #f1f5f9; font-weight: 600; color: #475569; }
     a { color: #667eea; }
     .nav {
       display: flex;
@@ -94,6 +74,53 @@
       text-decoration: none;
     }
     .nav a:hover { color: #667eea; }
+    .step {
+      display: flex;
+      gap: 1rem;
+      margin: 1.5rem 0;
+      padding: 1rem;
+      background: white;
+      border-radius: 8px;
+      border: 1px solid #e2e8f0;
+    }
+    .step-num {
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+    .step-content { flex: 1; }
+    .step-content h4 { margin: 0 0 0.5rem; color: #1e293b; }
+    .step-content p { margin: 0; font-size: 0.95rem; }
+    .cta {
+      display: inline-block;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      margin-top: 1rem;
+    }
+    .cta:hover { opacity: 0.9; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+      font-size: 0.9rem;
+    }
+    th, td {
+      padding: 0.75rem;
+      text-align: left;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    th { background: #f1f5f9; font-weight: 600; color: #475569; }
     footer {
       margin-top: 3rem;
       padding-top: 1.5rem;
@@ -108,312 +135,169 @@
 
 <div class="nav">
   <a href="/examples/">← Examples</a>
-  <a href="/browser/">Browser</a>
+  <a href="editor.html">Editor</a>
+  <a href="view.html">@view Docs</a>
   <a href="https://github.com/json-os">GitHub</a>
 </div>
 
 <h1>How It Works</h1>
-<p class="subtitle">Understanding jsonos examples for SolidOS developers</p>
+<p class="subtitle">Self-describing JSON-LD with @view</p>
 
-<h2>The Big Picture</h2>
+<h2>The Idea</h2>
 
-<p>These examples use the <strong>exact same stack</strong> as SolidOS, just with JSON-LD data embedded in the page instead of fetched from a pod.</p>
+<p>JSON-LD describes <em>what</em> data is. The <code>@view</code> property adds <em>how</em> to display it:</p>
 
-<svg viewBox="0 0 500 340" style="width: 100%; max-width: 500px; display: block; margin: 1.5rem auto;">
-  <defs>
-    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
-      <path d="M0,0 L0,6 L9,3 z" fill="#667eea"/>
-    </marker>
-  </defs>
-  <!-- Outer box -->
-  <rect x="10" y="10" width="480" height="320" rx="8" fill="white" stroke="#e2e8f0" stroke-width="2"/>
-  <text x="25" y="35" font-family="system-ui" font-size="14" font-weight="600" fill="#1e293b">person.html</text>
-
-  <!-- JSON-LD box -->
-  <rect x="30" y="50" width="440" height="60" rx="6" fill="#eff6ff" stroke="#667eea" stroke-width="1.5"/>
-  <text x="45" y="72" font-family="monospace" font-size="11" fill="#334155">&lt;script type="application/ld+json"&gt;</text>
-  <text x="45" y="88" font-family="monospace" font-size="11" fill="#334155">{ "@type": "schema:Person", ... }</text>
-  <text x="45" y="104" font-family="monospace" font-size="11" fill="#334155">&lt;/script&gt;</text>
-  <text x="380" y="88" font-family="system-ui" font-size="10" fill="#667eea">JSON-LD data</text>
-
-  <!-- Arrow 1 -->
-  <line x1="250" y1="115" x2="250" y2="135" stroke="#667eea" stroke-width="2" marker-end="url(#arrow)"/>
-  <text x="265" y="130" font-family="system-ui" font-size="10" fill="#64748b">Parse into store</text>
-
-  <!-- Mashlib box -->
-  <rect x="30" y="145" width="440" height="80" rx="6" fill="#f0fdf4" stroke="#16a34a" stroke-width="1.5"/>
-  <text x="45" y="167" font-family="system-ui" font-size="12" font-weight="600" fill="#1e293b">mashlib.min.js (solid-shim)</text>
-  <text x="380" y="167" font-family="system-ui" font-size="10" fill="#16a34a">Same as SolidOS</text>
-  <text x="55" y="187" font-family="monospace" font-size="10" fill="#334155">├─ rdflib → $rdf, store</text>
-  <text x="55" y="202" font-family="monospace" font-size="10" fill="#334155">├─ solid-ui → UI widgets</text>
-  <text x="55" y="217" font-family="monospace" font-size="10" fill="#334155">└─ solid-logic → SolidLogic.store</text>
-
-  <!-- Arrow 2 -->
-  <line x1="250" y1="230" x2="250" y2="250" stroke="#667eea" stroke-width="2" marker-end="url(#arrow)"/>
-
-  <!-- Pane box -->
-  <rect x="30" y="260" width="440" height="55" rx="6" fill="#fef3c7" stroke="#f59e0b" stroke-width="1.5"/>
-  <text x="45" y="282" font-family="system-ui" font-size="12" font-weight="600" fill="#1e293b">src/panes/person.js</text>
-  <text x="380" y="282" font-family="system-ui" font-size="10" fill="#f59e0b">Custom pane</text>
-  <text x="45" y="302" font-family="system-ui" font-size="11" fill="#334155">Reads from store, renders UI</text>
-</svg>
-
-<div class="key-point">
-  <strong>Key insight:</strong> The panes work identically to SolidOS panes.
-  They read from <code>SolidLogic.store</code> using <code>$rdf</code> - the only difference
-  is where the data came from (embedded JSON-LD vs fetched Turtle).
-</div>
-
-<h2>What's mashlib.min.js?</h2>
-
-<p>It's <a href="https://github.com/JavaScriptSolidServer/solid-shim">solid-shim</a> - a mashlib-compatible bundle built from JSS forks:</p>
-
-<table>
-  <tr><th>Component</th><th>What it does</th><th>SolidOS equivalent</th></tr>
-  <tr><td>rdflib</td><td>RDF parsing, store, fetcher</td><td>Same</td></tr>
-  <tr><td>solid-ui-jss</td><td>UI widgets</td><td>solid-ui</td></tr>
-  <tr><td>solid-logic-jss</td><td>Business logic, auth</td><td>solid-logic</td></tr>
-  <tr><td>solid-panes-jss</td><td>Pane system</td><td>solid-panes</td></tr>
-  <tr><td>solid-oidc</td><td>Authentication</td><td>solid-authn-client</td></tr>
-</table>
-
-<p>The only real difference: <code>solid-oidc</code> replaces <code>solid-authn-client</code> for auth.</p>
-
-<h2>How Data Flows</h2>
-
-<h3>1. JSON-LD Data Island</h3>
-<p>Each page has embedded JSON-LD (this is standard HTML, works in any browser):</p>
-<pre><code>&lt;script type="application/ld+json"&gt;
-{
-  "@context": { "schema": "http://schema.org/" },
-  "@id": "#me",
-  "@type": "schema:Person",
-  "schema:name": "Marie Curie"
-}
-&lt;/script&gt;</code></pre>
-
-<h3>2. Parse into RDF Store</h3>
-<p>On page load, we parse the JSON-LD into the same <code>SolidLogic.store</code> that SolidOS uses:</p>
-<pre><code>// This is what shared.js does internally
-const store = SolidLogic.store;
-const subject = $rdf.sym(baseUri + '#me');
-
-// Add triples to store
-store.add(subject, RDF('type'), $rdf.sym('http://schema.org/Person'));
-store.add(subject, SCHEMA('name'), 'Marie Curie');</code></pre>
-
-<h3>3. Pane Reads from Store</h3>
-<p>The pane reads data exactly like a SolidOS pane would:</p>
-<pre><code>// src/panes/person.js - same pattern as SolidOS panes
-const SCHEMA = $rdf.Namespace('http://schema.org/');
-
-const name = store.anyValue(subject, SCHEMA('name'));
-const image = store.any(subject, SCHEMA('image'));
-const jobTitle = store.anyValue(subject, SCHEMA('jobTitle'));</code></pre>
-
-<div class="key-point">
-  <strong>This is the same API</strong> you'd use in a SolidOS pane.
-  The pane doesn't know or care that the data came from a JSON-LD island
-  instead of a fetched Turtle file.
-</div>
-
-<h2>File Structure</h2>
-
-<svg viewBox="0 0 400 220" style="width: 100%; max-width: 400px; display: block; margin: 1.5rem auto;">
-  <rect x="5" y="5" width="390" height="210" rx="8" fill="white" stroke="#e2e8f0" stroke-width="2"/>
-  <text x="20" y="30" font-family="monospace" font-size="12" font-weight="600" fill="#1e293b">examples/</text>
-  <text x="35" y="50" font-family="monospace" font-size="11" fill="#334155">├── index.html</text>
-  <text x="200" y="50" font-family="system-ui" font-size="10" fill="#64748b"># Gallery</text>
-  <text x="35" y="68" font-family="monospace" font-size="11" fill="#334155">├── person.html</text>
-  <text x="200" y="68" font-family="system-ui" font-size="10" fill="#64748b"># Example page</text>
-  <text x="35" y="86" font-family="monospace" font-size="11" fill="#334155">├── article.html ...</text>
-  <text x="200" y="86" font-family="system-ui" font-size="10" fill="#64748b"># 20 schema.org types</text>
-  <text x="35" y="104" font-family="monospace" font-size="11" fill="#334155">├── how-it-works.html</text>
-  <text x="200" y="104" font-family="system-ui" font-size="10" fill="#64748b"># This page</text>
-  <text x="35" y="126" font-family="monospace" font-size="11" fill="#334155">└── src/</text>
-  <text x="55" y="146" font-family="monospace" font-size="11" fill="#667eea">├── shared.js</text>
-  <text x="200" y="146" font-family="system-ui" font-size="10" fill="#64748b"># Common init</text>
-  <text x="55" y="164" font-family="monospace" font-size="11" fill="#334155">├── toolbar.js</text>
-  <text x="200" y="164" font-family="system-ui" font-size="10" fill="#64748b"># Auth, views</text>
-  <text x="55" y="182" font-family="monospace" font-size="11" fill="#334155">└── panes/</text>
-  <text x="75" y="200" font-family="monospace" font-size="11" fill="#f59e0b">├── person.js, article.js ...</text>
-</svg>
-
-<h2>shared.js - The Glue</h2>
-
-<p><code>src/shared.js</code> is the bridge between JSON-LD data islands and SolidOS panes. It eliminates ~160 lines of boilerplate per page.</p>
-
-<h3>What shared.js Does</h3>
-
-<svg viewBox="0 0 500 420" style="width: 100%; max-width: 500px; display: block; margin: 1.5rem auto;">
-  <defs>
-    <marker id="arrow2" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
-      <path d="M0,0 L0,6 L9,3 z" fill="#667eea"/>
-    </marker>
-  </defs>
-  <!-- Header -->
-  <rect x="80" y="5" width="340" height="30" rx="6" fill="#667eea"/>
-  <text x="250" y="25" font-family="monospace" font-size="11" fill="white" text-anchor="middle">SchemaShared.init({ pane: '...', subject: '#me' })</text>
-
-  <!-- Arrow -->
-  <line x1="250" y1="40" x2="250" y2="55" stroke="#667eea" stroke-width="2" marker-end="url(#arrow2)"/>
-
-  <!-- Steps container -->
-  <rect x="10" y="60" width="480" height="350" rx="8" fill="white" stroke="#e2e8f0" stroke-width="2"/>
-
-  <!-- Step 1 -->
-  <rect x="25" y="75" width="450" height="35" rx="4" fill="#eff6ff"/>
-  <text x="40" y="92" font-family="system-ui" font-size="11" font-weight="600" fill="#667eea">1.</text>
-  <text x="60" y="92" font-family="system-ui" font-size="11" font-weight="500" fill="#1e293b">Load mashlib.min.js</text>
-  <text x="60" y="105" font-family="system-ui" font-size="10" fill="#64748b">→ Brings in $rdf, SolidLogic, pane system</text>
-
-  <!-- Step 2 -->
-  <rect x="25" y="118" width="450" height="35" rx="4" fill="#f8fafc"/>
-  <text x="40" y="135" font-family="system-ui" font-size="11" font-weight="600" fill="#667eea">2.</text>
-  <text x="60" y="135" font-family="system-ui" font-size="11" font-weight="500" fill="#1e293b">Wait for globals</text>
-  <text x="60" y="148" font-family="system-ui" font-size="10" fill="#64748b">→ Poll until $rdf and SolidLogic are defined</text>
-
-  <!-- Step 3 -->
-  <rect x="25" y="161" width="450" height="48" rx="4" fill="#eff6ff"/>
-  <text x="40" y="178" font-family="system-ui" font-size="11" font-weight="600" fill="#667eea">3.</text>
-  <text x="60" y="178" font-family="system-ui" font-size="11" font-weight="500" fill="#1e293b">Parse JSON-LD data island</text>
-  <text x="60" y="191" font-family="system-ui" font-size="10" fill="#64748b">→ Find &lt;script type="application/ld+json"&gt;</text>
-  <text x="60" y="204" font-family="system-ui" font-size="10" fill="#64748b">→ Convert to RDF triples, add to SolidLogic.store</text>
-
-  <!-- Step 4 -->
-  <rect x="25" y="217" width="450" height="35" rx="4" fill="#f8fafc"/>
-  <text x="40" y="234" font-family="system-ui" font-size="11" font-weight="600" fill="#667eea">4.</text>
-  <text x="60" y="234" font-family="system-ui" font-size="11" font-weight="500" fill="#1e293b">Load toolbar.js</text>
-  <text x="60" y="247" font-family="system-ui" font-size="10" fill="#64748b">→ Auth, view switching, actions</text>
-
-  <!-- Step 5 -->
-  <rect x="25" y="260" width="450" height="48" rx="4" fill="#eff6ff"/>
-  <text x="40" y="277" font-family="system-ui" font-size="11" font-weight="600" fill="#667eea">5.</text>
-  <text x="60" y="277" font-family="system-ui" font-size="11" font-weight="500" fill="#1e293b">Load pane</text>
-  <text x="60" y="290" font-family="system-ui" font-size="10" fill="#64748b">→ Detects window.Schema*Pane (backwards compat)</text>
-  <text x="60" y="303" font-family="system-ui" font-size="10" fill="#64748b">→ Or uses SchemaShared.registerPane() (new way)</text>
-
-  <!-- Step 6 -->
-  <rect x="25" y="316" width="450" height="48" rx="4" fill="#f8fafc"/>
-  <text x="40" y="333" font-family="system-ui" font-size="11" font-weight="600" fill="#667eea">6.</text>
-  <text x="60" y="333" font-family="system-ui" font-size="11" font-weight="500" fill="#1e293b">Create views</text>
-  <text x="60" y="346" font-family="system-ui" font-size="10" fill="#64748b">→ Profile: pane.render() | Data: RDF table | Source: JSON-LD</text>
-  <text x="60" y="359" font-family="system-ui" font-size="10" fill="#64748b">→ Add toolbar + content to page, show profile view</text>
-
-  <!-- Step 7 -->
-  <rect x="25" y="372" width="450" height="28" rx="4" fill="#f0fdf4"/>
-  <text x="40" y="390" font-family="system-ui" font-size="11" font-weight="600" fill="#16a34a">7.</text>
-  <text x="60" y="390" font-family="system-ui" font-size="11" font-weight="500" fill="#1e293b">Done!</text>
-  <text x="100" y="390" font-family="system-ui" font-size="10" fill="#64748b">Page is interactive</text>
-</svg>
-
-<h3>The JSON-LD Parser</h3>
-
-<p>The key function in shared.js converts JSON-LD to RDF triples:</p>
-
-<pre><code>// Simplified from shared.js
-function addTriples(node, subjectUri) {
-  const subject = $rdf.sym(subjectUri);
-
-  // Add type triple
-  if (node['@type']) {
-    store.add(subject, RDF('type'), $rdf.sym(node['@type']));
-  }
-
-  // Add property triples
-  Object.keys(node).forEach(key => {
-    if (key.startsWith('@')) return;  // Skip @context, @id, @type
-
-    const predicate = $rdf.sym(key);  // e.g., schema:name
-    const value = node[key];
-
-    if (value['@id']) {
-      store.add(subject, predicate, $rdf.sym(value['@id']));  // Link
-    } else {
-      store.add(subject, predicate, value);  // Literal
-    }
-  });
+<pre><code>{
+  <span class="string">"@type"</span>: <span class="string">"schema:Person"</span>,
+  <span class="highlight">"@view"</span>: <span class="string">"https://jsonos.com/examples/src/panes/person.js"</span>,
+  <span class="string">"schema:name"</span>: <span class="string">"Marie Curie"</span>
 }</code></pre>
 
-<p>After this runs, the store contains the same triples you'd get from fetching Turtle from a pod.</p>
+<p>The data carries its own renderer. No external configuration needed.</p>
 
-<h3>Pane Structure (ES Module)</h3>
+<div class="key-point">
+  <strong>One line to render:</strong> Include <code>solid-shim</code> and it auto-detects <code>@view</code>.
+</div>
 
-<p>Panes are now ES modules with a default export:</p>
+<h2>One-Line Embed</h2>
 
-<pre><code>// src/panes/person.js
+<p>A complete self-rendering page:</p>
+
+<pre><code><span class="comment">&lt;!-- Your data with @view --&gt;</span>
+&lt;script type="application/ld+json"&gt;
+{
+  "@type": "schema:Person",
+  <span class="highlight">"@view": "https://jsonos.com/examples/src/panes/person.js"</span>,
+  "schema:name": "Marie Curie"
+}
+&lt;/script&gt;
+
+<span class="comment">&lt;!-- One line - auto-renders when @view is present --&gt;</span>
+&lt;script src="https://unpkg.com/solid-shim/dist/mashlib.min.js"&gt;&lt;/script&gt;</code></pre>
+
+<p>That's it. The mashlib detects <code>@view</code> in your JSON-LD and renders automatically.</p>
+
+<h2>What Happens</h2>
+
+<div class="step">
+  <div class="step-num">1</div>
+  <div class="step-content">
+    <h4>Page loads mashlib.min.js</h4>
+    <p>Brings in <code>$rdf</code> (rdflib), the RDF store, and @view support.</p>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-num">2</div>
+  <div class="step-content">
+    <h4>Finds JSON-LD with @view</h4>
+    <p>Scans for <code>&lt;script type="application/ld+json"&gt;</code> containing <code>@view</code>.</p>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-num">3</div>
+  <div class="step-content">
+    <h4>Parses JSON-LD into RDF store</h4>
+    <p>Converts to triples: <code>subject → predicate → object</code></p>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-num">4</div>
+  <div class="step-content">
+    <h4>Loads the pane from @view URL</h4>
+    <p>Dynamic import: <code>import(data['@view'])</code></p>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-num">5</div>
+  <div class="step-content">
+    <h4>Calls pane.render()</h4>
+    <p>Pane reads from store, returns DOM element, gets inserted into page.</p>
+  </div>
+</div>
+
+<h2>Writing a Pane</h2>
+
+<p>Panes are ES modules with a <code>render</code> function:</p>
+
+<pre><code><span class="comment">// src/panes/person.js</span>
 export default {
-  name: 'schemaPerson',
+  name: 'personPane',
 
   render(subject, context) {
-    const SCHEMA = $rdf.Namespace('http://schema.org/');
     const store = context.session.store;
     const dom = context.dom;
+    const SCHEMA = $rdf.Namespace('http://schema.org/');
 
-    const div = dom.createElement('div');
+    <span class="comment">// Read from RDF store</span>
     const name = store.anyValue(subject, SCHEMA('name'));
-    // ... render logic
+    const image = store.any(subject, SCHEMA('image'));
+
+    <span class="comment">// Build DOM</span>
+    const div = dom.createElement('div');
+    div.innerHTML = `&lt;h1&gt;${name}&lt;/h1&gt;`;
+
     return div;
   }
 };</code></pre>
 
-<p>Note: <code>SCHEMA</code> is defined inside <code>render()</code> because <code>$rdf</code> isn't available until mashlib loads.</p>
-
-<h3>Usage (ES Modules)</h3>
-
-<p>With shared.js, a complete example is just:</p>
-
-<pre><code>&lt;script type="application/ld+json"&gt;
-{ "@type": "schema:Person", "schema:name": "Marie Curie", ... }
-&lt;/script&gt;
-
-&lt;script type="module"&gt;
-import { init } from './src/shared.js';
-import pane from './src/panes/person.js';
-
-init({ pane, subject: '#me' });
-&lt;/script&gt;</code></pre>
-
-<p>That's it. ~46 lines instead of ~230.</p>
-
-<h2>Pane Compatibility</h2>
-
-<p>The custom panes in <code>src/panes/</code> follow the same pattern as SolidOS panes:</p>
+<h3>Store API</h3>
 
 <table>
-  <tr><th>Feature</th><th>How it works</th></tr>
-  <tr><td>Read data</td><td><code>store.anyValue(subject, predicate)</code></td></tr>
-  <tr><td>Get links</td><td><code>store.any(subject, predicate)</code></td></tr>
-  <tr><td>Query triples</td><td><code>store.statementsMatching(s, p, o)</code></td></tr>
-  <tr><td>Namespaces</td><td><code>$rdf.Namespace('http://schema.org/')</code></td></tr>
-  <tr><td>Symbols</td><td><code>$rdf.sym('http://...')</code></td></tr>
+  <tr><th>Method</th><th>Returns</th><th>Example</th></tr>
+  <tr><td><code>store.anyValue(s, p)</code></td><td>String or null</td><td>Get name as text</td></tr>
+  <tr><td><code>store.any(s, p)</code></td><td>Node or null</td><td>Get linked resource</td></tr>
+  <tr><td><code>store.each(s, p)</code></td><td>Array of nodes</td><td>Get all values</td></tr>
 </table>
 
-<p>If you can write a SolidOS pane, you can write these panes. Same API.</p>
+<h2>Try It Live</h2>
 
-<h2>Why JSON-LD Data Islands?</h2>
+<p>The editor lets you modify both JSON-LD and pane code, with live preview:</p>
+
+<pre><code>┌──────────────┬─────────────────────┐
+│   JSON-LD    │                     │
+│   (edit)     │                     │
+├──────────────┤      Preview        │
+│  Pane Code   │      (live)         │
+│   (edit)     │                     │
+└──────────────┴─────────────────────┘</code></pre>
+
+<a href="editor.html" class="cta">Open Editor →</a>
+
+<h2>20 Schema.org Types</h2>
+
+<p>Examples for Person, Article, Event, Recipe, Product, Movie, Book, Review, FAQ, HowTo, Job, Business, Service, Course, Video, Music, Software, and more.</p>
+
+<p>Each example is one HTML file with JSON-LD + one script tag.</p>
+
+<a href="/examples/" class="cta">View All Examples →</a>
+
+<h2>The @view Proposal</h2>
+
+<p>This implements <a href="https://github.com/w3c/json-ld-syntax/issues/384">W3C JSON-LD Syntax Issue #384</a>.</p>
+
+<table>
+  <tr><th>Benefit</th><th>Why it matters</th></tr>
+  <tr><td>Self-describing</td><td>Data carries its display hint</td></tr>
+  <tr><td>Decentralized</td><td>Anyone can publish views</td></tr>
+  <tr><td>Progressive</td><td>Processors that don't support @view ignore it</td></tr>
+  <tr><td>Extensible</td><td>New types get views immediately</td></tr>
+</table>
+
+<h2>Links</h2>
 
 <ul>
-  <li><strong>Zero server</strong> - Works on static hosting (GitHub Pages)</li>
-  <li><strong>SEO friendly</strong> - Search engines understand JSON-LD</li>
-  <li><strong>Portable</strong> - Copy the HTML file, it just works</li>
-  <li><strong>Familiar</strong> - Same as schema.org structured data</li>
+  <li><a href="editor.html">Live Editor</a> - Edit JSON-LD and pane code</li>
+  <li><a href="view.html">@view Documentation</a> - Full proposal details</li>
+  <li><a href="https://www.npmjs.com/package/solid-shim">solid-shim on npm</a> - The one-line renderer</li>
+  <li><a href="https://github.com/w3c/json-ld-syntax/issues/384">W3C Proposal</a> - Issue #384</li>
 </ul>
-
-<h2>The Goal</h2>
-
-<p>Show that SolidOS patterns work with any RDF data source:</p>
-
-<ul>
-  <li>Solid pods (Turtle, fetched)</li>
-  <li>JSON-LD islands (embedded)</li>
-  <li>Any RDF endpoint</li>
-</ul>
-
-<p>The panes don't care. They just read from the store.</p>
 
 <footer>
-  <a href="/examples/">Back to Examples</a> ·
+  <a href="/examples/">Examples</a> ·
   <a href="https://jsonos.com">jsonos</a> ·
   <a href="https://github.com/json-os">GitHub</a>
 </footer>
