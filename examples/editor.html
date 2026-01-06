@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Live Editor - jsonos Examples</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #0f172a;
+      color: #e2e8f0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Header */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 1.5rem;
+      background: #1e293b;
+      border-bottom: 1px solid #334155;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: #e2e8f0;
+      text-decoration: none;
+    }
+    .logo-icon {
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: monospace;
+      font-size: 0.85rem;
+    }
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .type-select {
+      background: #0f172a;
+      color: #e2e8f0;
+      border: 1px solid #334155;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+    .type-select:hover { border-color: #667eea; }
+    .btn {
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      font-weight: 500;
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+    }
+    .btn-secondary {
+      background: rgba(255,255,255,0.1);
+      color: #e2e8f0;
+      border: 1px solid #334155;
+    }
+    .btn-secondary:hover { background: rgba(255,255,255,0.15); }
+
+    /* Main split view */
+    main {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      min-height: 0;
+    }
+
+    /* Editor pane */
+    .editor-pane {
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid #334155;
+      min-height: 0;
+    }
+    .pane-header {
+      padding: 0.75rem 1rem;
+      background: #1e293b;
+      border-bottom: 1px solid #334155;
+      font-size: 0.85rem;
+      color: #94a3b8;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .pane-header strong { color: #e2e8f0; }
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.8rem;
+    }
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #4ade80;
+    }
+    .status-dot.error { background: #ef4444; }
+
+    #editor {
+      flex: 1;
+      width: 100%;
+      background: #0f172a;
+      color: #e2e8f0;
+      border: none;
+      padding: 1rem;
+      font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      resize: none;
+      outline: none;
+    }
+    #editor::placeholder { color: #475569; }
+
+    /* Preview pane */
+    .preview-pane {
+      display: flex;
+      flex-direction: column;
+      background: #f8fafc;
+      min-height: 0;
+    }
+    .preview-pane .pane-header {
+      background: #f1f5f9;
+      border-bottom: 1px solid #e2e8f0;
+      color: #64748b;
+    }
+    .preview-pane .pane-header strong { color: #1e293b; }
+
+    #preview {
+      flex: 1;
+      overflow: auto;
+      padding: 1.5rem;
+    }
+    #preview .error-message {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      color: #dc2626;
+      padding: 1rem;
+      border-radius: 8px;
+      font-family: monospace;
+      font-size: 0.85rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 800px) {
+      main {
+        grid-template-columns: 1fr;
+        grid-template-rows: 1fr 1fr;
+      }
+      .editor-pane {
+        border-right: none;
+        border-bottom: 1px solid #334155;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <a href="/examples/" class="logo">
+    <span class="logo-icon">{}</span>
+    Live Editor
+  </a>
+  <div class="header-right">
+    <select id="typeSelect" class="type-select">
+      <option value="person">Person</option>
+      <option value="event">Event</option>
+      <option value="article">Article</option>
+      <option value="organization">Organization</option>
+      <option value="recipe">Recipe</option>
+      <option value="product">Product</option>
+      <option value="place">Place</option>
+      <option value="movie">Movie</option>
+      <option value="book">Book</option>
+      <option value="review">Review</option>
+      <option value="faqpage">FAQ</option>
+      <option value="howto">How-To</option>
+      <option value="jobposting">Job Posting</option>
+      <option value="localbusiness">Local Business</option>
+      <option value="service">Service</option>
+      <option value="course">Course</option>
+      <option value="video">Video</option>
+      <option value="musicrecording">Music</option>
+      <option value="softwareapplication">Software App</option>
+      <option value="creativework">Creative Work</option>
+    </select>
+    <a href="/examples/" class="btn btn-secondary">Back to Examples</a>
+  </div>
+</header>
+
+<main>
+  <div class="editor-pane">
+    <div class="pane-header">
+      <span><strong>JSON-LD</strong> &mdash; Edit below</span>
+      <div class="status">
+        <span class="status-dot" id="statusDot"></span>
+        <span id="statusText">Valid</span>
+      </div>
+    </div>
+    <textarea id="editor" spellcheck="false" placeholder="Enter JSON-LD..."></textarea>
+  </div>
+
+  <div class="preview-pane">
+    <div class="pane-header">
+      <span><strong>Preview</strong> &mdash; Live render</span>
+    </div>
+    <div id="preview"></div>
+  </div>
+</main>
+
+<script src="/browser/dist/mashlib.min.js"></script>
+<script type="module">
+// Templates for each type
+const templates = {
+  person: {
+    "@context": { "schema": "http://schema.org/" },
+    "@id": "#me",
+    "@type": "schema:Person",
+    "schema:name": "Marie Curie",
+    "schema:jobTitle": "Physicist & Chemist",
+    "schema:description": "Nobel Prize winner in Physics and Chemistry",
+    "schema:image": { "@id": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Marie_Curie_c1920.jpg/440px-Marie_Curie_c1920.jpg" },
+    "schema:email": "marie@example.com",
+    "schema:url": { "@id": "https://en.wikipedia.org/wiki/Marie_Curie" }
+  },
+  event: {
+    "@context": { "schema": "http://schema.org/" },
+    "@id": "#event",
+    "@type": "schema:Event",
+    "schema:name": "Solid World Conference 2026",
+    "schema:description": "The annual gathering of the Solid community",
+    "schema:startDate": "2026-03-15T09:00:00",
+    "schema:endDate": "2026-03-17T18:00:00",
+    "schema:location": {
+      "@type": "schema:Place",
+      "schema:name": "MIT Media Lab",
+      "schema:address": "Cambridge, MA"
+    },
+    "schema:image": { "@id": "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800" }
+  },
+  article: {
+    "@context": { "schema": "http://schema.org/" },
+    "@id": "#article",
+    "@type": "schema:Article",
+    "schema:headline": "The Future of Decentralized Data",
+    "schema:description": "How JSON-LD and Solid are reshaping the web",
+    "schema:author": {
+      "@type": "schema:Person",
+      "schema:name": "Tim Berners-Lee"
+    },
+    "schema:datePublished": "2026-01-06",
+    "schema:image": { "@id": "https://images.unsplash.com/photo-1518770660439-4636190af475?w=800" }
+  },
+  organization: {
+    "@context": { "schema": "http://schema.org/" },
+    "@id": "#org",
+    "@type": "schema:Organization",
+    "schema:name": "Solid Project",
+    "schema:description": "Re-decentralizing the web",
+    "schema:url": { "@id": "https://solidproject.org" },
+    "schema:logo": { "@id": "https://solidproject.org/assets/img/solid-emblem.svg" },
+    "schema:foundingDate": "2015"
+  },
+  recipe: {
+    "@context": { "schema": "http://schema.org/" },
+    "@id": "#recipe",
+    "@type": "schema:Recipe",
+    "schema:name": "Classic Pancakes",
+    "schema:description": "Fluffy homemade pancakes",
+    "schema:prepTime": "PT10M",
+    "schema:cookTime": "PT15M",
+    "schema:recipeYield": "8 pancakes",
+    "schema:image": { "@id": "https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=800" },
+    "schema:recipeIngredient": ["2 cups flour", "2 eggs", "1 cup milk", "2 tbsp sugar"]
+  },
+  product: {
+    "@context": { "schema": "http://schema.org/" },
+    "@id": "#product",
+    "@type": "schema:Product",
+    "schema:name": "Wireless Headphones Pro",
+    "schema:description": "Premium noise-canceling headphones",
+    "schema:brand": { "@type": "schema:Brand", "schema:name": "AudioTech" },
+    "schema:image": { "@id": "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800" },
+    "schema:offers": {
+      "@type": "schema:Offer",
+      "schema:price": "299.99",
+      "schema:priceCurrency": "USD"
+    }
+  },
+  place: {
+    "@context": { "schema": "http://schema.org/" },
+    "@id": "#place",
+    "@type": "schema:Place",
+    "schema:name": "Eiffel Tower",
+    "schema:description": "Iconic iron lattice tower in Paris",
+    "schema:address": "Champ de Mars, Paris, France",
+    "schema:image": { "@id": "https://images.unsplash.com/photo-1511739001486-6bfe10ce65f4?w=800" },
+    "schema:geo": {
+      "@type": "schema:GeoCoordinates",
+      "schema:latitude": "48.8584",
+      "schema:longitude": "2.2945"
+    }
+  },
+  movie: {
+    "@context": { "schema": "http://schema.org/" },
+    "@id": "#movie",
+    "@type": "schema:Movie",
+    "schema:name": "The Matrix",
+    "schema:description": "A computer hacker learns about the true nature of reality",
+    "schema:director": { "@type": "schema:Person", "schema:name": "Lana Wachowski" },
+    "schema:datePublished": "1999",
+    "schema:duration": "PT2H16M",
+    "schema:image": { "@id": "https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=800" }
+  },
+  book: {
+    "@context": { "schema": "http://schema.org/" },
+    "@id": "#book",
+    "@type": "schema:Book",
+    "schema:name": "Weaving the Web",
+    "schema:author": { "@type": "schema:Person", "schema:name": "Tim Berners-Lee" },
+    "schema:description": "The story of the World Wide Web",
+    "schema:isbn": "978-0062515872",
+    "schema:numberOfPages": "256",
+    "schema:image": { "@id": "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=800" }
+  },
+  review: {
+    "@context": { "schema": "http://schema.org/" },
+    "@id": "#review",
+    "@type": "schema:Review",
+    "schema:itemReviewed": {
+      "@type": "schema:Product",
+      "schema:name": "jsonos"
+    },
+    "schema:reviewRating": {
+      "@type": "schema:Rating",
+      "schema:ratingValue": "5",
+      "schema:bestRating": "5"
+    },
+    "schema:author": { "@type": "schema:Person", "schema:name": "Developer" },
+    "schema:reviewBody": "Amazing tool for building decentralized apps!"
+  },
+  faqpage: {
+    "@context": { "schema": "http://schema.org/" },
+    "@id": "#faq",
+    "@type": "schema:FAQPage",
+    "schema:name": "jsonos FAQ",
+    "schema:mainEntity": [
+      {
+        "@type": "schema:Question",
+        "schema:name": "What is jsonos?",
+        "schema:acceptedAnswer": {
+          "@type": "schema:Answer",
+          "schema:text": "A JSON Operating System for the decentralized web."
+        }
+      },
+      {
+        "@type": "schema:Question",
+        "schema:name": "How do I get started?",
+        "schema:acceptedAnswer": {
+          "@type": "schema:Answer",
+          "schema:text": "Visit jsonos.com and click Launch Browser."
+        }
+      }
+    ]
+  },
+  howto: {
+    "@context": { "schema": "http://schema.org/" },
+    "@id": "#howto",
+    "@type": "schema:HowTo",
+    "schema:name": "How to Build a Solid App",
+    "schema:description": "A step-by-step guide",
+    "schema:step": [
+      { "@type": "schema:HowToStep", "schema:text": "Create an HTML file" },
+      { "@type": "schema:HowToStep", "schema:text": "Add JSON-LD data" },
+      { "@type": "schema:HowToStep", "schema:text": "Import the pane renderer" }
+    ]
+  },
+  jobposting: {
+    "@context": { "schema": "http://schema.org/" },
+    "@id": "#job",
+    "@type": "schema:JobPosting",
+    "schema:title": "Senior Developer",
+    "schema:description": "Build the decentralized web",
+    "schema:hiringOrganization": {
+      "@type": "schema:Organization",
+      "schema:name": "Solid Project"
+    },
+    "schema:employmentType": "FULL_TIME",
+    "schema:baseSalary": {
+      "@type": "schema:MonetaryAmount",
+      "schema:currency": "USD",
+      "schema:value": { "@type": "schema:QuantitativeValue", "schema:value": "150000" }
+    }
+  },
+  localbusiness: {
+    "@context": { "schema": "http://schema.org/" },
+    "@id": "#business",
+    "@type": "schema:Restaurant",
+    "schema:name": "The Code Cafe",
+    "schema:description": "Coffee and coding",
+    "schema:address": "123 Dev Street, San Francisco",
+    "schema:telephone": "+1-555-0123",
+    "schema:image": { "@id": "https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=800" }
+  },
+  service: {
+    "@context": { "schema": "http://schema.org/" },
+    "@id": "#service",
+    "@type": "schema:Service",
+    "schema:name": "Cloud Hosting",
+    "schema:description": "Reliable hosting for your apps",
+    "schema:provider": { "@type": "schema:Organization", "schema:name": "CloudCo" },
+    "schema:offers": {
+      "@type": "schema:Offer",
+      "schema:price": "9.99",
+      "schema:priceCurrency": "USD"
+    }
+  },
+  course: {
+    "@context": { "schema": "http://schema.org/" },
+    "@id": "#course",
+    "@type": "schema:Course",
+    "schema:name": "Introduction to Solid",
+    "schema:description": "Learn to build decentralized apps",
+    "schema:provider": { "@type": "schema:Organization", "schema:name": "Solid Academy" },
+    "schema:image": { "@id": "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800" }
+  },
+  video: {
+    "@context": { "schema": "http://schema.org/" },
+    "@id": "#video",
+    "@type": "schema:VideoObject",
+    "schema:name": "Getting Started with jsonos",
+    "schema:description": "A quick tutorial",
+    "schema:thumbnailUrl": { "@id": "https://images.unsplash.com/photo-1611162616475-46b635cb6868?w=800" },
+    "schema:duration": "PT5M30S",
+    "schema:uploadDate": "2026-01-01"
+  },
+  musicrecording: {
+    "@context": { "schema": "http://schema.org/" },
+    "@id": "#music",
+    "@type": "schema:MusicRecording",
+    "schema:name": "Digital Dreams",
+    "schema:byArtist": { "@type": "schema:Person", "schema:name": "The Coders" },
+    "schema:duration": "PT3M45S",
+    "schema:image": { "@id": "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=800" }
+  },
+  softwareapplication: {
+    "@context": { "schema": "http://schema.org/" },
+    "@id": "#app",
+    "@type": "schema:SoftwareApplication",
+    "schema:name": "jsonos",
+    "schema:description": "The JSON Operating System",
+    "schema:applicationCategory": "DeveloperApplication",
+    "schema:operatingSystem": "Web",
+    "schema:softwareVersion": "0.0.2"
+  },
+  creativework: {
+    "@context": { "schema": "http://schema.org/" },
+    "@id": "#artwork",
+    "@type": "schema:CreativeWork",
+    "schema:name": "Data Flow",
+    "schema:description": "A visualization of linked data",
+    "schema:creator": { "@type": "schema:Person", "schema:name": "Artist" },
+    "schema:dateCreated": "2026-01-01",
+    "schema:image": { "@id": "https://images.unsplash.com/photo-1549490349-8643362247b5?w=800" }
+  }
+};
+
+// Import panes dynamically
+const paneModules = {};
+async function loadPane(type) {
+  if (!paneModules[type]) {
+    paneModules[type] = await import(`./src/panes/${type}.js`);
+  }
+  return paneModules[type].default;
+}
+
+// DOM elements
+const editor = document.getElementById('editor');
+const preview = document.getElementById('preview');
+const typeSelect = document.getElementById('typeSelect');
+const statusDot = document.getElementById('statusDot');
+const statusText = document.getElementById('statusText');
+
+// Set initial template
+editor.value = JSON.stringify(templates.person, null, 2);
+
+// Parse JSON-LD and add to store
+function parseJsonLd(jsonStr) {
+  const data = JSON.parse(jsonStr);
+  const store = $rdf.graph();
+  const baseUri = window.location.href;
+
+  function addTriples(node, subjectUri) {
+    const subject = $rdf.sym(subjectUri);
+    const RDF = $rdf.Namespace('http://www.w3.org/1999/02/22-rdf-syntax-ns#');
+
+    if (node['@type']) {
+      const typeUri = node['@type'].replace('schema:', 'http://schema.org/');
+      store.add(subject, RDF('type'), $rdf.sym(typeUri));
+    }
+
+    Object.entries(node).forEach(([key, val]) => {
+      if (key.startsWith('@')) return;
+      const pred = $rdf.sym(key.replace('schema:', 'http://schema.org/'));
+
+      if (Array.isArray(val)) {
+        val.forEach((item, i) => {
+          if (typeof item === 'object' && !item['@id']) {
+            const blankId = `${subjectUri}_${key}_${i}`;
+            store.add(subject, pred, $rdf.sym(blankId));
+            addTriples(item, blankId);
+          } else if (typeof item === 'object' && item['@id']) {
+            store.add(subject, pred, $rdf.sym(item['@id']));
+          } else {
+            store.add(subject, pred, item);
+          }
+        });
+      } else if (typeof val === 'object' && val['@id']) {
+        store.add(subject, pred, $rdf.sym(val['@id']));
+      } else if (typeof val === 'object') {
+        const blankId = `${subjectUri}_${key}`;
+        store.add(subject, pred, $rdf.sym(blankId));
+        addTriples(val, blankId);
+      } else {
+        store.add(subject, pred, val);
+      }
+    });
+  }
+
+  const subjectId = data['@id'] || '#thing';
+  const fullUri = baseUri + subjectId;
+  addTriples(data, fullUri);
+
+  return { store, subjectUri: fullUri, data };
+}
+
+// Detect type from JSON-LD
+function detectType(data) {
+  const type = data['@type'] || '';
+  const typeMap = {
+    'schema:Person': 'person',
+    'schema:Event': 'event',
+    'schema:Article': 'article',
+    'schema:Organization': 'organization',
+    'schema:Recipe': 'recipe',
+    'schema:Product': 'product',
+    'schema:Place': 'place',
+    'schema:Movie': 'movie',
+    'schema:Book': 'book',
+    'schema:Review': 'review',
+    'schema:FAQPage': 'faqpage',
+    'schema:HowTo': 'howto',
+    'schema:JobPosting': 'jobposting',
+    'schema:Restaurant': 'localbusiness',
+    'schema:LocalBusiness': 'localbusiness',
+    'schema:Service': 'service',
+    'schema:Course': 'course',
+    'schema:VideoObject': 'video',
+    'schema:MusicRecording': 'musicrecording',
+    'schema:SoftwareApplication': 'softwareapplication',
+    'schema:CreativeWork': 'creativework'
+  };
+  return typeMap[type] || 'person';
+}
+
+// Render preview
+let renderTimeout;
+async function render() {
+  clearTimeout(renderTimeout);
+  renderTimeout = setTimeout(async () => {
+    try {
+      const { store, subjectUri, data } = parseJsonLd(editor.value);
+      const type = detectType(data);
+      const pane = await loadPane(type);
+
+      const context = {
+        session: { store },
+        dom: document
+      };
+
+      preview.innerHTML = '';
+      const rendered = pane.render($rdf.sym(subjectUri), context);
+      preview.appendChild(rendered);
+
+      statusDot.classList.remove('error');
+      statusText.textContent = 'Valid';
+    } catch (err) {
+      preview.innerHTML = `<div class="error-message">${err.message}</div>`;
+      statusDot.classList.add('error');
+      statusText.textContent = 'Error';
+    }
+  }, 300);
+}
+
+// Type selector change
+typeSelect.addEventListener('change', () => {
+  const type = typeSelect.value;
+  if (templates[type]) {
+    editor.value = JSON.stringify(templates[type], null, 2);
+    render();
+  }
+});
+
+// Editor input
+editor.addEventListener('input', render);
+
+// Initial render
+render();
+</script>
+
+</body>
+</html>
