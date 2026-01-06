@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,351 +5,25 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>jsonos Browser</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mashlib/dist/mash.css" />
-  <!-- Using solid-shim instead of mashlib -->
   <script src="dist/solid-shim.min.js"></script>
   <style>
-    :root {
-      --primary: #7C3AED;
-      --primary-dark: #6D28D9;
-      --secondary: #2563EB;
-      --bg-light: #f8fafc;
-      --bg-dark: #0f172a;
-      --text-light: #1e293b;
-      --text-dark: #e2e8f0;
-      --card-light: #ffffff;
-      --card-dark: #1e293b;
-    }
-
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      margin: 0;
-      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-      background: var(--bg-light);
-      color: var(--text-light);
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #0f172a;
+      color: #e2e8f0;
       min-height: 100vh;
     }
 
-    @media (prefers-color-scheme: dark) {
-      body {
-        background: var(--bg-dark);
-        color: var(--text-dark);
-      }
-      .header { background: linear-gradient(135deg, #5B21B6, #1D4ED8); }
-      .card { background: var(--card-dark); border-color: #334155; }
-      #uriField { background: #1e293b; color: #e2e8f0; border-color: #475569; }
-      #uriField:focus { border-color: var(--primary); }
-      .quick-link { background: #334155; color: #e2e8f0; }
-      .quick-link:hover { background: #475569; }
-      .status-bar { background: var(--card-dark); border-color: #334155; }
-    }
-
-    .header {
-      background: linear-gradient(135deg, var(--primary), var(--secondary));
-      color: white;
-      padding: 1.5rem 2rem;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-    }
-
-    .header-content {
-      max-width: 1400px;
-      margin: 0 auto;
-    }
-
-    .header h1 {
-      margin: 0 0 0.5rem 0;
-      font-size: 1.75rem;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .header h1::before {
-      content: "{}";
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 36px;
-      height: 36px;
-      background: rgba(255,255,255,0.2);
-      border-radius: 10px;
-      font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
-      font-size: 18px;
-      font-weight: 700;
-    }
-
-    .header-subtitle {
-      opacity: 0.9;
-      font-size: 0.95rem;
-    }
-
-    .search-container {
-      margin-top: 1.25rem;
-      display: flex;
-      gap: 0.75rem;
-      flex-wrap: wrap;
-    }
-
-    #uriField {
-      flex: 1;
-      min-width: 280px;
-      padding: 0.875rem 1.25rem;
-      font-size: 1rem;
-      border: 2px solid rgba(255, 255, 255, 0.3);
-      border-radius: 12px;
-      background: rgba(255, 255, 255, 0.95);
-      color: var(--text-light);
-      outline: none;
-      transition: all 0.2s ease;
-    }
-
-    #uriField:focus {
-      border-color: white;
-      box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.2);
-    }
-
-    #uriField::placeholder {
-      color: #94a3b8;
-    }
-
-    #goButton {
-      padding: 0.875rem 2rem;
-      font-size: 1rem;
-      font-weight: 600;
-      background: white;
-      color: var(--primary);
-      border: none;
-      border-radius: 12px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-
-    #goButton:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-    }
-
-    #goButton:active {
-      transform: translateY(0);
-    }
-
-    .quick-links {
-      margin-top: 1rem;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      align-items: center;
-    }
-
-    .quick-links-label {
-      font-size: 0.85rem;
-      opacity: 0.8;
-      margin-right: 0.25rem;
-    }
-
-    .quick-link {
-      display: inline-block;
-      padding: 0.4rem 0.9rem;
-      font-size: 0.85rem;
-      background: rgba(255, 255, 255, 0.2);
-      color: white;
-      text-decoration: none;
-      border-radius: 20px;
-      transition: all 0.2s ease;
-      cursor: pointer;
-      border: 1px solid rgba(255, 255, 255, 0.3);
-    }
-
-    .quick-link:hover {
-      background: rgba(255, 255, 255, 0.35);
-      transform: translateY(-1px);
-    }
-
-    .status-bar {
-      background: var(--card-light);
-      border-bottom: 1px solid #e2e8f0;
-      padding: 0.75rem 2rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-    }
-
-    .status-bar-content {
-      max-width: 1400px;
-      margin: 0 auto;
-      width: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-    }
-
-    .user-info {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-size: 0.9rem;
-    }
-
-    .user-info .label {
-      color: #64748b;
-    }
-
-    #webId {
-      font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
-      font-size: 0.85rem;
-      color: var(--primary);
-    }
-
-    #loginButtonArea {
-      display: flex;
-      align-items: center;
-    }
-
-    #loginButtonArea input[type="button"],
-    #loginButtonArea button {
-      padding: 0.6rem 1.5rem !important;
-      font-size: 0.875rem !important;
-      font-weight: 600 !important;
-      background: white !important;
-      color: var(--primary) !important;
-      border: 2px solid var(--primary) !important;
-      border-radius: 50px !important;
-      cursor: pointer !important;
-      transition: all 0.2s ease;
-      opacity: 1 !important;
-      margin: 0 0.35rem !important;
-      text-transform: none !important;
-      letter-spacing: 0 !important;
-      box-shadow: 0 2px 8px rgba(124, 58, 237, 0.15);
-    }
-
-    #loginButtonArea input[type="button"]:hover,
-    #loginButtonArea button:hover {
-      background: var(--primary) !important;
-      color: white !important;
-      transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
-    }
-
-    #loginButtonArea a {
-      padding: 0.6rem 1.5rem !important;
-      font-size: 0.875rem !important;
-      font-weight: 600 !important;
-      background: linear-gradient(135deg, var(--primary), var(--secondary)) !important;
-      color: white !important;
-      border: none !important;
-      border-radius: 50px !important;
-      cursor: pointer !important;
-      text-decoration: none !important;
-      display: inline-block;
-      margin: 0 0.35rem !important;
-      box-shadow: 0 2px 8px rgba(124, 58, 237, 0.25);
-      transition: all 0.2s ease;
-    }
-
-    #loginButtonArea a:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 4px 16px rgba(124, 58, 237, 0.4);
-    }
-
-    .browser-container {
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 1.5rem 2rem;
-    }
-
-    .card {
-      background: var(--card-light);
-      border-radius: 16px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-      border: 1px solid #e2e8f0;
-      overflow: hidden;
-    }
-
-    #DummyUUID {
-      min-height: 60vh;
-      padding: 1rem;
-    }
-
-    .loading {
-      display: none;
-      text-align: center;
-      padding: 3rem;
-      color: #64748b;
-    }
-
-    .loading.active {
-      display: block;
-    }
-
-    .spinner {
-      width: 40px;
-      height: 40px;
-      border: 3px solid #e2e8f0;
-      border-top-color: var(--primary);
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-      margin: 0 auto 1rem;
-    }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
-    .welcome-message {
-      text-align: center;
-      padding: 4rem 2rem;
-      color: #64748b;
-    }
-
-    .welcome-message h2 {
-      color: var(--text-light);
-      margin-bottom: 0.5rem;
-    }
-
-    @media (prefers-color-scheme: dark) {
-      .welcome-message h2 { color: var(--text-dark); }
-    }
-
-    .footer {
-      text-align: center;
-      padding: 2rem;
-      color: #64748b;
-      font-size: 0.85rem;
-    }
-
-    .footer a {
-      color: var(--primary);
-      text-decoration: none;
-    }
-
-    .footer a:hover {
-      text-decoration: underline;
-    }
-
-    @media (max-width: 640px) {
-      .header { padding: 1rem; }
-      .browser-container { padding: 1rem; }
-      .status-bar { padding: 0.75rem 1rem; }
-      #uriField { min-width: 100%; }
-    }
-
-    /* Nav bar */
-    .nav {
+    /* Navigation */
+    nav {
       display: flex;
       justify-content: space-between;
       align-items: center;
       padding: 1.25rem 2rem;
       max-width: 1400px;
       margin: 0 auto;
-      background: var(--bg-dark);
     }
     .logo {
       display: flex;
@@ -390,15 +63,254 @@
       color: #e2e8f0;
       background: rgba(255,255,255,0.1);
     }
-    .nav-links .btn-secondary {
+    .btn-secondary {
       background: rgba(255,255,255,0.1);
       border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    /* Hero search section */
+    .hero {
+      background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
+      padding: 3rem 2rem 4rem;
+      text-align: center;
+      position: relative;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: radial-gradient(ellipse at 30% 20%, rgba(102, 126, 234, 0.15) 0%, transparent 50%),
+                  radial-gradient(ellipse at 70% 80%, rgba(139, 92, 246, 0.1) 0%, transparent 50%);
+      pointer-events: none;
+    }
+    .hero-inner {
+      max-width: 800px;
+      margin: 0 auto;
+      position: relative;
+    }
+    .hero h1 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      margin-bottom: 0.5rem;
+    }
+    .hero h1 span {
+      background: linear-gradient(135deg, #667eea 0%, #a78bfa 50%, #f472b6 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero .tagline {
+      color: #94a3b8;
+      font-size: 1.1rem;
+      margin-bottom: 2rem;
+    }
+
+    /* Search box */
+    .search-container {
+      display: flex;
+      gap: 0.75rem;
+      max-width: 700px;
+      margin: 0 auto 1.5rem;
+    }
+    #uriField {
+      flex: 1;
+      padding: 1rem 1.5rem;
+      font-size: 1rem;
+      border: 2px solid #334155;
+      border-radius: 12px;
+      background: #1e293b;
+      color: #e2e8f0;
+      outline: none;
+      transition: all 0.2s;
+    }
+    #uriField:focus {
+      border-color: #667eea;
+      box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.2);
+    }
+    #uriField::placeholder { color: #64748b; }
+    #goButton {
+      padding: 1rem 2rem;
+      font-size: 1rem;
+      font-weight: 600;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 4px 14px rgba(102, 126, 234, 0.4);
+    }
+    #goButton:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+    }
+
+    /* Quick links */
+    .quick-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      justify-content: center;
+      align-items: center;
+    }
+    .quick-links-label {
+      font-size: 0.9rem;
+      color: #64748b;
+      margin-right: 0.25rem;
+    }
+    .quick-link {
+      padding: 0.5rem 1rem;
+      font-size: 0.85rem;
+      background: rgba(102, 126, 234, 0.2);
+      color: #a5b4fc;
+      text-decoration: none;
+      border-radius: 20px;
+      border: 1px solid rgba(102, 126, 234, 0.3);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .quick-link:hover {
+      background: rgba(102, 126, 234, 0.3);
+      transform: translateY(-1px);
+    }
+
+    /* Status bar */
+    .status-bar {
+      background: #1e293b;
+      border-bottom: 1px solid #334155;
+      padding: 0.75rem 2rem;
+    }
+    .status-bar-content {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.9rem;
+    }
+    .user-info .label { color: #64748b; }
+    #webId {
+      font-family: 'SF Mono', Monaco, monospace;
+      font-size: 0.85rem;
+      color: #a78bfa;
+    }
+    #loginButtonArea {
+      display: flex;
+      align-items: center;
+    }
+    #loginButtonArea input[type="button"],
+    #loginButtonArea button {
+      padding: 0.5rem 1.25rem !important;
+      font-size: 0.85rem !important;
+      font-weight: 600 !important;
+      background: transparent !important;
+      color: #a78bfa !important;
+      border: 1px solid #a78bfa !important;
+      border-radius: 8px !important;
+      cursor: pointer !important;
+      transition: all 0.2s;
+      margin: 0 0.25rem !important;
+    }
+    #loginButtonArea input[type="button"]:hover,
+    #loginButtonArea button:hover {
+      background: rgba(167, 139, 250, 0.1) !important;
+    }
+    #loginButtonArea a {
+      padding: 0.5rem 1.25rem !important;
+      font-size: 0.85rem !important;
+      font-weight: 600 !important;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+      color: white !important;
+      border: none !important;
+      border-radius: 8px !important;
+      text-decoration: none !important;
+      margin: 0 0.25rem !important;
+      transition: all 0.2s;
+    }
+    #loginButtonArea a:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    }
+
+    /* Browser container */
+    .browser-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 1.5rem 2rem;
+    }
+    .card {
+      background: #1e293b;
+      border-radius: 16px;
+      border: 1px solid #334155;
+      overflow: hidden;
+    }
+    #DummyUUID {
+      min-height: 60vh;
+      padding: 1rem;
+      background: white;
+      color: #1e293b;
+    }
+    .loading {
+      display: none;
+      text-align: center;
+      padding: 3rem;
+      color: #64748b;
+    }
+    .loading.active { display: block; }
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid #334155;
+      border-top-color: #667eea;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 1rem;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .welcome-message {
+      text-align: center;
+      padding: 4rem 2rem;
+      color: #64748b;
+      background: white;
+    }
+    .welcome-message h2 {
+      color: #1e293b;
+      margin-bottom: 0.5rem;
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 2rem;
+      color: #64748b;
+      font-size: 0.85rem;
+    }
+    footer a {
+      color: #667eea;
+      text-decoration: none;
+    }
+    footer a:hover { text-decoration: underline; }
+
+    @media (max-width: 640px) {
+      .hero { padding: 2rem 1rem 3rem; }
+      .hero h1 { font-size: 1.75rem; }
+      .search-container { flex-direction: column; }
+      #goButton { width: 100%; }
+      .browser-container { padding: 1rem; }
+      .status-bar { padding: 0.75rem 1rem; }
     }
   </style>
 </head>
 <body>
 
-<nav class="nav">
+<nav>
   <a href="https://jsonos.com" class="logo">
     <span class="logo-icon">{}</span>
     jsonos
@@ -411,69 +323,68 @@
   </div>
 </nav>
 
-  <header class="header">
-    <div class="header-content">
-      <h1>jsonos Browser</h1>
-      <p class="header-subtitle">The JSON Operating System for the Web</p>
+<section class="hero">
+  <div class="hero-inner">
+    <h1>Solid Data <span>Browser</span></h1>
+    <p class="tagline">View any Solid pod, WebID, or RDF resource</p>
 
-      <div class="search-container">
-        <input
-          type="text"
-          id="uriField"
-          placeholder="Enter a Solid pod URL or WebID..."
-          autocomplete="off"
-          spellcheck="false"
-        />
-        <button id="goButton">Browse</button>
-      </div>
-
-      <div class="quick-links">
-        <span class="quick-links-label">Try:</span>
-        <a class="quick-link" data-uri="https://timbl.solidcommunity.net/profile/card#me">Tim Berners-Lee</a>
-        <a class="quick-link" data-uri="https://solidos.solidcommunity.net/public/Roadmap/">Roadmap</a>
-        <a class="quick-link" data-uri="https://solidos.solidcommunity.net/public/SolidOS%20team%20meetings/">Team Meetings</a>
-        <a class="quick-link" data-uri="https://solidos.solidcommunity.net/public/">SolidOS Files</a>
-      </div>
+    <div class="search-container">
+      <input
+        type="text"
+        id="uriField"
+        placeholder="Enter a Solid pod URL or WebID..."
+        autocomplete="off"
+        spellcheck="false"
+      />
+      <button id="goButton">Browse</button>
     </div>
-  </header>
 
-  <div class="status-bar">
-    <div class="status-bar-content">
-      <div class="user-info">
-        <span class="label">Logged in as:</span>
-        <span id="webId">Not logged in</span>
-      </div>
-      <div id="loginButtonArea"></div>
+    <div class="quick-links">
+      <span class="quick-links-label">Try:</span>
+      <a class="quick-link" data-uri="https://timbl.solidcommunity.net/profile/card#me">Tim Berners-Lee</a>
+      <a class="quick-link" data-uri="https://solidos.solidcommunity.net/public/Roadmap/">Roadmap</a>
+      <a class="quick-link" data-uri="https://solidos.solidcommunity.net/public/SolidOS%20team%20meetings/">Team Meetings</a>
+      <a class="quick-link" data-uri="https://solidos.solidcommunity.net/public/">SolidOS Files</a>
     </div>
   </div>
+</section>
 
-  <main class="browser-container">
-    <div class="card">
-      <div id="welcome" class="welcome-message">
-        <h2>Welcome to jsonos</h2>
-        <p>Enter a URL above or click one of the quick links to get started.</p>
-        <p>Log in with your WebID to access private data and edit resources.</p>
-      </div>
-
-      <div id="loading" class="loading">
-        <div class="spinner"></div>
-        <p>Loading resource...</p>
-      </div>
-
-      <div class="TabulatorOutline" id="DummyUUID" role="main" style="display: none;">
-        <table id="outline"></table>
-        <div id="GlobalDashboard"></div>
-      </div>
+<div class="status-bar">
+  <div class="status-bar-content">
+    <div class="user-info">
+      <span class="label">Logged in as:</span>
+      <span id="webId">Not logged in</span>
     </div>
-  </main>
+    <div id="loginButtonArea"></div>
+  </div>
+</div>
 
-  <footer class="footer">
-    <p>
-      Powered by <a href="https://jsonos.com" target="_blank">jsonos</a> |
-      <a href="https://github.com/json-os" target="_blank">GitHub</a> |
-      <a href="https://solidproject.org/" target="_blank">Solid Project</a>
-    </p>
-  </footer>
+<main class="browser-container">
+  <div class="card">
+    <div id="welcome" class="welcome-message">
+      <h2>Welcome to jsonos</h2>
+      <p>Enter a URL above or click one of the quick links to get started.</p>
+      <p>Log in with your WebID to access private data and edit resources.</p>
+    </div>
+
+    <div id="loading" class="loading">
+      <div class="spinner"></div>
+      <p>Loading resource...</p>
+    </div>
+
+    <div class="TabulatorOutline" id="DummyUUID" role="main" style="display: none;">
+      <table id="outline"></table>
+      <div id="GlobalDashboard"></div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <a href="https://jsonos.com">jsonos</a> ·
+  <a href="/examples/">Examples</a> ·
+  <a href="https://github.com/json-os">GitHub</a> ·
+  <a href="https://solidproject.org/">Solid Project</a>
+</footer>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -492,7 +403,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
   const outliner = panes.getOutliner(dom)
 
-  // Navigate to a URI
   function go(uri) {
     if (!uri) uri = uriField.value.trim()
     if (!uri) return
@@ -500,18 +410,15 @@ document.addEventListener('DOMContentLoaded', function() {
     uriField.value = uri
     console.log('Navigating to:', uri)
 
-    // Show loading state
     welcomeEl.style.display = 'none'
     loadingEl.classList.add('active')
     browserEl.style.display = 'none'
 
-    // Update URL bar
     const params = new URLSearchParams(location.search)
     params.set('uri', uri)
     window.history.replaceState({}, '', `${location.origin}${location.pathname}?${params}`)
     document.title = `jsonos - ${uri}`
 
-    // Load the resource
     const subject = $rdf.sym(uri)
 
     setTimeout(() => {
@@ -523,14 +430,11 @@ document.addEventListener('DOMContentLoaded', function() {
     updateLoginArea()
   }
 
-  // Update login status display
   async function updateLoginArea() {
     loginButtonArea.innerHTML = ''
     loginButtonArea.appendChild(UI.login.loginStatusBox(document, null, {}))
 
-    // Override signup button/link to point to correct URL
     setTimeout(() => {
-      // Fix any anchor links
       const signupLinks = loginButtonArea.querySelectorAll('a')
       signupLinks.forEach(link => {
         const text = link.textContent.toLowerCase()
@@ -540,12 +444,10 @@ document.addEventListener('DOMContentLoaded', function() {
         }
       })
 
-      // Fix signup button (which opens broken popup)
       const buttons = loginButtonArea.querySelectorAll('input[type="button"], button')
       buttons.forEach(btn => {
         const text = (btn.value || btn.textContent || '').toLowerCase()
         if (text.includes('sign up')) {
-          // Clone to remove old event listeners
           const newBtn = btn.cloneNode(true)
           btn.parentNode.replaceChild(newBtn, btn)
           newBtn.addEventListener('click', (e) => {
@@ -570,13 +472,11 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
 
-  // Event listeners
   uriField.addEventListener('keyup', (e) => {
     if (e.keyCode === 13) go()
   })
   goButton.addEventListener('click', () => go())
 
-  // Quick links
   document.querySelectorAll('.quick-link').forEach(link => {
     link.addEventListener('click', (e) => {
       e.preventDefault()
@@ -585,7 +485,6 @@ document.addEventListener('DOMContentLoaded', function() {
     })
   })
 
-  // Handle auth events
   if (authSession) {
     authSession.events.on('login', () => {
       updateLoginArea()
@@ -601,7 +500,6 @@ document.addEventListener('DOMContentLoaded', function() {
     })
   }
 
-  // Check for URI in query string
   const initial = new URLSearchParams(location.search).get('uri')
   if (initial) {
     go(initial)
@@ -612,4 +510,3 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 </body>
 </html>
-
