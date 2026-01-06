@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>jsonos - JSON Operating System for the Web</title>
+  <meta name="description" content="A lightweight JSON-LD operating system for building decentralized web applications">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary: #6366f1;
+      --primary-light: #818cf8;
+      --primary-soft: #e0e7ff;
+      --secondary: #8b5cf6;
+      --accent: #06b6d4;
+      --text: #1e293b;
+      --text-muted: #64748b;
+      --bg: #fafbfc;
+      --bg-card: #ffffff;
+      --border: #e2e8f0;
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+      --radius: 12px;
+      --radius-lg: 20px;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* Soft gradient background */
+    .bg-gradient {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 600px;
+      background: linear-gradient(135deg, #f0f4ff 0%, #faf5ff 50%, #f0fdff 100%);
+      z-index: -1;
+    }
+
+    .bg-gradient::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 200px;
+      background: linear-gradient(to bottom, transparent, var(--bg));
+    }
+
+    /* Navigation */
+    nav {
+      padding: 1.5rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 700;
+      font-size: 1.5rem;
+      color: var(--text);
+      text-decoration: none;
+    }
+
+    .logo-icon {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1rem;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      align-items: center;
+    }
+
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.95rem;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover {
+      color: var(--primary);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.6rem 1.2rem;
+      border-radius: 8px;
+      font-weight: 500;
+      font-size: 0.95rem;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-light);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow);
+    }
+
+    .btn-secondary {
+      background: var(--bg-card);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--primary-light);
+      color: var(--primary);
+    }
+
+    /* Hero */
+    .hero {
+      text-align: center;
+      padding: 5rem 2rem 4rem;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.4rem 1rem;
+      background: var(--primary-soft);
+      color: var(--primary);
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      margin-bottom: 1.5rem;
+    }
+
+    h1 {
+      font-size: 3.5rem;
+      font-weight: 700;
+      line-height: 1.1;
+      margin-bottom: 1.5rem;
+      background: linear-gradient(135deg, var(--text) 0%, var(--primary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero p {
+      font-size: 1.25rem;
+      color: var(--text-muted);
+      max-width: 600px;
+      margin: 0 auto 2.5rem;
+    }
+
+    .hero-buttons {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .hero-buttons .btn {
+      padding: 0.8rem 1.5rem;
+    }
+
+    /* Code preview */
+    .code-preview {
+      max-width: 700px;
+      margin: 4rem auto 0;
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    .code-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.8rem 1rem;
+      background: #f8fafc;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .code-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+
+    .code-dot.red { background: #fca5a5; }
+    .code-dot.yellow { background: #fcd34d; }
+    .code-dot.green { background: #86efac; }
+
+    .code-title {
+      margin-left: 0.5rem;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    pre {
+      padding: 1.5rem;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+      line-height: 1.7;
+      text-align: left;
+    }
+
+    .code-keyword { color: #8b5cf6; }
+    .code-string { color: #059669; }
+    .code-property { color: #0891b2; }
+    .code-comment { color: #94a3b8; }
+
+    /* Features */
+    .features {
+      max-width: 1100px;
+      margin: 6rem auto;
+      padding: 0 2rem;
+    }
+
+    .features h2 {
+      text-align: center;
+      font-size: 2rem;
+      margin-bottom: 3rem;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .feature-card {
+      background: var(--bg-card);
+      padding: 2rem;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      transition: all 0.3s;
+    }
+
+    .feature-card:hover {
+      box-shadow: var(--shadow-lg);
+      transform: translateY(-2px);
+      border-color: var(--primary-soft);
+    }
+
+    .feature-icon {
+      width: 48px;
+      height: 48px;
+      background: var(--primary-soft);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .feature-card h3 {
+      font-size: 1.1rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .feature-card p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    /* Install section */
+    .install {
+      max-width: 700px;
+      margin: 4rem auto;
+      padding: 0 2rem;
+      text-align: center;
+    }
+
+    .install h2 {
+      font-size: 2rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .install-box {
+      background: #1e293b;
+      color: #e2e8f0;
+      padding: 1rem 1.5rem;
+      border-radius: var(--radius);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.95rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .install-box code {
+      color: #86efac;
+    }
+
+    .copy-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 0.5rem;
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+
+    .copy-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 3rem 2rem;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      border-top: 1px solid var(--border);
+      margin-top: 4rem;
+    }
+
+    footer a {
+      color: var(--primary);
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 2.5rem;
+      }
+
+      .nav-links {
+        display: none;
+      }
+
+      .hero {
+        padding: 3rem 1.5rem 2rem;
+      }
+
+      .features-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-gradient"></div>
+
+  <nav>
+    <a href="/" class="logo">
+      <span class="logo-icon">{}</span>
+      jsonos
+    </a>
+    <div class="nav-links">
+      <a href="https://github.com/json-os/jsonos#readme">Docs</a>
+      <a href="https://github.com/json-os/jsonos/tree/main/examples">Examples</a>
+      <a href="https://github.com/json-os" class="btn btn-secondary">GitHub</a>
+    </div>
+  </nav>
+
+  <main>
+    <section class="hero">
+      <span class="badge">
+        <span>v0.0.1</span>
+        Early Preview
+      </span>
+      <h1>JSON Operating System for the Web</h1>
+      <p>
+        A lightweight framework for building decentralized applications with JSON-LD.
+        Read and write Linked Data with a simple, familiar API.
+      </p>
+      <div class="hero-buttons">
+        <a href="https://github.com/json-os/jsonos#getting-started" class="btn btn-primary">
+          Get Started
+        </a>
+        <a href="https://github.com/json-os/jsonos" class="btn btn-secondary">
+          View on GitHub
+        </a>
+      </div>
+
+      <div class="code-preview">
+        <div class="code-header">
+          <span class="code-dot red"></span>
+          <span class="code-dot yellow"></span>
+          <span class="code-dot green"></span>
+          <span class="code-title">app.js</span>
+        </div>
+        <pre><span class="code-keyword">import</span> { JsonOS } <span class="code-keyword">from</span> <span class="code-string">'jsonos'</span>;
+
+<span class="code-comment">// Initialize with your data source</span>
+<span class="code-keyword">const</span> os = <span class="code-keyword">new</span> JsonOS({
+  <span class="code-property">storage</span>: <span class="code-string">'https://pod.example/data/'</span>
+});
+
+<span class="code-comment">// Read JSON-LD data</span>
+<span class="code-keyword">const</span> tasks = <span class="code-keyword">await</span> os.read(<span class="code-string">'/todos.json'</span>);
+
+<span class="code-comment">// Write with automatic format handling</span>
+<span class="code-keyword">await</span> os.write(<span class="code-string">'/todos.json'</span>, tasks);</pre>
+      </div>
+    </section>
+
+    <section class="features">
+      <h2>Why jsonos?</h2>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">🔗</div>
+          <h3>Linked Data Native</h3>
+          <p>Built for JSON-LD from the ground up. Automatic context handling, predicate expansion, and format detection.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🌐</div>
+          <h3>Decentralized Ready</h3>
+          <p>Works with Solid pods, static files, or any HTTP endpoint. Your data stays under your control.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🪶</div>
+          <h3>Lightweight</h3>
+          <p>Zero dependencies. Under 5KB gzipped. Works in browsers and Node.js without configuration.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🔄</div>
+          <h3>Format Agnostic</h3>
+          <p>Preserve + Layer pattern: read any RDF format while keeping original data intact.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🔐</div>
+          <h3>Auth Built-in</h3>
+          <p>Solid OIDC authentication ready. Seamlessly switch between authenticated and public data.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">⚡</div>
+          <h3>Developer Experience</h3>
+          <p>Familiar async/await API. TypeScript types included. Comprehensive error messages.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="install">
+      <h2>Quick Install</h2>
+      <div class="install-box">
+        <span>$ <code>npm install jsonos</code></span>
+        <button class="copy-btn" onclick="navigator.clipboard.writeText('npm install jsonos')" title="Copy">
+          📋
+        </button>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>
+      Made with care by the <a href="https://github.com/json-os">json-os</a> community.
+      Licensed under <a href="https://github.com/json-os/jsonos/blob/main/LICENSE">AGPL-3.0</a>.
+    </p>
+  </footer>
+</body>
+</html>
