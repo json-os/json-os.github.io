@@ -206,10 +206,19 @@ const Shared = {
     let paneRenderer = null;
     if (panePath) {
       await this.loadScript(panePath);
-      // Pane should register itself via Shared.registerPane()
+      // Extract pane name from path (e.g., 'src/panes/person.js' -> 'person')
       const paneName = panePath.split('/').pop().replace('.js', '');
+
+      // Check for pane in registry first
       if (this.panes[paneName]) {
         paneRenderer = this.panes[paneName].render;
+      }
+      // Backwards compat: check for window.Schema*Pane globals
+      else {
+        const globalName = 'Schema' + paneName.charAt(0).toUpperCase() + paneName.slice(1) + 'Pane';
+        if (window[globalName] && window[globalName].render) {
+          paneRenderer = window[globalName].render;
+        }
       }
     } else {
       // Check if any pane was already registered (inline registration)

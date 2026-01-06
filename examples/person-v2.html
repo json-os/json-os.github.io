@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Marie Curie - Person</title>
+  <style>
+    body { margin: 0; font-family: system-ui, sans-serif; background: #f8fafc; }
+  </style>
+</head>
+<body>
+
+<script type="application/ld+json">
+{
+  "@context": {
+    "schema": "http://schema.org/"
+  },
+  "@id": "#me",
+  "@type": "schema:Person",
+  "schema:name": "Marie Curie",
+  "schema:givenName": "Marie",
+  "schema:familyName": "Curie",
+  "schema:jobTitle": "Physicist and Chemist",
+  "schema:description": "First woman to win a Nobel Prize. Pioneer in radioactivity research.",
+  "schema:birthDate": "1867-11-07",
+  "schema:image": { "@id": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Marie_Curie_c1920.jpg/440px-Marie_Curie_c1920.jpg" },
+  "schema:url": { "@id": "https://en.wikipedia.org/wiki/Marie_Curie" },
+  "schema:knows": {
+    "@id": "#pierre",
+    "@type": "schema:Person",
+    "schema:name": "Pierre Curie",
+    "schema:jobTitle": "Physicist"
+  }
+}
+</script>
+
+<script src="src/shared.js"></script>
+<script>
+  SchemaShared.init({
+    pane: 'src/panes/person.js',
+    subject: '#me',
+    theme: { primary: '#667eea', bg: '#eff6ff' }
+  });
+</script>
+
+</body>
+</html>
