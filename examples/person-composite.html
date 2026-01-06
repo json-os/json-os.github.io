@@ -24,33 +24,43 @@
 
 <div class="container" id="profile"></div>
 
-<script type="application/ld+json">
+<script type="application/ld+json" id="data">
 {
-  "@context": {"schema": "http://schema.org/"},
-  "@id": "#timbl",
-  "@type": "schema:Person",
-  "@view": "https://jsonos.com/examples/src/panes/person-composite.js",
-  "schema:name": "Tim Berners-Lee",
-  "schema:jobTitle": "CoFounder and CTO",
-  "schema:worksFor": {
-    "@type": "schema:Organization",
-    "schema:name": "Inrupt Inc"
+  "@context": {
+    "foaf": "http://xmlns.com/foaf/0.1/",
+    "vcard": "http://www.w3.org/2006/vcard/ns#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#"
   },
-  "schema:description": "Inventor of the World Wide Web. Director of W3C. Founder of the Web Foundation. Leading the Solid project to re-decentralize the web and give people control over their data.",
-  "schema:image": "https://www.w3.org/People/Berners-Lee/2017-image-600.jpeg",
-  "schema:url": "https://www.w3.org/People/Berners-Lee/",
-  "schema:email": "timbl@w3.org",
-  "schema:sameAs": [
-    "https://github.com/timbl",
-    "https://twitter.com/timberners_lee",
-    "https://www.linkedin.com/in/timbl"
+  "@id": "#timbl",
+  "@type": "foaf:Person",
+  "foaf:name": "Tim Berners-Lee",
+  "foaf:img": {"@id": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Sir_Tim_Berners-Lee_%28cropped%29.jpg/440px-Sir_Tim_Berners-Lee_%28cropped%29.jpg"},
+  "foaf:depiction": {"@id": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Sir_Tim_Berners-Lee_%28cropped%29.jpg/440px-Sir_Tim_Berners-Lee_%28cropped%29.jpg"},
+  "vcard:hasPhoto": {"@id": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Sir_Tim_Berners-Lee_%28cropped%29.jpg/440px-Sir_Tim_Berners-Lee_%28cropped%29.jpg"},
+  "foaf:mbox": "mailto:timbl@w3.org",
+  "foaf:homepage": "https://www.w3.org/People/Berners-Lee/",
+  "foaf:based_near": "Cambridge, MA",
+  "rdfs:comment": "Inventor of the World Wide Web. Director of W3C. Founder of the Web Foundation. Leading the Solid project to re-decentralize the web and give people control over their data.",
+  "vcard:fn": "Tim Berners-Lee",
+  "vcard:role": "CoFounder and CTO",
+  "vcard:organization-name": "Inrupt Inc",
+  "foaf:account": [
+    {"@id": "https://github.com/timbl"},
+    {"@id": "https://twitter.com/timberners_lee"},
+    {"@id": "https://www.linkedin.com/in/timbl"}
   ],
-  "schema:knowsLanguage": ["English", "French"],
-  "schema:address": {
-    "@type": "schema:PostalAddress",
-    "schema:addressLocality": "Cambridge",
-    "schema:addressRegion": "MA"
-  }
+  "foaf:knows": [
+    {
+      "@id": "#melvin",
+      "@type": "foaf:Person",
+      "foaf:name": "Melvin Carvalho"
+    },
+    {
+      "@id": "#ruben",
+      "@type": "foaf:Person",
+      "foaf:name": "Ruben Verborgh"
+    }
+  ]
 }
 </script>
 
@@ -63,12 +73,27 @@
   const data = JSON.parse(jsonLdScript.textContent)
 
   const baseUri = window.location.href.split('#')[0]
-  const store = $rdf.graph()
-  const subject = window.solidShim.parseJsonLdToStore(data, baseUri, store)
+  const subject = window.solidShim.parseJsonLdToStore(data, baseUri, SolidLogic.store)
 
+  // Manually add photo as NamedNode (parseJsonLdToStore doesn't handle @id properly)
+  const VCARD = $rdf.Namespace('http://www.w3.org/2006/vcard/ns#')
+  const FOAF = $rdf.Namespace('http://xmlns.com/foaf/0.1/')
+  const photoUrl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Sir_Tim_Berners-Lee_%28cropped%29.jpg/440px-Sir_Tim_Berners-Lee_%28cropped%29.jpg'
+  SolidLogic.store.add(subject, VCARD('hasPhoto'), $rdf.sym(photoUrl))
+  SolidLogic.store.add(subject, FOAF('img'), $rdf.sym(photoUrl))
+  SolidLogic.store.add(subject, FOAF('depiction'), $rdf.sym(photoUrl))
+
+  // Use the full SolidLogic context that solid-panes expects
   const context = {
     dom: document,
-    session: { store }
+    session: {
+      store: SolidLogic.store,
+      paneRegistry: panes,
+      logic: SolidLogic.solidLogicSingleton
+    },
+    getOutliner: () => panes.getOutliner(document),
+    statusArea: document.createElement('div'),
+    div: document.getElementById('profile')
   }
 
   const rendered = pane.render(subject, context)
