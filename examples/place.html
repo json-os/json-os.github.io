@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Golden Gate Bridge - Place</title>
+</head>
+<body>
+
+<script type="application/ld+json">
+{
+  "@context": {
+    "schema": "http://schema.org/"
+  },
+  "@id": "#place",
+  "@type": "schema:TouristAttraction",
+  "schema:name": "Golden Gate Bridge",
+  "schema:description": "The Golden Gate Bridge is a suspension bridge spanning the Golden Gate, the one-mile-wide strait connecting San Francisco Bay and the Pacific Ocean. It has been declared one of the Wonders of the Modern World.",
+  "schema:image": { "@id": "https://images.unsplash.com/photo-1501594907352-04cda38ebc29?w=1200&q=80" },
+  "schema:address": {
+    "@type": "schema:PostalAddress",
+    "schema:streetAddress": "Golden Gate Bridge",
+    "schema:addressLocality": "San Francisco",
+    "schema:addressRegion": "California",
+    "schema:postalCode": "94129",
+    "schema:addressCountry": "USA"
+  },
+  "schema:geo": {
+    "@type": "schema:GeoCoordinates",
+    "schema:latitude": "37.8199",
+    "schema:longitude": "-122.4783"
+  },
+  "schema:telephone": "+1-415-921-5858",
+  "schema:openingHours": "Open 24 hours for pedestrians and vehicles",
+  "schema:aggregateRating": {
+    "@type": "schema:AggregateRating",
+    "schema:ratingValue": "4.8",
+    "schema:reviewCount": "125483"
+  },
+  "schema:url": { "@id": "https://www.goldengate.org/" }
+}
+</script>
+
+<style>
+  body { margin: 0; font-family: system-ui, sans-serif; background: #f8fafc; }
+  #content { padding: 0; }
+</style>
+
+<script>
+  async function loadScript(src) {
+    return new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = src;
+      script.onload = resolve;
+      script.onerror = reject;
+      document.head.appendChild(script);
+    });
+  }
+
+  async function init() {
+    await loadScript('/browser/dist/mashlib.min.js');
+
+    await new Promise(resolve => {
+      const check = setInterval(() => {
+        if (typeof $rdf !== 'undefined' && typeof SolidLogic !== 'undefined') {
+          clearInterval(check);
+          resolve();
+        }
+      }, 50);
+    });
+
+    const island = document.querySelector('script[type="application/ld+json"]');
+    if (island) {
+      const store = SolidLogic.store;
+      const baseUri = window.location.href.split('#')[0];
+      const jsonld = JSON.parse(island.textContent);
+
+      function addTriples(node, subjectUri) {
+        const subject = $rdf.sym(subjectUri);
+        if (node['@type']) {
+          const type = node['@type'].replace('schema:', 'http://schema.org/');
+          store.add(subject, $rdf.sym('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), $rdf.sym(type));
+        }
+        Object.keys(node).forEach(key => {
+          if (key.startsWith('@')) return;
+          const pred = key.replace('schema:', 'http://schema.org/');
+          const val = node[key];
+          if (typeof val === 'object' && val['@id']) {
+            const uri = val['@id'].startsWith('http') ? val['@id'] : baseUri + val['@id'];
+            store.add(subject, $rdf.sym(pred), $rdf.sym(uri));
+          } else if (typeof val === 'object' && val['@type']) {
+            const blankId = baseUri + '#_b' + Math.random().toString(36).substr(2,6);
+            store.add(subject, $rdf.sym(pred), $rdf.sym(blankId));
+            addTriples(val, blankId);
+          } else if (typeof val === 'string') {
+            store.add(subject, $rdf.sym(pred), val);
+          }
+        });
+      }
+
+      const rootId = baseUri + (jsonld['@id'] || '#thing');
+      addTriples(jsonld, rootId);
+    }
+
+    await loadScript('src/toolbar.js');
+    await loadScript('src/panes/place.js');
+
+    const subject = $rdf.sym(window.location.href.split('#')[0] + '#place');
+    const context = { dom: document, session: { store: SolidLogic.store } };
+
+    const content = document.createElement('div');
+    content.id = 'content';
+
+    const views = {
+      profile: () => window.SchemaPlacePane ? window.SchemaPlacePane.render(subject, context) : document.createTextNode('No pane'),
+      data: () => {
+        const div = document.createElement('div');
+        div.style.cssText = 'padding: 32px; max-width: 800px; margin: 0 auto;';
+        const table = document.createElement('table');
+        table.style.cssText = 'width: 100%; border-collapse: collapse; background: white; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);';
+        SolidLogic.store.statementsMatching(subject, null, null).forEach(st => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `<td style="padding:12px;color:#0ea5e9;font-weight:500;width:30%;border-bottom:1px solid #e2e8f0;">${st.predicate.value.split(/[#\/]/).pop()}</td><td style="padding:12px;color:#334155;border-bottom:1px solid #e2e8f0;">${st.object.value}</td>`;
+          table.appendChild(tr);
+        });
+        div.appendChild(table);
+        return div;
+      },
+      source: () => {
+        const div = document.createElement('div');
+        div.style.cssText = 'padding: 32px; max-width: 800px; margin: 0 auto;';
+        const pre = document.createElement('pre');
+        pre.style.cssText = 'background: #1e293b; color: #e2e8f0; padding: 24px; border-radius: 12px; overflow-x: auto;';
+        pre.textContent = JSON.stringify(JSON.parse(document.querySelector('script[type="application/ld+json"]').textContent), null, 2);
+        div.appendChild(pre);
+        return div;
+      }
+    };
+
+    function switchView(v) { content.innerHTML = ''; content.appendChild(views[v]()); }
+
+    const toolbar = window.SchemaToolbar.render({
+      dom: document, subject, theme: { primary: '#0ea5e9', bg: '#f0f9ff' },
+      onViewChange: switchView, onRefresh: () => location.reload()
+    });
+
+    document.body.appendChild(toolbar);
+    document.body.appendChild(content);
+    switchView('profile');
+  }
+  init();
+</script>
+
+</body>
+</html>

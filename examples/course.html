@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Web Development - Course</title>
+</head>
+<body>
+
+<script type="application/ld+json">
+{
+  "@context": {
+    "schema": "http://schema.org/"
+  },
+  "@id": "#course",
+  "@type": "schema:Course",
+  "schema:name": "Full Stack Web Development Bootcamp",
+  "schema:description": "Master modern web development from front-end to back-end. Learn React, Node.js, PostgreSQL, and deployment strategies through hands-on projects.",
+  "schema:courseCode": "WEB-401",
+  "schema:educationalLevel": "Intermediate",
+  "schema:timeRequired": "PT120H",
+  "schema:provider": {
+    "@type": "schema:Organization",
+    "schema:name": "TechAcademy Online",
+    "schema:logo": { "@id": "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=100&q=80" }
+  },
+  "schema:aggregateRating": {
+    "@type": "schema:AggregateRating",
+    "schema:ratingValue": "4.8",
+    "schema:reviewCount": "1247"
+  },
+  "schema:hasCourseInstance": [
+    {
+      "@type": "schema:CourseInstance",
+      "schema:startDate": "2025-02-15",
+      "schema:location": { "@type": "schema:Place", "schema:name": "Online" }
+    },
+    {
+      "@type": "schema:CourseInstance",
+      "schema:startDate": "2025-04-01",
+      "schema:location": { "@type": "schema:Place", "schema:name": "Online" }
+    }
+  ],
+  "schema:url": { "@id": "https://techacademy.example/web-dev" }
+}
+</script>
+
+<style>
+  body { margin: 0; font-family: system-ui, sans-serif; background: #f8fafc; }
+  #content { padding: 0; }
+</style>
+
+<script>
+  async function loadScript(src) {
+    return new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = src;
+      script.onload = resolve;
+      script.onerror = reject;
+      document.head.appendChild(script);
+    });
+  }
+
+  async function init() {
+    await loadScript('/browser/dist/mashlib.min.js');
+
+    await new Promise(resolve => {
+      const check = setInterval(() => {
+        if (typeof $rdf !== 'undefined' && typeof SolidLogic !== 'undefined') {
+          clearInterval(check);
+          resolve();
+        }
+      }, 50);
+    });
+
+    const island = document.querySelector('script[type="application/ld+json"]');
+    if (island) {
+      const store = SolidLogic.store;
+      const baseUri = window.location.href.split('#')[0];
+      const jsonld = JSON.parse(island.textContent);
+
+      function addTriples(node, subjectUri) {
+        const subject = $rdf.sym(subjectUri);
+        if (node['@type']) {
+          const type = node['@type'].replace('schema:', 'http://schema.org/');
+          store.add(subject, $rdf.sym('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), $rdf.sym(type));
+        }
+        Object.keys(node).forEach(key => {
+          if (key.startsWith('@')) return;
+          const pred = key.replace('schema:', 'http://schema.org/');
+          const val = node[key];
+          if (Array.isArray(val)) {
+            val.forEach(item => {
+              if (typeof item === 'object' && item['@type']) {
+                const blankId = baseUri + '#_b' + Math.random().toString(36).substr(2,6);
+                store.add(subject, $rdf.sym(pred), $rdf.sym(blankId));
+                addTriples(item, blankId);
+              }
+            });
+          } else if (typeof val === 'object' && val['@id']) {
+            const uri = val['@id'].startsWith('http') ? val['@id'] : baseUri + val['@id'];
+            store.add(subject, $rdf.sym(pred), $rdf.sym(uri));
+          } else if (typeof val === 'object' && val['@type']) {
+            const blankId = baseUri + '#_b' + Math.random().toString(36).substr(2,6);
+            store.add(subject, $rdf.sym(pred), $rdf.sym(blankId));
+            addTriples(val, blankId);
+          } else if (typeof val === 'string') {
+            store.add(subject, $rdf.sym(pred), val);
+          }
+        });
+      }
+
+      const rootId = baseUri + (jsonld['@id'] || '#thing');
+      addTriples(jsonld, rootId);
+    }
+
+    await loadScript('src/toolbar.js');
+    await loadScript('src/panes/course.js');
+
+    const subject = $rdf.sym(window.location.href.split('#')[0] + '#course');
+    const context = { dom: document, session: { store: SolidLogic.store } };
+
+    const content = document.createElement('div');
+    content.id = 'content';
+
+    const views = {
+      profile: () => window.SchemaCoursePane ? window.SchemaCoursePane.render(subject, context) : document.createTextNode('No pane'),
+      data: () => {
+        const div = document.createElement('div');
+        div.style.cssText = 'padding: 32px; max-width: 800px; margin: 0 auto;';
+        const table = document.createElement('table');
+        table.style.cssText = 'width: 100%; border-collapse: collapse; background: white; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);';
+        SolidLogic.store.statementsMatching(subject, null, null).forEach(st => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `<td style="padding:12px;color:#3b82f6;font-weight:500;width:30%;border-bottom:1px solid #e2e8f0;">${st.predicate.value.split(/[#\/]/).pop()}</td><td style="padding:12px;color:#334155;border-bottom:1px solid #e2e8f0;">${st.object.value}</td>`;
+          table.appendChild(tr);
+        });
+        div.appendChild(table);
+        return div;
+      },
+      source: () => {
+        const div = document.createElement('div');
+        div.style.cssText = 'padding: 32px; max-width: 800px; margin: 0 auto;';
+        const pre = document.createElement('pre');
+        pre.style.cssText = 'background: #1e293b; color: #e2e8f0; padding: 24px; border-radius: 12px; overflow-x: auto;';
+        pre.textContent = JSON.stringify(JSON.parse(document.querySelector('script[type="application/ld+json"]').textContent), null, 2);
+        div.appendChild(pre);
+        return div;
+      }
+    };
+
+    function switchView(v) { content.innerHTML = ''; content.appendChild(views[v]()); }
+
+    const toolbar = window.SchemaToolbar.render({
+      dom: document, subject, theme: { primary: '#3b82f6', bg: '#eff6ff' },
+      onViewChange: switchView, onRefresh: () => location.reload()
+    });
+
+    document.body.appendChild(toolbar);
+    document.body.appendChild(content);
+    switchView('profile');
+  }
+  init();
+</script>
+
+</body>
+</html>

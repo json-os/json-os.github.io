@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Midnight Drive - Music</title>
+</head>
+<body>
+
+<script type="application/ld+json">
+{
+  "@context": {
+    "schema": "http://schema.org/"
+  },
+  "@id": "#album",
+  "@type": "schema:MusicAlbum",
+  "schema:name": "Midnight Drive",
+  "schema:image": { "@id": "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=500&q=80" },
+  "schema:byArtist": {
+    "@type": "schema:MusicGroup",
+    "schema:name": "Neon Pulse",
+    "schema:image": { "@id": "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=100&q=80" }
+  },
+  "schema:datePublished": "2024-06-15",
+  "schema:genre": "Synthwave, Electronic",
+  "schema:track": [
+    { "@type": "schema:MusicRecording", "schema:name": "Nightfall", "schema:duration": "PT4M32S" },
+    { "@type": "schema:MusicRecording", "schema:name": "City Lights", "schema:duration": "PT3M45S" },
+    { "@type": "schema:MusicRecording", "schema:name": "Digital Dreams", "schema:duration": "PT5M12S" },
+    { "@type": "schema:MusicRecording", "schema:name": "Midnight Drive", "schema:duration": "PT4M08S" },
+    { "@type": "schema:MusicRecording", "schema:name": "Neon Rain", "schema:duration": "PT3M56S" },
+    { "@type": "schema:MusicRecording", "schema:name": "Sunset Boulevard", "schema:duration": "PT4M44S" },
+    { "@type": "schema:MusicRecording", "schema:name": "Electric Heart", "schema:duration": "PT3M33S" },
+    { "@type": "schema:MusicRecording", "schema:name": "Dawn Horizon", "schema:duration": "PT6M21S" }
+  ],
+  "schema:url": { "@id": "https://music.example/neonpulse/midnight-drive" }
+}
+</script>
+
+<style>
+  body { margin: 0; font-family: system-ui, sans-serif; background: linear-gradient(135deg, #1e1e1e 0%, #2d2d2d 100%); }
+  #content { padding: 0; }
+</style>
+
+<script>
+  async function loadScript(src) {
+    return new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = src;
+      script.onload = resolve;
+      script.onerror = reject;
+      document.head.appendChild(script);
+    });
+  }
+
+  async function init() {
+    await loadScript('/browser/dist/mashlib.min.js');
+
+    await new Promise(resolve => {
+      const check = setInterval(() => {
+        if (typeof $rdf !== 'undefined' && typeof SolidLogic !== 'undefined') {
+          clearInterval(check);
+          resolve();
+        }
+      }, 50);
+    });
+
+    const island = document.querySelector('script[type="application/ld+json"]');
+    if (island) {
+      const store = SolidLogic.store;
+      const baseUri = window.location.href.split('#')[0];
+      const jsonld = JSON.parse(island.textContent);
+
+      function addTriples(node, subjectUri) {
+        const subject = $rdf.sym(subjectUri);
+        if (node['@type']) {
+          const type = node['@type'].replace('schema:', 'http://schema.org/');
+          store.add(subject, $rdf.sym('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), $rdf.sym(type));
+        }
+        Object.keys(node).forEach(key => {
+          if (key.startsWith('@')) return;
+          const pred = key.replace('schema:', 'http://schema.org/');
+          const val = node[key];
+          if (Array.isArray(val)) {
+            val.forEach(item => {
+              if (typeof item === 'object' && item['@type']) {
+                const blankId = baseUri + '#_b' + Math.random().toString(36).substr(2,6);
+                store.add(subject, $rdf.sym(pred), $rdf.sym(blankId));
+                addTriples(item, blankId);
+              }
+            });
+          } else if (typeof val === 'object' && val['@id']) {
+            const uri = val['@id'].startsWith('http') ? val['@id'] : baseUri + val['@id'];
+            store.add(subject, $rdf.sym(pred), $rdf.sym(uri));
+          } else if (typeof val === 'object' && val['@type']) {
+            const blankId = baseUri + '#_b' + Math.random().toString(36).substr(2,6);
+            store.add(subject, $rdf.sym(pred), $rdf.sym(blankId));
+            addTriples(val, blankId);
+          } else if (typeof val === 'string') {
+            store.add(subject, $rdf.sym(pred), val);
+          }
+        });
+      }
+
+      const rootId = baseUri + (jsonld['@id'] || '#thing');
+      addTriples(jsonld, rootId);
+    }
+
+    await loadScript('src/toolbar.js');
+    await loadScript('src/panes/musicrecording.js');
+
+    const subject = $rdf.sym(window.location.href.split('#')[0] + '#album');
+    const context = { dom: document, session: { store: SolidLogic.store } };
+
+    const content = document.createElement('div');
+    content.id = 'content';
+
+    const views = {
+      profile: () => window.SchemaMusicRecordingPane ? window.SchemaMusicRecordingPane.render(subject, context) : document.createTextNode('No pane'),
+      data: () => {
+        const div = document.createElement('div');
+        div.style.cssText = 'padding: 32px; max-width: 800px; margin: 0 auto;';
+        const table = document.createElement('table');
+        table.style.cssText = 'width: 100%; border-collapse: collapse; background: #1e293b; border-radius: 8px;';
+        SolidLogic.store.statementsMatching(subject, null, null).forEach(st => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `<td style="padding:12px;color:#a78bfa;font-weight:500;width:30%;border-bottom:1px solid #334155;">${st.predicate.value.split(/[#\/]/).pop()}</td><td style="padding:12px;color:#e2e8f0;border-bottom:1px solid #334155;">${st.object.value}</td>`;
+          table.appendChild(tr);
+        });
+        div.appendChild(table);
+        return div;
+      },
+      source: () => {
+        const div = document.createElement('div');
+        div.style.cssText = 'padding: 32px; max-width: 800px; margin: 0 auto;';
+        const pre = document.createElement('pre');
+        pre.style.cssText = 'background: #1e293b; color: #e2e8f0; padding: 24px; border-radius: 12px; overflow-x: auto;';
+        pre.textContent = JSON.stringify(JSON.parse(document.querySelector('script[type="application/ld+json"]').textContent), null, 2);
+        div.appendChild(pre);
+        return div;
+      }
+    };
+
+    function switchView(v) { content.innerHTML = ''; content.appendChild(views[v]()); }
+
+    const toolbar = window.SchemaToolbar.render({
+      dom: document, subject, theme: { primary: '#1db954', bg: '#1e1e1e' },
+      onViewChange: switchView, onRefresh: () => location.reload()
+    });
+
+    document.body.appendChild(toolbar);
+    document.body.appendChild(content);
+    switchView('profile');
+  }
+  init();
+</script>
+
+</body>
+</html>

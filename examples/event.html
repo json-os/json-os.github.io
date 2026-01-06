@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Solid World - Event</title>
+</head>
+<body>
+
+<script type="application/ld+json">
+{
+  "@context": {
+    "schema": "http://schema.org/"
+  },
+  "@id": "#event",
+  "@type": "schema:Event",
+  "schema:name": "Solid World",
+  "schema:description": "Monthly community call for the Solid project. Join us to hear updates and connect with the community.",
+  "schema:startDate": "2025-02-06T16:00:00Z",
+  "schema:endDate": "2025-02-06T17:00:00Z",
+  "schema:eventStatus": "EventScheduled",
+  "schema:location": "Online - Jitsi Meet",
+  "schema:url": { "@id": "https://meet.jit.si/solid-world" },
+  "schema:organizer": {
+    "@type": "schema:Organization",
+    "schema:name": "Solid Project",
+    "schema:url": { "@id": "https://solidproject.org" }
+  },
+  "schema:image": { "@id": "https://solidproject.org/assets/img/solid-emblem.svg" }
+}
+</script>
+
+<!-- Custom loader: mashlib for RDF, our own UI -->
+<style>
+  body { margin: 0; font-family: system-ui, sans-serif; background: #f8fafc; }
+  .toolbar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 16px;
+    background: white;
+    border-bottom: 1px solid #e2e8f0;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  }
+  .toolbar-icon {
+    width: 32px;
+    height: 32px;
+    padding: 6px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .toolbar-icon:hover { background: #f1f5f9; }
+  .toolbar-icon.active { background: #ede9fe; }
+  .toolbar-icon svg { width: 20px; height: 20px; stroke: #64748b; fill: none; stroke-width: 2; }
+  .toolbar-icon.active svg { stroke: #7c3aed; }
+  .toolbar-title { font-weight: 600; color: #1e293b; margin-left: 8px; }
+  .toolbar-spacer { flex: 1; }
+  .toolbar-url { font-size: 0.8rem; color: #94a3b8; }
+  #content { padding: 0; }
+</style>
+<script>
+  async function loadScript(src) {
+    return new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = src;
+      script.onload = resolve;
+      script.onerror = reject;
+      document.head.appendChild(script);
+    });
+  }
+
+  async function init() {
+    // Load mashlib JS (for RDF parsing)
+    await loadScript('/browser/dist/mashlib.min.js');
+
+    // Wait for $rdf to be ready
+    await new Promise(resolve => {
+      const check = setInterval(() => {
+        if (typeof $rdf !== 'undefined' && typeof SolidLogic !== 'undefined') {
+          clearInterval(check);
+          resolve();
+        }
+      }, 50);
+    });
+
+    // Parse the JSON-LD data island manually
+    const island = document.querySelector('script[type="application/ld+json"]');
+    if (island) {
+      const store = SolidLogic.store;
+      const baseUri = window.location.href.split('#')[0];
+
+      // Simple JSON-LD to store parsing
+      const jsonld = JSON.parse(island.textContent);
+      const ctx = jsonld['@context'] || {};
+      const SCHEMA = $rdf.Namespace('http://schema.org/');
+
+      function addTriples(node, subjectUri) {
+        const subject = $rdf.sym(subjectUri);
+
+        if (node['@type']) {
+          const type = node['@type'].replace('schema:', 'http://schema.org/');
+          store.add(subject, $rdf.sym('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), $rdf.sym(type));
+        }
+
+        Object.keys(node).forEach(key => {
+          if (key.startsWith('@')) return;
+          const pred = key.replace('schema:', 'http://schema.org/');
+          const val = node[key];
+
+          if (Array.isArray(val)) {
+            val.forEach((item, i) => {
+              if (typeof item === 'object' && item['@type']) {
+                const blankId = baseUri + '#_b' + Math.random().toString(36).substr(2,6);
+                store.add(subject, $rdf.sym(pred), $rdf.sym(blankId));
+                addTriples(item, blankId);
+              } else if (typeof item === 'string') {
+                store.add(subject, $rdf.sym(pred), item);
+              }
+            });
+          } else if (typeof val === 'object' && val['@id']) {
+            const uri = val['@id'].startsWith('http') ? val['@id'] : baseUri + val['@id'];
+            store.add(subject, $rdf.sym(pred), $rdf.sym(uri));
+          } else if (typeof val === 'object' && val['@type']) {
+            const blankId = baseUri + '#_b' + Math.random().toString(36).substr(2,6);
+            store.add(subject, $rdf.sym(pred), $rdf.sym(blankId));
+            addTriples(val, blankId);
+          } else if (typeof val === 'string') {
+            store.add(subject, $rdf.sym(pred), val);
+          }
+        });
+      }
+
+      const rootId = baseUri + (jsonld['@id'] || '#thing');
+      addTriples(jsonld, rootId);
+      console.log('Parsed JSON-LD into store');
+    }
+
+    // Load our custom pane
+    await loadScript('src/panes/event.js');
+
+    // Build the UI
+    const subject = $rdf.sym(window.location.href.split('#')[0] + '#event');
+    const context = {
+      dom: document,
+      session: { store: SolidLogic.store }
+    };
+
+    // Create toolbar
+    const toolbar = document.createElement('div');
+    toolbar.className = 'toolbar';
+    toolbar.innerHTML = `
+      <div class="toolbar-icon active" data-view="profile" title="Event">
+        <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+      </div>
+      <div class="toolbar-icon" data-view="data" title="Data">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+      </div>
+      <div class="toolbar-icon" data-view="source" title="Source">
+        <svg viewBox="0 0 24 24"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6"/></svg>
+      </div>
+      <div class="toolbar-spacer"></div>
+      <div class="toolbar-url">${subject.value}</div>
+    `;
+    document.body.appendChild(toolbar);
+
+    // Create content area
+    const content = document.createElement('div');
+    content.id = 'content';
+    document.body.appendChild(content);
+
+    // View renderers
+    const views = {
+      profile: () => {
+        if (window.SchemaEventPane) {
+          return window.SchemaEventPane.render(subject, context);
+        }
+        return document.createTextNode('No pane available');
+      },
+      data: () => {
+        const div = document.createElement('div');
+        div.style.cssText = 'padding: 32px; max-width: 800px; margin: 0 auto; font-family: system-ui;';
+
+        const h2 = document.createElement('h2');
+        h2.textContent = 'RDF Data';
+        h2.style.cssText = 'margin: 0 0 16px; color: #1e293b;';
+        div.appendChild(h2);
+
+        const table = document.createElement('table');
+        table.style.cssText = 'width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1);';
+
+        const store = SolidLogic.store;
+        const stmts = store.statementsMatching(subject, null, null);
+
+        stmts.forEach(st => {
+          const tr = document.createElement('tr');
+          tr.style.cssText = 'border-bottom: 1px solid #e2e8f0;';
+
+          const tdPred = document.createElement('td');
+          tdPred.style.cssText = 'padding: 12px; color: #7c3aed; font-weight: 500; width: 30%;';
+          tdPred.textContent = st.predicate.value.split(/[#\/]/).pop();
+
+          const tdObj = document.createElement('td');
+          tdObj.style.cssText = 'padding: 12px; color: #334155;';
+          if (st.object.termType === 'NamedNode') {
+            const a = document.createElement('a');
+            a.href = st.object.value;
+            a.textContent = st.object.value;
+            a.style.cssText = 'color: #2563eb; text-decoration: none;';
+            tdObj.appendChild(a);
+          } else {
+            tdObj.textContent = st.object.value;
+          }
+
+          tr.appendChild(tdPred);
+          tr.appendChild(tdObj);
+          table.appendChild(tr);
+        });
+
+        div.appendChild(table);
+        return div;
+      },
+      source: () => {
+        const div = document.createElement('div');
+        div.style.cssText = 'padding: 32px; max-width: 800px; margin: 0 auto;';
+
+        const h2 = document.createElement('h2');
+        h2.textContent = 'JSON-LD Source';
+        h2.style.cssText = 'margin: 0 0 16px; color: #1e293b; font-family: system-ui;';
+        div.appendChild(h2);
+
+        const pre = document.createElement('pre');
+        pre.style.cssText = 'background: #1e293b; color: #e2e8f0; padding: 24px; border-radius: 12px; overflow-x: auto; font-size: 14px; line-height: 1.5;';
+        const island = document.querySelector('script[type="application/ld+json"]');
+        if (island) {
+          const json = JSON.parse(island.textContent);
+          pre.textContent = JSON.stringify(json, null, 2);
+        }
+        div.appendChild(pre);
+        return div;
+      }
+    };
+
+    // Switch view
+    function switchView(viewName) {
+      // Update active state
+      toolbar.querySelectorAll('.toolbar-icon').forEach(icon => {
+        icon.classList.toggle('active', icon.dataset.view === viewName);
+      });
+      // Render view
+      content.innerHTML = '';
+      content.appendChild(views[viewName]());
+    }
+
+    // Toolbar click handlers
+    toolbar.querySelectorAll('.toolbar-icon[data-view]').forEach(icon => {
+      icon.addEventListener('click', () => switchView(icon.dataset.view));
+    });
+
+    // Initial render
+    switchView('profile');
+    console.log('Rendered SchemaEventPane');
+  }
+  init();
+</script>
+
+</body>
+</html>
