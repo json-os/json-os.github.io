@@ -4,6 +4,21 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Live Editor - jsonos Examples</title>
+  <meta name="description" content="Edit JSON-LD and see it render live. Create beautiful schema.org panes instantly.">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://jsonos.com/examples/editor.html">
+  <meta property="og:title" content="Live JSON-LD Editor">
+  <meta property="og:description" content="Edit JSON-LD and see it render live. 20 schema.org types supported.">
+  <meta property="og:image" content="https://jsonos.com/og-editor.png">
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Live JSON-LD Editor">
+  <meta name="twitter:description" content="Edit JSON-LD and see it render live. Create beautiful schema.org panes.">
+  <meta name="twitter:image" content="https://jsonos.com/og-editor.png">
+
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -72,8 +87,37 @@
       background: rgba(255,255,255,0.1);
       color: #e2e8f0;
       border: 1px solid #334155;
+      cursor: pointer;
     }
     .btn-secondary:hover { background: rgba(255,255,255,0.15); }
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    .btn-primary:hover { opacity: 0.9; }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: #1e293b;
+      color: #e2e8f0;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+      opacity: 0;
+      transition: all 0.3s;
+      z-index: 1000;
+    }
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
 
     /* Main split view */
     main {
@@ -202,9 +246,13 @@
       <option value="softwareapplication">Software App</option>
       <option value="creativework">Creative Work</option>
     </select>
-    <a href="/examples/" class="btn btn-secondary">Back to Examples</a>
+    <button id="copyHtml" class="btn btn-primary">Copy HTML</button>
+    <button id="copyUrl" class="btn btn-secondary">Copy URL</button>
+    <a href="/examples/" class="btn btn-secondary">Back</a>
   </div>
 </header>
+
+<div class="toast" id="toast">Copied!</div>
 
 <main>
   <div class="editor-pane">
@@ -621,6 +669,77 @@ typeSelect.addEventListener('change', () => {
 
 // Editor input
 editor.addEventListener('input', render);
+
+// Toast notification
+const toast = document.getElementById('toast');
+function showToast(msg) {
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2000);
+}
+
+// Copy HTML - generates standalone HTML file
+document.getElementById('copyHtml').addEventListener('click', () => {
+  try {
+    const data = JSON.parse(editor.value);
+    const type = detectType(data);
+    const html = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>${data['schema:name'] || data['schema:headline'] || data['schema:title'] || 'Schema.org Pane'}</title>
+  <style>
+    body { margin: 0; font-family: system-ui, sans-serif; background: #f8fafc; }
+  </style>
+</head>
+<body>
+
+<script type="application/ld+json">
+${JSON.stringify(data, null, 2)}
+<\/script>
+
+<script type="module">
+import { init } from 'https://jsonos.com/examples/src/shared.js';
+import pane from 'https://jsonos.com/examples/src/panes/${type}.js';
+
+init({ pane, subject: '${data['@id'] || '#thing'}' });
+<\/script>
+
+</body>
+</html>`;
+    navigator.clipboard.writeText(html);
+    showToast('HTML copied!');
+  } catch (e) {
+    showToast('Error: Invalid JSON');
+  }
+});
+
+// Copy URL - encodes JSON-LD in URL param
+document.getElementById('copyUrl').addEventListener('click', () => {
+  try {
+    JSON.parse(editor.value); // validate
+    const encoded = btoa(encodeURIComponent(editor.value));
+    const url = `${window.location.origin}${window.location.pathname}?data=${encoded}`;
+    navigator.clipboard.writeText(url);
+    showToast('URL copied!');
+  } catch (e) {
+    showToast('Error: Invalid JSON');
+  }
+});
+
+// Load from URL param on page load
+const params = new URLSearchParams(window.location.search);
+if (params.has('data')) {
+  try {
+    const decoded = decodeURIComponent(atob(params.get('data')));
+    editor.value = decoded;
+    const data = JSON.parse(decoded);
+    const type = detectType(data);
+    typeSelect.value = type;
+  } catch (e) {
+    console.error('Failed to load from URL:', e);
+  }
+}
 
 // Initial render
 render();

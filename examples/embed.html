@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Embed Panes - jsonos</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #0f172a;
+      color: #e2e8f0;
+      line-height: 1.6;
+      padding: 2rem;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+      background: linear-gradient(135deg, #667eea 0%, #a78bfa 50%, #f472b6 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .tagline {
+      color: #94a3b8;
+      font-size: 1.1rem;
+      margin-bottom: 3rem;
+    }
+    h2 {
+      font-size: 1.5rem;
+      margin: 2.5rem 0 1rem;
+      color: #e2e8f0;
+    }
+    p { margin-bottom: 1rem; color: #94a3b8; }
+    code {
+      background: #1e293b;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      font-family: 'SF Mono', Monaco, monospace;
+      font-size: 0.9em;
+    }
+    pre {
+      background: #1e293b;
+      border-radius: 12px;
+      padding: 1.5rem;
+      overflow-x: auto;
+      margin: 1rem 0;
+      font-family: 'SF Mono', Monaco, monospace;
+      font-size: 0.85rem;
+      line-height: 1.7;
+      border: 1px solid #334155;
+    }
+    .highlight { color: #4ade80; }
+    .comment { color: #64748b; }
+    .tag { color: #f472b6; }
+    .attr { color: #a78bfa; }
+    .string { color: #4ade80; }
+    .back-link {
+      display: inline-block;
+      margin-bottom: 2rem;
+      color: #667eea;
+      text-decoration: none;
+    }
+    .back-link:hover { text-decoration: underline; }
+    .demo-box {
+      background: #f8fafc;
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin: 2rem 0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+    }
+    th, td {
+      text-align: left;
+      padding: 0.75rem;
+      border-bottom: 1px solid #334155;
+    }
+    th { color: #e2e8f0; }
+    td { color: #94a3b8; }
+    td code { background: #0f172a; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <a href="/examples/" class="back-link">&larr; Back to Examples</a>
+
+  <h1>Embed Panes</h1>
+  <p class="tagline">Add beautiful schema.org renderers to any HTML page with one script tag.</p>
+
+  <h2>Quick Start</h2>
+  <p>Add JSON-LD to your page, then include the embed script:</p>
+
+  <pre><span class="comment">&lt;!-- Your JSON-LD data --&gt;</span>
+<span class="tag">&lt;script</span> <span class="attr">type</span>=<span class="string">"application/ld+json"</span><span class="tag">&gt;</span>
+{
+  "@context": { "schema": "http://schema.org/" },
+  "@id": "#me",
+  "@type": "schema:Person",
+  "schema:name": "Marie Curie",
+  "schema:jobTitle": "Physicist"
+}
+<span class="tag">&lt;/script&gt;</span>
+
+<span class="comment">&lt;!-- One line to render it --&gt;</span>
+<span class="tag">&lt;script</span> <span class="attr">src</span>=<span class="string">"https://jsonos.com/examples/embed.js"</span><span class="tag">&gt;&lt;/script&gt;</span></pre>
+
+  <p>That's it! The script auto-detects the schema.org type and renders the appropriate pane.</p>
+
+  <h2>Live Demo</h2>
+  <div class="demo-box">
+    <script type="application/ld+json">
+    {
+      "@context": { "schema": "http://schema.org/" },
+      "@id": "#demo",
+      "@type": "schema:Person",
+      "schema:name": "Ada Lovelace",
+      "schema:jobTitle": "Mathematician & Writer",
+      "schema:description": "First computer programmer",
+      "schema:image": { "@id": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Ada_Lovelace_portrait.jpg/440px-Ada_Lovelace_portrait.jpg" }
+    }
+    </script>
+    <script src="embed.js"></script>
+  </div>
+
+  <h2>Options</h2>
+  <p>Configure with data attributes on the script tag:</p>
+
+  <table>
+    <tr>
+      <th>Attribute</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+    <tr>
+      <td><code>data-target</code></td>
+      <td>CSS selector for container element</td>
+      <td>Auto-creates after JSON-LD</td>
+    </tr>
+    <tr>
+      <td><code>data-subject</code></td>
+      <td>Subject ID to render</td>
+      <td>First @id found</td>
+    </tr>
+    <tr>
+      <td><code>data-theme</code></td>
+      <td>"light" or "dark"</td>
+      <td>light</td>
+    </tr>
+  </table>
+
+  <h2>Example with Options</h2>
+  <pre><span class="tag">&lt;div</span> <span class="attr">id</span>=<span class="string">"my-pane"</span><span class="tag">&gt;&lt;/div&gt;</span>
+
+<span class="tag">&lt;script</span> <span class="attr">type</span>=<span class="string">"application/ld+json"</span><span class="tag">&gt;</span>
+{ ... }
+<span class="tag">&lt;/script&gt;</span>
+
+<span class="tag">&lt;script</span>
+  <span class="attr">src</span>=<span class="string">"https://jsonos.com/examples/embed.js"</span>
+  <span class="attr">data-target</span>=<span class="string">"#my-pane"</span>
+  <span class="attr">data-theme</span>=<span class="string">"dark"</span>
+<span class="tag">&gt;&lt;/script&gt;</span></pre>
+
+  <h2>Supported Types</h2>
+  <p>20 schema.org types are supported:</p>
+  <p style="color: #64748b;">
+    Person, Event, Article, Organization, Recipe, Product, Place, Movie, Book, Review,
+    FAQPage, HowTo, JobPosting, LocalBusiness, Service, Course, VideoObject,
+    MusicRecording, SoftwareApplication, CreativeWork
+  </p>
+
+  <h2>How It Works</h2>
+  <p>The embed script:</p>
+  <ol style="color: #94a3b8; padding-left: 1.5rem; margin: 1rem 0;">
+    <li>Finds the JSON-LD on your page</li>
+    <li>Detects the @type</li>
+    <li>Loads the matching pane renderer</li>
+    <li>Renders into the target element</li>
+  </ol>
+
+  <p style="margin-top: 3rem;">
+    <a href="editor.html" style="color: #667eea;">Try the Live Editor &rarr;</a>
+  </p>
+</div>
+
+</body>
+</html>
