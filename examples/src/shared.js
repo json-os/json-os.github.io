@@ -1,6 +1,9 @@
 /**
  * shared.js - Common initialization for schemapanes examples
  * ES Module version
+ *
+ * Supports @view proposal for JSON-LD (self-describing view hint)
+ * See: https://github.com/w3c/json-ld-syntax/issues/384
  */
 
 // Load a script dynamically
@@ -163,10 +166,15 @@ function createViews(subject, paneRenderer) {
  * @param {Object} options.pane - The pane module (with render function)
  * @param {string} options.subject - Fragment ID of subject (e.g., '#me')
  * @param {string} options.mashlib - Path to mashlib (default: '/browser/dist/mashlib.min.js')
+ *
+ * @view Support:
+ * If the JSON-LD contains "@view": "https://example.com/pane.js",
+ * that module will be loaded and used instead of options.pane.
+ * This implements the @view proposal: https://github.com/w3c/json-ld-syntax/issues/384
  */
 export async function init(options = {}) {
   const mashlibPath = options.mashlib || '/browser/dist/mashlib.min.js';
-  const pane = options.pane;
+  let pane = options.pane;
   const subjectId = options.subject || window.location.hash || '#thing';
   const theme = options.theme || { primary: '#667eea', bg: '#eff6ff' };
 
@@ -175,7 +183,19 @@ export async function init(options = {}) {
   await waitForRdf();
 
   // 2. Parse data island
-  const { subject } = parseDataIsland();
+  const { subject, jsonld } = parseDataIsland();
+
+  // 3. Check for @view - self-describing view hint (JSON-LD proposal)
+  if (jsonld && jsonld['@view']) {
+    try {
+      console.log(`[jsonos] Loading @view: ${jsonld['@view']}`);
+      const viewModule = await import(jsonld['@view']);
+      pane = viewModule.default || viewModule;
+    } catch (err) {
+      console.warn(`[jsonos] Failed to load @view "${jsonld['@view']}":`, err);
+      // Fall back to provided pane
+    }
+  }
 
   // Override subject if specified
   const finalSubject = subjectId !== '#thing'

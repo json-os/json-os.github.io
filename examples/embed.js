@@ -3,11 +3,15 @@
  *
  * Add this to any HTML page with JSON-LD to auto-render a beautiful pane.
  *
+ * Supports @view proposal for JSON-LD (self-describing view hint)
+ * See: https://github.com/w3c/json-ld-syntax/issues/384
+ *
  * Usage:
  *   <script type="application/ld+json">
  *   {
  *     "@context": { "schema": "http://schema.org/" },
  *     "@type": "schema:Person",
+ *     "@view": "https://jsonos.com/examples/src/panes/person.js",
  *     "schema:name": "Marie Curie",
  *     "schema:jobTitle": "Physicist"
  *   }
@@ -85,9 +89,25 @@
     document.head.appendChild(script);
   });
 
-  // Load pane
-  const paneModule = await import(`${PANES_BASE}${paneType}.js`);
-  const pane = paneModule.default;
+  // Load pane - check @view first, then fall back to @type detection
+  let pane;
+  if (data['@view']) {
+    // @view: self-describing view hint (JSON-LD proposal)
+    // See: https://github.com/w3c/json-ld-syntax/issues/384
+    try {
+      console.log(`[jsonos] Loading @view: ${data['@view']}`);
+      const paneModule = await import(data['@view']);
+      pane = paneModule.default || paneModule;
+    } catch (err) {
+      console.warn(`[jsonos] Failed to load @view, falling back to @type:`, err);
+      const paneModule = await import(`${PANES_BASE}${paneType}.js`);
+      pane = paneModule.default;
+    }
+  } else {
+    // Fall back to @type-based detection
+    const paneModule = await import(`${PANES_BASE}${paneType}.js`);
+    pane = paneModule.default;
+  }
 
   // Create or find target element
   let target;

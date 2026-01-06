@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>@view Demo - Self-Describing JSON-LD</title>
+  <style>
+    body { margin: 0; font-family: system-ui, sans-serif; background: #f8fafc; }
+  </style>
+</head>
+<body>
+
+<!--
+  @view Demo - Self-Describing JSON-LD
+
+  This JSON-LD includes "@view" which tells processors which pane to use.
+  The data describes its own preferred view - no type mapping needed.
+
+  See proposal: https://github.com/w3c/json-ld-syntax/issues/384
+-->
+<script type="application/ld+json">
+{
+  "@context": {
+    "schema": "http://schema.org/"
+  },
+  "@id": "#me",
+  "@type": "schema:Person",
+  "@view": "https://jsonos.com/examples/src/panes/person.js",
+  "schema:name": "Tim Berners-Lee",
+  "schema:jobTitle": "Web Inventor",
+  "schema:description": "Inventor of the World Wide Web and director of W3C",
+  "schema:image": { "@id": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Sir_Tim_Berners-Lee_%28cropped%29.jpg/440px-Sir_Tim_Berners-Lee_%28cropped%29.jpg" },
+  "schema:url": { "@id": "https://www.w3.org/People/Berners-Lee/" },
+  "schema:worksFor": {
+    "@type": "schema:Organization",
+    "schema:name": "W3C"
+  }
+}
+</script>
+
+<!-- The embed script reads @view and loads that pane automatically -->
+<script src="embed.js"></script>
+
+</body>
+</html>

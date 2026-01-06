@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>@view - Self-Describing JSON-LD Views</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #0f172a;
+      color: #e2e8f0;
+      line-height: 1.6;
+      padding: 2rem;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    a { color: #667eea; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .back-link {
+      display: inline-block;
+      margin-bottom: 2rem;
+    }
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+      background: linear-gradient(135deg, #667eea 0%, #a78bfa 50%, #f472b6 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .tagline {
+      color: #94a3b8;
+      font-size: 1.1rem;
+      margin-bottom: 2rem;
+    }
+    .proposal-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(102, 126, 234, 0.2);
+      border: 1px solid rgba(102, 126, 234, 0.3);
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      margin-bottom: 3rem;
+      font-size: 0.9rem;
+    }
+    h2 {
+      font-size: 1.5rem;
+      margin: 2.5rem 0 1rem;
+      color: #e2e8f0;
+    }
+    p { margin-bottom: 1rem; color: #94a3b8; }
+    code {
+      background: #1e293b;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      font-family: 'SF Mono', Monaco, monospace;
+      font-size: 0.9em;
+      color: #a78bfa;
+    }
+    pre {
+      background: #1e293b;
+      border-radius: 12px;
+      padding: 1.5rem;
+      overflow-x: auto;
+      margin: 1rem 0 2rem;
+      font-family: 'SF Mono', Monaco, monospace;
+      font-size: 0.85rem;
+      line-height: 1.7;
+      border: 1px solid #334155;
+    }
+    .key { color: #a78bfa; }
+    .string { color: #4ade80; }
+    .comment { color: #64748b; }
+    .highlight { color: #f472b6; font-weight: bold; }
+    .benefits {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+      margin: 2rem 0;
+    }
+    .benefit {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 1.25rem;
+    }
+    .benefit h3 {
+      font-size: 1rem;
+      margin-bottom: 0.5rem;
+      color: #e2e8f0;
+    }
+    .benefit p {
+      font-size: 0.9rem;
+      margin: 0;
+    }
+    .demo-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-weight: 600;
+      margin-top: 1rem;
+    }
+    .demo-link:hover { opacity: 0.9; text-decoration: none; }
+    @media (max-width: 600px) {
+      .benefits { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <a href="/examples/" class="back-link">&larr; Back to Examples</a>
+
+  <h1>@view</h1>
+  <p class="tagline">Self-describing JSON-LD views. Data that knows how to display itself.</p>
+
+  <a href="https://github.com/w3c/json-ld-syntax/issues/384" class="proposal-link">
+    W3C Proposal &rarr;
+  </a>
+
+  <h2>The Problem</h2>
+  <p>JSON-LD describes <em>what</em> data is, but not <em>how</em> to display it. Processors must maintain type mappings, limiting extensibility.</p>
+
+  <h2>The Solution</h2>
+  <p>Add <code>@view</code> to JSON-LD. Data hints at its preferred renderer. Processors that support it load the view; others ignore it.</p>
+
+  <pre>{
+  <span class="key">"@context"</span>: { <span class="string">"schema"</span>: <span class="string">"http://schema.org/"</span> },
+  <span class="key">"@type"</span>: <span class="string">"schema:Person"</span>,
+  <span class="highlight">"@view"</span>: <span class="string">"https://jsonos.com/examples/src/panes/person.js"</span>,
+  <span class="key">"schema:name"</span>: <span class="string">"Marie Curie"</span>,
+  <span class="key">"schema:jobTitle"</span>: <span class="string">"Physicist"</span>
+}</pre>
+
+  <h2>Benefits</h2>
+  <div class="benefits">
+    <div class="benefit">
+      <h3>Self-Describing</h3>
+      <p>Data carries its own display hint. No external configuration needed.</p>
+    </div>
+    <div class="benefit">
+      <h3>Decentralized</h3>
+      <p>Anyone can publish views. No central registry required.</p>
+    </div>
+    <div class="benefit">
+      <h3>Progressive</h3>
+      <p>Processors that don't support @view simply ignore it.</p>
+    </div>
+    <div class="benefit">
+      <h3>Extensible</h3>
+      <p>New types get views immediately. No processor updates needed.</p>
+    </div>
+  </div>
+
+  <h2>How It Works in jsonos</h2>
+  <p>When jsonos encounters <code>@view</code>, it:</p>
+  <ol style="color: #94a3b8; padding-left: 1.5rem; margin: 1rem 0;">
+    <li>Loads the module from the @view URL</li>
+    <li>Calls its <code>render(subject, context)</code> function</li>
+    <li>Falls back to @type detection if @view fails</li>
+  </ol>
+
+  <pre><span class="comment">// Pane module structure (ES Module)</span>
+export default {
+  name: <span class="string">'myPane'</span>,
+  render(subject, context) {
+    const store = context.session.store;
+    const div = document.createElement(<span class="string">'div'</span>);
+    <span class="comment">// Render logic...</span>
+    return div;
+  }
+};</pre>
+
+  <h2>Precedent</h2>
+  <p>This pattern exists elsewhere:</p>
+  <ul style="color: #94a3b8; padding-left: 1.5rem; margin: 1rem 0;">
+    <li><code>&lt;?xml-stylesheet?&gt;</code> - XML declares its stylesheet</li>
+    <li><code>&lt;link rel="stylesheet"&gt;</code> - HTML declares its CSS</li>
+    <li><code>potentialAction</code> - Schema.org hints at available actions</li>
+  </ul>
+
+  <h2>Try It</h2>
+  <p>The Live Editor supports @view. Add it to any JSON-LD and watch it load your custom pane.</p>
+  <a href="editor.html" class="demo-link">Open Live Editor &rarr;</a>
+
+  <p style="margin-top: 3rem; color: #64748b; font-size: 0.9rem;">
+    <a href="view-demo.html">View Demo</a> &middot;
+    <a href="https://github.com/w3c/json-ld-syntax/issues/384">W3C Issue #384</a> &middot;
+    <a href="embed.html">Embed Docs</a>
+  </p>
+</div>
+
+</body>
+</html>

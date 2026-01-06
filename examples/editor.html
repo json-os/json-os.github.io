@@ -630,14 +630,30 @@ function detectType(data) {
 }
 
 // Render preview
+// Supports @view proposal: https://github.com/w3c/json-ld-syntax/issues/384
 let renderTimeout;
 async function render() {
   clearTimeout(renderTimeout);
   renderTimeout = setTimeout(async () => {
     try {
       const { store, subjectUri, data } = parseJsonLd(editor.value);
-      const type = detectType(data);
-      const pane = await loadPane(type);
+
+      // Check for @view first (self-describing view hint)
+      let pane;
+      if (data['@view']) {
+        try {
+          console.log(`[jsonos] Loading @view: ${data['@view']}`);
+          const paneModule = await import(data['@view']);
+          pane = paneModule.default || paneModule;
+        } catch (viewErr) {
+          console.warn(`[jsonos] @view failed, falling back to @type:`, viewErr);
+          const type = detectType(data);
+          pane = await loadPane(type);
+        }
+      } else {
+        const type = detectType(data);
+        pane = await loadPane(type);
+      }
 
       const context = {
         session: { store },
@@ -649,7 +665,7 @@ async function render() {
       preview.appendChild(rendered);
 
       statusDot.classList.remove('error');
-      statusText.textContent = 'Valid';
+      statusText.textContent = data['@view'] ? 'Valid (@view)' : 'Valid';
     } catch (err) {
       preview.innerHTML = `<div class="error-message">${err.message}</div>`;
       statusDot.classList.add('error');
@@ -678,11 +694,20 @@ function showToast(msg) {
   setTimeout(() => toast.classList.remove('show'), 2000);
 }
 
-// Copy HTML - generates standalone HTML file
+// Copy HTML - generates standalone HTML file with @view
+// Uses @view proposal: https://github.com/w3c/json-ld-syntax/issues/384
 document.getElementById('copyHtml').addEventListener('click', () => {
   try {
     const data = JSON.parse(editor.value);
     const type = detectType(data);
+    const viewUrl = `https://jsonos.com/examples/src/panes/${type}.js`;
+
+    // Add @view to data if not present (self-describing view hint)
+    const dataWithView = { ...data };
+    if (!dataWithView['@view']) {
+      dataWithView['@view'] = viewUrl;
+    }
+
     const html = `<!DOCTYPE html>
 <html>
 <head>
@@ -694,16 +719,13 @@ document.getElementById('copyHtml').addEventListener('click', () => {
 </head>
 <body>
 
+<!-- JSON-LD with @view hint - see https://github.com/w3c/json-ld-syntax/issues/384 -->
 <script type="application/ld+json">
-${JSON.stringify(data, null, 2)}
+${JSON.stringify(dataWithView, null, 2)}
 <\/script>
 
-<script type="module">
-import { init } from 'https://jsonos.com/examples/src/shared.js';
-import pane from 'https://jsonos.com/examples/src/panes/${type}.js';
-
-init({ pane, subject: '${data['@id'] || '#thing'}' });
-<\/script>
+<!-- One line embed - @view tells it which pane to use -->
+<script src="https://jsonos.com/examples/embed.js"><\/script>
 
 </body>
 </html>`;
