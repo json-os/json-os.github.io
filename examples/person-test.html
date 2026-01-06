@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Marie Curie - Person (shared.js test)</title>
+  <style>
+    body { margin: 0; font-family: system-ui, sans-serif; background: #f8fafc; }
+  </style>
+</head>
+<body>
+
+<script type="application/ld+json">
+{
+  "@context": {
+    "schema": "http://schema.org/"
+  },
+  "@id": "#me",
+  "@type": "schema:Person",
+  "schema:name": "Marie Curie",
+  "schema:givenName": "Marie",
+  "schema:familyName": "Curie",
+  "schema:jobTitle": "Physicist and Chemist",
+  "schema:description": "First woman to win a Nobel Prize. Pioneer in radioactivity research.",
+  "schema:birthDate": "1867-11-07",
+  "schema:image": { "@id": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Marie_Curie_c1920.jpg/440px-Marie_Curie_c1920.jpg" },
+  "schema:url": { "@id": "https://en.wikipedia.org/wiki/Marie_Curie" },
+  "schema:knows": {
+    "@id": "#pierre",
+    "@type": "schema:Person",
+    "schema:name": "Pierre Curie",
+    "schema:jobTitle": "Physicist"
+  }
+}
+</script>
+
+<script src="src/shared.js"></script>
+<script>
+  // Update person pane to register with shared
+  SchemaShared.registerPane('person', {
+    render: function(subject, context) {
+      const dom = context.dom;
+      const store = context.session.store;
+      const SCHEMA = $rdf.Namespace('http://schema.org/');
+
+      const container = dom.createElement('div');
+      container.style.cssText = 'max-width: 600px; margin: 32px auto; padding: 0 16px;';
+
+      // Card
+      const card = dom.createElement('div');
+      card.style.cssText = 'background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);';
+
+      // Image
+      const image = store.any(subject, SCHEMA('image'));
+      if (image) {
+        const img = dom.createElement('img');
+        img.src = image.uri || image.value;
+        img.style.cssText = 'width: 100%; height: 200px; object-fit: cover;';
+        card.appendChild(img);
+      }
+
+      // Content
+      const content = dom.createElement('div');
+      content.style.cssText = 'padding: 24px;';
+
+      const name = store.anyValue(subject, SCHEMA('name'));
+      const jobTitle = store.anyValue(subject, SCHEMA('jobTitle'));
+      const description = store.anyValue(subject, SCHEMA('description'));
+
+      if (name) {
+        const h1 = dom.createElement('h1');
+        h1.textContent = name;
+        h1.style.cssText = 'margin: 0 0 4px; font-size: 1.5rem; color: #1e293b;';
+        content.appendChild(h1);
+      }
+
+      if (jobTitle) {
+        const job = dom.createElement('div');
+        job.textContent = jobTitle;
+        job.style.cssText = 'color: #667eea; font-weight: 500; margin-bottom: 12px;';
+        content.appendChild(job);
+      }
+
+      if (description) {
+        const desc = dom.createElement('p');
+        desc.textContent = description;
+        desc.style.cssText = 'color: #64748b; line-height: 1.6; margin: 0;';
+        content.appendChild(desc);
+      }
+
+      card.appendChild(content);
+      container.appendChild(card);
+
+      return container;
+    }
+  });
+
+  // Initialize
+  SchemaShared.init({
+    subject: '#me',
+    theme: { primary: '#667eea', bg: '#eff6ff' }
+  });
+</script>
+
+</body>
+</html>
