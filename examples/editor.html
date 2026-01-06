@@ -119,11 +119,12 @@
       opacity: 1;
     }
 
-    /* Main split view */
+    /* Main split view - code left, preview right */
     main {
       flex: 1;
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 40% 60%;
+      grid-template-rows: 1fr 1fr;
       min-height: 0;
     }
 
@@ -174,12 +175,40 @@
     }
     #editor::placeholder { color: #475569; }
 
-    /* Preview pane */
+    /* Pane code editor - bottom left */
+    .pane-code-pane {
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid #334155;
+      border-top: 1px solid #334155;
+      min-height: 0;
+    }
+    .pane-code-pane .pane-header {
+      background: #1a1a2e;
+      border-bottom: 1px solid #334155;
+    }
+    #paneCode {
+      flex: 1;
+      width: 100%;
+      background: #0a0a14;
+      color: #a5b4fc;
+      border: none;
+      padding: 1rem;
+      font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+      font-size: 0.85rem;
+      line-height: 1.6;
+      resize: none;
+      outline: none;
+    }
+
+    /* Preview pane - spans both rows */
     .preview-pane {
       display: flex;
       flex-direction: column;
       background: #f8fafc;
       min-height: 0;
+      grid-row: 1 / -1;
+      grid-column: 2;
     }
     .preview-pane .pane-header {
       background: #f1f5f9;
@@ -204,14 +233,21 @@
     }
 
     /* Responsive */
-    @media (max-width: 800px) {
+    @media (max-width: 900px) {
       main {
         grid-template-columns: 1fr;
-        grid-template-rows: 1fr 1fr;
+        grid-template-rows: auto auto 1fr;
       }
-      .editor-pane {
+      .editor-pane, .pane-code-pane {
         border-right: none;
-        border-bottom: 1px solid #334155;
+        max-height: 200px;
+      }
+      .pane-code-pane {
+        border-top: 1px solid #334155;
+      }
+      .preview-pane {
+        grid-row: auto;
+        grid-column: auto;
       }
     }
   </style>
@@ -264,6 +300,17 @@
       </div>
     </div>
     <textarea id="editor" spellcheck="false" placeholder="Enter JSON-LD..."></textarea>
+  </div>
+
+  <div class="pane-code-pane">
+    <div class="pane-header">
+      <span><strong>Pane Code</strong> &mdash; <span id="paneUrl">person.js</span></span>
+      <div class="status">
+        <span class="status-dot" id="paneStatusDot"></span>
+        <span id="paneStatusText">Loaded</span>
+      </div>
+    </div>
+    <textarea id="paneCode" spellcheck="false" placeholder="// Pane render code..."></textarea>
   </div>
 
   <div class="preview-pane">
@@ -531,13 +578,32 @@ const templates = {
   }
 };
 
-// Import panes dynamically
-const paneModules = {};
-async function loadPane(type) {
-  if (!paneModules[type]) {
-    paneModules[type] = await import(`./src/panes/${type}.js`);
+// Pane source cache
+const paneSources = {};
+let currentPaneSource = '';
+let customPaneBlob = null;
+
+// Load pane source code
+async function loadPaneSource(type) {
+  const url = `./src/panes/${type}.js`;
+  if (!paneSources[type]) {
+    const res = await fetch(url);
+    paneSources[type] = await res.text();
   }
-  return paneModules[type].default;
+  return paneSources[type];
+}
+
+// Create pane from source code (supports editing)
+async function createPaneFromSource(source) {
+  // Revoke previous blob URL
+  if (customPaneBlob) {
+    URL.revokeObjectURL(customPaneBlob);
+  }
+
+  const blob = new Blob([source], { type: 'text/javascript' });
+  customPaneBlob = URL.createObjectURL(blob);
+  const module = await import(customPaneBlob);
+  return module.default || module;
 }
 
 // DOM elements
@@ -546,6 +612,10 @@ const preview = document.getElementById('preview');
 const typeSelect = document.getElementById('typeSelect');
 const statusDot = document.getElementById('statusDot');
 const statusText = document.getElementById('statusText');
+const paneCodeEl = document.getElementById('paneCode');
+const paneUrlEl = document.getElementById('paneUrl');
+const paneStatusDot = document.getElementById('paneStatusDot');
+const paneStatusText = document.getElementById('paneStatusText');
 
 // Set initial template
 editor.value = JSON.stringify(templates.person, null, 2);
@@ -629,7 +699,27 @@ function detectType(data) {
   return typeMap[type] || 'person';
 }
 
-// Render preview
+// Track current pane type
+let currentPaneType = 'person';
+
+// Load pane source into editor
+async function loadPaneCode(type) {
+  try {
+    const source = await loadPaneSource(type);
+    paneCodeEl.value = source;
+    currentPaneSource = source;
+    currentPaneType = type;
+    paneUrlEl.textContent = `${type}.js`;
+    paneStatusDot.classList.remove('error');
+    paneStatusText.textContent = 'Loaded';
+  } catch (err) {
+    paneCodeEl.value = `// Error loading ${type}.js: ${err.message}`;
+    paneStatusDot.classList.add('error');
+    paneStatusText.textContent = 'Error';
+  }
+}
+
+// Render preview using current pane code
 // Supports @view proposal: https://github.com/w3c/json-ld-syntax/issues/384
 let renderTimeout;
 async function render() {
@@ -637,23 +727,31 @@ async function render() {
   renderTimeout = setTimeout(async () => {
     try {
       const { store, subjectUri, data } = parseJsonLd(editor.value);
+      const detectedType = detectType(data);
 
-      // Check for @view first (self-describing view hint)
-      let pane;
+      // Load pane source if type changed or @view specified
+      let paneSource = paneCodeEl.value;
       if (data['@view']) {
+        // Fetch external @view source
         try {
-          console.log(`[jsonos] Loading @view: ${data['@view']}`);
-          const paneModule = await import(data['@view']);
-          pane = paneModule.default || paneModule;
-        } catch (viewErr) {
-          console.warn(`[jsonos] @view failed, falling back to @type:`, viewErr);
-          const type = detectType(data);
-          pane = await loadPane(type);
+          const res = await fetch(data['@view']);
+          if (res.ok) {
+            paneSource = await res.text();
+            if (paneSource !== paneCodeEl.value) {
+              paneCodeEl.value = paneSource;
+              paneUrlEl.textContent = data['@view'].split('/').pop();
+            }
+          }
+        } catch (e) {
+          console.warn(`[jsonos] @view fetch failed:`, e);
         }
-      } else {
-        const type = detectType(data);
-        pane = await loadPane(type);
+      } else if (detectedType !== currentPaneType) {
+        await loadPaneCode(detectedType);
+        paneSource = paneCodeEl.value;
       }
+
+      // Create pane from current source code
+      const pane = await createPaneFromSource(paneSource);
 
       const context = {
         session: { store },
@@ -666,6 +764,8 @@ async function render() {
 
       statusDot.classList.remove('error');
       statusText.textContent = data['@view'] ? 'Valid (@view)' : 'Valid';
+      paneStatusDot.classList.remove('error');
+      paneStatusText.textContent = 'OK';
     } catch (err) {
       preview.innerHTML = `<div class="error-message">${err.message}</div>`;
       statusDot.classList.add('error');
@@ -675,16 +775,20 @@ async function render() {
 }
 
 // Type selector change
-typeSelect.addEventListener('change', () => {
+typeSelect.addEventListener('change', async () => {
   const type = typeSelect.value;
   if (templates[type]) {
     editor.value = JSON.stringify(templates[type], null, 2);
+    await loadPaneCode(type);
     render();
   }
 });
 
 // Editor input
 editor.addEventListener('input', render);
+
+// Pane code input - re-render when pane code changes
+paneCodeEl.addEventListener('input', render);
 
 // Toast notification
 const toast = document.getElementById('toast');
@@ -763,8 +867,8 @@ if (params.has('data')) {
   }
 }
 
-// Initial render
-render();
+// Initial load - pane code and render
+loadPaneCode('person').then(() => render());
 </script>
 
 </body>
