@@ -5,586 +5,218 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>jsonos - The JSON Operating System</title>
   <meta name="description" content="The JSON Operating System. Own your data. Build your apps. Run anywhere.">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    :root {
-      --primary: #6366f1;
-      --primary-light: #818cf8;
-      --primary-soft: #e0e7ff;
-      --primary-glow: rgba(99, 102, 241, 0.15);
-      --secondary: #8b5cf6;
-      --accent: #06b6d4;
-      --accent-soft: #cffafe;
-      --success: #10b981;
-      --success-soft: #d1fae5;
-      --warning: #f59e0b;
-      --warning-soft: #fef3c7;
-      --text: #0f172a;
-      --text-secondary: #334155;
-      --text-muted: #64748b;
-      --bg: #ffffff;
-      --bg-soft: #f8fafc;
-      --bg-card: #ffffff;
-      --border: #e2e8f0;
-      --border-light: #f1f5f9;
-      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
-      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
-      --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
-      --shadow-xl: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
-      --radius: 12px;
-      --radius-lg: 20px;
-      --radius-xl: 28px;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      background: var(--bg);
-      color: var(--text);
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #0f172a;
+      color: #e2e8f0;
       line-height: 1.6;
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
-
-    /* Animated background */
-    .bg-pattern {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background:
-        radial-gradient(ellipse at 20% 20%, var(--primary-glow) 0%, transparent 50%),
-        radial-gradient(ellipse at 80% 80%, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
-        radial-gradient(ellipse at 50% 50%, rgba(6, 182, 212, 0.05) 0%, transparent 70%);
-      z-index: -1;
-      animation: bgPulse 15s ease-in-out infinite;
-    }
-
-    @keyframes bgPulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.7; }
-    }
-
-    /* Grid pattern overlay */
-    .bg-grid {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-image:
-        linear-gradient(rgba(99, 102, 241, 0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(99, 102, 241, 0.03) 1px, transparent 1px);
-      background-size: 60px 60px;
-      z-index: -1;
     }
 
     /* Navigation */
     nav {
-      padding: 1.25rem 2rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      max-width: 1400px;
+      padding: 1.25rem 2rem;
+      max-width: 1200px;
       margin: 0 auto;
-      position: relative;
-      z-index: 100;
     }
-
     .logo {
       display: flex;
       align-items: center;
       gap: 0.6rem;
       font-weight: 800;
       font-size: 1.4rem;
-      color: var(--text);
+      color: #e2e8f0;
       text-decoration: none;
-      letter-spacing: -0.02em;
     }
-
     .logo-icon {
-      width: 40px;
-      height: 40px;
-      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-      border-radius: 12px;
+      width: 38px;
+      height: 38px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
-      color: white;
-      font-size: 1.1rem;
-      font-family: 'JetBrains Mono', monospace;
-      font-weight: 700;
-      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+      font-family: monospace;
+      font-size: 1rem;
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
     }
-
     .nav-links {
       display: flex;
-      gap: 1rem;
+      gap: 0.5rem;
       align-items: center;
     }
-
     .nav-links a {
-      color: var(--text-muted);
+      color: #94a3b8;
       text-decoration: none;
       font-weight: 500;
-      font-size: 0.95rem;
       padding: 0.5rem 1rem;
       border-radius: 8px;
       transition: all 0.2s;
     }
-
     .nav-links a:hover {
-      color: var(--primary);
-      background: var(--primary-soft);
-    }
-
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-      padding: 0.75rem 1.5rem;
-      border-radius: 10px;
-      font-weight: 600;
-      font-size: 0.95rem;
-      text-decoration: none;
-      transition: all 0.2s;
-      border: none;
-      cursor: pointer;
-    }
-
-    .btn-primary {
-      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-      color: white;
-      box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35);
-    }
-
-    .btn-primary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(99, 102, 241, 0.45);
-    }
-
-    .btn-secondary {
-      background: var(--bg-card);
-      color: var(--text);
-      border: 1.5px solid var(--border);
-    }
-
-    .btn-secondary:hover {
-      border-color: var(--primary);
-      color: var(--primary);
-      background: var(--primary-soft);
-    }
-
-    .btn-large {
-      padding: 1rem 2rem;
-      font-size: 1.05rem;
-      border-radius: 12px;
+      color: #e2e8f0;
+      background: rgba(255,255,255,0.1);
     }
 
     /* Hero */
     .hero {
+      background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
+      padding: 4rem 2rem 5rem;
       text-align: center;
-      padding: 4rem 2rem 2rem;
-      max-width: 1000px;
-      margin: 0 auto;
+      position: relative;
+      overflow: hidden;
     }
-
-    .hero-badge {
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: radial-gradient(ellipse at 30% 20%, rgba(102, 126, 234, 0.15) 0%, transparent 50%),
+                  radial-gradient(ellipse at 70% 80%, rgba(139, 92, 246, 0.1) 0%, transparent 50%);
+      pointer-events: none;
+    }
+    .hero-inner {
+      max-width: 900px;
+      margin: 0 auto;
+      position: relative;
+    }
+    .badge {
       display: inline-flex;
       align-items: center;
-      gap: 0.75rem;
-      padding: 0.5rem 1rem 0.5rem 0.5rem;
-      background: var(--bg-card);
-      border: 1px solid var(--border);
+      gap: 0.5rem;
+      background: rgba(102, 126, 234, 0.2);
+      border: 1px solid rgba(102, 126, 234, 0.3);
+      padding: 0.4rem 1rem;
       border-radius: 100px;
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       margin-bottom: 2rem;
-      box-shadow: var(--shadow-sm);
     }
-
-    .hero-badge-dot {
+    .badge-dot {
       width: 8px;
       height: 8px;
-      background: var(--success);
+      background: #4ade80;
       border-radius: 50%;
       animation: pulse 2s infinite;
     }
-
     @keyframes pulse {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.7; transform: scale(1.1); }
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
     }
-
-    .hero-badge-version {
-      background: var(--primary-soft);
-      color: var(--primary);
-      padding: 0.25rem 0.6rem;
-      border-radius: 100px;
-      font-weight: 600;
-      font-size: 0.8rem;
-    }
-
     h1 {
-      font-size: 4.5rem;
+      font-size: 4rem;
       font-weight: 800;
-      line-height: 1.05;
+      line-height: 1.1;
       margin-bottom: 1.5rem;
       letter-spacing: -0.03em;
-      color: var(--text);
     }
-
     h1 span {
-      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 50%, var(--accent) 100%);
+      background: linear-gradient(135deg, #667eea 0%, #a78bfa 50%, #f472b6 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
     }
-
-    .hero-subtitle {
+    .tagline {
       font-size: 1.35rem;
-      color: var(--text-secondary);
+      color: #94a3b8;
       max-width: 600px;
       margin: 0 auto 2.5rem;
-      line-height: 1.7;
     }
-
+    .tagline strong { color: #e2e8f0; }
     .hero-buttons {
       display: flex;
       gap: 1rem;
       justify-content: center;
       flex-wrap: wrap;
-      margin-bottom: 1.5rem;
     }
-
-    .hero-note {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-    }
-
-    .hero-note a {
-      color: var(--primary);
-      text-decoration: none;
-    }
-
-    /* Desktop Preview */
-    .desktop-preview {
-      max-width: 1100px;
-      margin: 4rem auto;
-      padding: 0 2rem;
-    }
-
-    .desktop-frame {
-      background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
-      border-radius: var(--radius-xl);
-      padding: 0.75rem;
-      box-shadow: var(--shadow-xl), 0 0 0 1px rgba(255,255,255,0.1) inset;
-    }
-
-    .desktop-toolbar {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.5rem 0.75rem;
-      margin-bottom: 0.5rem;
-    }
-
-    .desktop-dot {
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-    }
-    .desktop-dot.red { background: #ef4444; }
-    .desktop-dot.yellow { background: #eab308; }
-    .desktop-dot.green { background: #22c55e; }
-
-    .desktop-title {
-      flex: 1;
-      text-align: center;
-      font-size: 0.8rem;
-      color: #64748b;
-      font-weight: 500;
-    }
-
-    .desktop-content {
-      background: var(--bg-soft);
-      border-radius: var(--radius-lg);
-      min-height: 400px;
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 1rem;
-      padding: 1.5rem;
-    }
-
-    /* App Cards */
-    .app-card {
-      background: var(--bg-card);
-      border-radius: var(--radius);
-      border: 1px solid var(--border);
-      overflow: hidden;
-      transition: all 0.3s;
-      animation: fadeInUp 0.6s ease-out backwards;
-    }
-
-    .app-card:nth-child(1) { animation-delay: 0.1s; }
-    .app-card:nth-child(2) { animation-delay: 0.2s; }
-    .app-card:nth-child(3) { animation-delay: 0.3s; }
-
-    @keyframes fadeInUp {
-      from {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .app-card:hover {
-      transform: translateY(-4px);
-      box-shadow: var(--shadow-lg);
-      border-color: var(--primary-soft);
-    }
-
-    .app-header {
-      padding: 1rem;
-      border-bottom: 1px solid var(--border-light);
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-    }
-
-    .app-icon {
-      width: 36px;
-      height: 36px;
+    .btn {
+      padding: 0.875rem 1.75rem;
       border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.1rem;
-    }
-
-    .app-icon.todo { background: var(--success-soft); }
-    .app-icon.profile { background: var(--primary-soft); }
-    .app-icon.chat { background: var(--warning-soft); }
-
-    .app-name {
       font-weight: 600;
-      font-size: 0.95rem;
-    }
-
-    .app-body {
-      padding: 1rem;
-    }
-
-    /* Todo App Mini */
-    .mini-todo-item {
-      display: flex;
+      text-decoration: none;
+      transition: all 0.2s;
+      display: inline-flex;
       align-items: center;
-      gap: 0.6rem;
-      padding: 0.5rem 0;
-      font-size: 0.85rem;
-      color: var(--text-secondary);
-    }
-
-    .mini-todo-check {
-      width: 16px;
-      height: 16px;
-      border: 2px solid var(--border);
-      border-radius: 4px;
-      flex-shrink: 0;
-    }
-
-    .mini-todo-check.done {
-      background: var(--success);
-      border-color: var(--success);
-      position: relative;
-    }
-
-    .mini-todo-check.done::after {
-      content: '✓';
-      color: white;
-      font-size: 10px;
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-    }
-
-    .mini-todo-item.done {
-      text-decoration: line-through;
-      color: var(--text-muted);
-    }
-
-    /* Profile App Mini */
-    .mini-profile {
-      text-align: center;
-    }
-
-    .mini-avatar {
-      width: 48px;
-      height: 48px;
-      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-      border-radius: 50%;
-      margin: 0 auto 0.75rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-weight: 700;
-      font-size: 1.2rem;
-    }
-
-    .mini-profile-name {
-      font-weight: 600;
-      font-size: 0.95rem;
-      margin-bottom: 0.25rem;
-    }
-
-    .mini-profile-webid {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      word-break: break-all;
-    }
-
-    /* Chat App Mini */
-    .mini-chat-msg {
-      display: flex;
       gap: 0.5rem;
-      margin-bottom: 0.75rem;
     }
-
-    .mini-chat-avatar {
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-      background: var(--border);
-      flex-shrink: 0;
-    }
-
-    .mini-chat-avatar.you {
-      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-    }
-
-    .mini-chat-bubble {
-      background: var(--bg-soft);
-      padding: 0.5rem 0.75rem;
-      border-radius: 12px;
-      font-size: 0.8rem;
-      color: var(--text-secondary);
-    }
-
-    .mini-chat-msg.you .mini-chat-bubble {
-      background: var(--primary);
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: white;
+      box-shadow: 0 4px 14px rgba(102, 126, 234, 0.4);
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+    }
+    .btn-secondary {
+      background: rgba(255,255,255,0.1);
+      color: #e2e8f0;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    .btn-secondary:hover {
+      background: rgba(255,255,255,0.15);
     }
 
-    /* Section: How it works */
-    .section {
+    /* Products Grid */
+    .products {
+      padding: 5rem 2rem;
+      background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+    }
+    .products-inner {
       max-width: 1100px;
-      margin: 6rem auto;
-      padding: 0 2rem;
-    }
-
-    .section-header {
-      text-align: center;
-      margin-bottom: 4rem;
-    }
-
-    .section-label {
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: var(--primary);
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      margin-bottom: 1rem;
-    }
-
-    .section h2 {
-      font-size: 2.75rem;
-      font-weight: 700;
-      letter-spacing: -0.02em;
-      margin-bottom: 1rem;
-    }
-
-    .section-subtitle {
-      font-size: 1.15rem;
-      color: var(--text-muted);
-      max-width: 600px;
       margin: 0 auto;
     }
-
-    /* Steps */
-    .steps {
+    .products h2 {
+      text-align: center;
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+    .products .subtitle {
+      text-align: center;
+      color: #94a3b8;
+      margin-bottom: 3rem;
+      font-size: 1.1rem;
+    }
+    .products-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 2rem;
-    }
-
-    .step {
-      text-align: center;
-      padding: 2rem;
-    }
-
-    .step-number {
-      width: 56px;
-      height: 56px;
-      background: linear-gradient(135deg, var(--primary-soft) 0%, var(--bg-card) 100%);
-      border: 2px solid var(--primary-soft);
-      border-radius: 16px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: var(--primary);
-      margin: 0 auto 1.5rem;
-    }
-
-    .step h3 {
-      font-size: 1.2rem;
-      margin-bottom: 0.75rem;
-    }
-
-    .step p {
-      color: var(--text-muted);
-      font-size: 0.95rem;
-    }
-
-    /* Features Grid */
-    .features-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
       gap: 1.5rem;
     }
-
-    .feature-card {
-      background: var(--bg-card);
+    .product-card {
+      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+      border: 1px solid #334155;
+      border-radius: 16px;
       padding: 2rem;
-      border-radius: var(--radius-lg);
-      border: 1px solid var(--border);
+      text-decoration: none;
+      color: inherit;
       transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
     }
-
-    .feature-card:hover {
-      box-shadow: var(--shadow-lg);
-      transform: translateY(-2px);
-      border-color: var(--primary-soft);
+    .product-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent), var(--accent-light));
+      opacity: 0;
+      transition: opacity 0.3s;
     }
-
-    .feature-icon {
-      width: 52px;
-      height: 52px;
-      background: var(--primary-soft);
+    .product-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(102, 126, 234, 0.5);
+      box-shadow: 0 20px 40px -12px rgba(0,0,0,0.5);
+    }
+    .product-card:hover::before { opacity: 1; }
+    .product-card.browser { --accent: #667eea; --accent-light: #a78bfa; }
+    .product-card.examples { --accent: #f472b6; --accent-light: #fb7185; }
+    .product-card.npm { --accent: #4ade80; --accent-light: #86efac; }
+    .product-icon {
+      width: 56px;
+      height: 56px;
       border-radius: 14px;
       display: flex;
       align-items: center;
@@ -592,424 +224,376 @@
       font-size: 1.5rem;
       margin-bottom: 1.25rem;
     }
+    .product-card.browser .product-icon { background: rgba(102, 126, 234, 0.2); }
+    .product-card.examples .product-icon { background: rgba(244, 114, 182, 0.2); }
+    .product-card.npm .product-icon { background: rgba(74, 222, 128, 0.2); }
+    .product-card h3 {
+      font-size: 1.25rem;
+      margin-bottom: 0.5rem;
+    }
+    .product-card p {
+      color: #94a3b8;
+      font-size: 0.95rem;
+      margin-bottom: 1rem;
+    }
+    .product-link {
+      color: #667eea;
+      font-weight: 500;
+      font-size: 0.9rem;
+    }
+    .product-card:hover .product-link { text-decoration: underline; }
 
-    .feature-card h3 {
+    /* How it Works */
+    .how {
+      padding: 5rem 2rem;
+      background: #f8fafc;
+      color: #1e293b;
+    }
+    .how-inner {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    .how h2 {
+      text-align: center;
+      font-size: 2.5rem;
+      margin-bottom: 3rem;
+    }
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+    }
+    .step {
+      text-align: center;
+    }
+    .step-num {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1.25rem;
+      margin: 0 auto 1rem;
+    }
+    .step h3 {
       font-size: 1.15rem;
       margin-bottom: 0.5rem;
     }
-
-    .feature-card p {
-      color: var(--text-muted);
+    .step p {
+      color: #64748b;
       font-size: 0.95rem;
-      line-height: 1.6;
     }
 
-    /* Code Section */
+    /* Code Example */
     .code-section {
-      background: var(--bg-soft);
-      border-radius: var(--radius-xl);
-      padding: 4rem;
-      margin-top: 6rem;
-    }
-
-    .code-section .section-header {
-      margin-bottom: 3rem;
-    }
-
-    .code-tabs {
-      display: flex;
-      gap: 0.5rem;
-      margin-bottom: 1rem;
-    }
-
-    .code-tab {
-      padding: 0.6rem 1.2rem;
-      border-radius: 8px;
-      font-size: 0.9rem;
-      font-weight: 500;
-      color: var(--text-muted);
-      background: transparent;
-      border: none;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .code-tab.active {
-      background: var(--bg-card);
-      color: var(--text);
-      box-shadow: var(--shadow-sm);
-    }
-
-    .code-preview {
+      padding: 5rem 2rem;
       background: #0f172a;
-      border-radius: var(--radius-lg);
-      overflow: hidden;
-      box-shadow: var(--shadow-xl);
     }
-
+    .code-inner {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .code-section h2 {
+      text-align: center;
+      font-size: 2rem;
+      margin-bottom: 2rem;
+    }
+    .code-block {
+      background: #1e293b;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+    }
     .code-header {
       display: flex;
       align-items: center;
       gap: 0.5rem;
       padding: 1rem 1.25rem;
-      background: #1e293b;
+      background: #0f172a;
       border-bottom: 1px solid #334155;
     }
-
     .code-dot {
       width: 12px;
       height: 12px;
       border-radius: 50%;
     }
-
     .code-dot.red { background: #ef4444; }
     .code-dot.yellow { background: #eab308; }
     .code-dot.green { background: #22c55e; }
-
     .code-title {
       margin-left: 0.75rem;
-      font-size: 0.85rem;
       color: #64748b;
-      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      font-family: monospace;
     }
-
     pre {
-      padding: 1.75rem;
-      overflow-x: auto;
-      font-family: 'JetBrains Mono', monospace;
+      padding: 1.5rem;
+      font-family: 'SF Mono', Monaco, monospace;
       font-size: 0.9rem;
       line-height: 1.8;
-      text-align: left;
-      color: #e2e8f0;
+      overflow-x: auto;
     }
+    .kw { color: #c084fc; }
+    .str { color: #4ade80; }
+    .cmt { color: #64748b; }
+    .prop { color: #22d3ee; }
 
-    .code-keyword { color: #c084fc; }
-    .code-string { color: #4ade80; }
-    .code-property { color: #22d3ee; }
-    .code-comment { color: #64748b; }
-    .code-tag { color: #f472b6; }
-
-    /* CTA Section */
-    .cta {
+    /* Features */
+    .features {
+      padding: 5rem 2rem;
+      background: #f8fafc;
+      color: #1e293b;
+    }
+    .features-inner {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    .features h2 {
       text-align: center;
-      padding: 6rem 2rem;
-      background: linear-gradient(180deg, var(--bg) 0%, var(--bg-soft) 100%);
+      font-size: 2.5rem;
+      margin-bottom: 3rem;
+    }
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem;
+    }
+    .feature {
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 1.75rem;
+      transition: all 0.2s;
+    }
+    .feature:hover {
+      box-shadow: 0 12px 24px -8px rgba(0,0,0,0.1);
+      transform: translateY(-2px);
+    }
+    .feature-icon {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, #eff6ff 0%, #e0e7ff 100%);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      margin-bottom: 1rem;
+    }
+    .feature h3 {
+      font-size: 1.1rem;
+      margin-bottom: 0.5rem;
+    }
+    .feature p {
+      color: #64748b;
+      font-size: 0.95rem;
     }
 
+    /* CTA */
+    .cta {
+      padding: 5rem 2rem;
+      background: linear-gradient(135deg, #1e1b4b 0%, #0f172a 100%);
+      text-align: center;
+    }
     .cta h2 {
       font-size: 2.5rem;
-      font-weight: 700;
       margin-bottom: 1rem;
-      letter-spacing: -0.02em;
     }
-
     .cta p {
+      color: #94a3b8;
       font-size: 1.15rem;
-      color: var(--text-muted);
       margin-bottom: 2rem;
     }
-
     .cta-buttons {
       display: flex;
       gap: 1rem;
       justify-content: center;
+      flex-wrap: wrap;
     }
 
     /* Footer */
     footer {
+      background: #0f172a;
+      padding: 2rem;
       text-align: center;
-      padding: 3rem 2rem;
-      color: var(--text-muted);
-      font-size: 0.9rem;
-      border-top: 1px solid var(--border);
+      color: #64748b;
+      border-top: 1px solid #1e293b;
     }
-
-    footer a {
-      color: var(--primary);
-      text-decoration: none;
-    }
-
-    footer a:hover {
-      text-decoration: underline;
-    }
+    footer a { color: #667eea; text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
 
     /* Responsive */
     @media (max-width: 900px) {
-      h1 {
-        font-size: 3rem;
-      }
-
-      .desktop-content {
-        grid-template-columns: 1fr;
-      }
-
-      .steps {
-        grid-template-columns: 1fr;
-      }
-
-      .features-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .code-section {
-        padding: 2rem;
-      }
+      h1 { font-size: 2.75rem; }
+      .products-grid, .steps { grid-template-columns: 1fr; }
+      .features-grid { grid-template-columns: 1fr; }
     }
-
     @media (max-width: 600px) {
-      h1 {
-        font-size: 2.25rem;
-      }
-
-      .hero-subtitle {
-        font-size: 1.1rem;
-      }
-
-      .nav-links a:not(.btn) {
-        display: none;
-      }
-
-      .section h2 {
-        font-size: 2rem;
-      }
+      h1 { font-size: 2.25rem; }
+      .tagline { font-size: 1.1rem; }
+      .nav-links a:not(:last-child) { display: none; }
     }
   </style>
 </head>
 <body>
-  <div class="bg-pattern"></div>
-  <div class="bg-grid"></div>
 
-  <nav>
-    <a href="/" class="logo">
-      <span class="logo-icon">{}</span>
-      jsonos
-    </a>
-    <div class="nav-links">
-      <a href="/browser/">Browser</a>
-      <a href="/examples/">Examples</a>
-      <a href="https://github.com/json-os/jsonos#readme">Docs</a>
-      <a href="https://github.com/json-os" class="btn btn-secondary">GitHub</a>
+<nav>
+  <a href="/" class="logo">
+    <span class="logo-icon">{}</span>
+    jsonos
+  </a>
+  <div class="nav-links">
+    <a href="/browser/">Browser</a>
+    <a href="/examples/">Examples</a>
+    <a href="https://github.com/json-os/jsonos#readme">Docs</a>
+    <a href="https://github.com/json-os" class="btn btn-secondary">GitHub</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-inner">
+    <div class="badge">
+      <span class="badge-dot"></span>
+      Early Preview v0.0.2
     </div>
-  </nav>
-
-  <main>
-    <section class="hero">
-      <div class="hero-badge">
-        <span class="hero-badge-dot"></span>
-        <span>Now in Early Preview</span>
-        <span class="hero-badge-version">v0.0.2</span>
-      </div>
-
-      <h1>The JSON <span>Operating System</span></h1>
-
-      <p class="hero-subtitle">
-        Own your data. Build your apps. Run anywhere.
-        A complete web OS powered by JSON-LD and the decentralized web.
-      </p>
-
-      <div class="hero-buttons">
-        <a href="/browser/" class="btn btn-primary btn-large">
-          Launch Browser
-        </a>
-        <a href="https://github.com/json-os/jsonos#getting-started" class="btn btn-secondary btn-large">
-          Get Started
-        </a>
-      </div>
-
-      <p class="hero-note">
-        Works with <a href="https://solidproject.org">Solid pods</a>, static hosting, or any HTTP server
-      </p>
-    </section>
-
-    <!-- Desktop Preview -->
-    <section class="desktop-preview" id="demo">
-      <div class="desktop-frame">
-        <div class="desktop-toolbar">
-          <span class="desktop-dot red"></span>
-          <span class="desktop-dot yellow"></span>
-          <span class="desktop-dot green"></span>
-          <span class="desktop-title">jsonos://your-pod/apps</span>
-        </div>
-        <div class="desktop-content">
-          <!-- Todo App -->
-          <div class="app-card">
-            <div class="app-header">
-              <div class="app-icon todo">✓</div>
-              <span class="app-name">Tasks</span>
-            </div>
-            <div class="app-body">
-              <div class="mini-todo-item done">
-                <span class="mini-todo-check done"></span>
-                Set up Solid pod
-              </div>
-              <div class="mini-todo-item done">
-                <span class="mini-todo-check done"></span>
-                Install jsonos
-              </div>
-              <div class="mini-todo-item">
-                <span class="mini-todo-check"></span>
-                Build something amazing
-              </div>
-              <div class="mini-todo-item">
-                <span class="mini-todo-check"></span>
-                Own my data forever
-              </div>
-            </div>
-          </div>
-
-          <!-- Profile App -->
-          <div class="app-card">
-            <div class="app-header">
-              <div class="app-icon profile">👤</div>
-              <span class="app-name">Profile</span>
-            </div>
-            <div class="app-body">
-              <div class="mini-profile">
-                <div class="mini-avatar">JD</div>
-                <div class="mini-profile-name">Jane Developer</div>
-                <div class="mini-profile-webid">solidweb.org/jane/profile#me</div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Chat App -->
-          <div class="app-card">
-            <div class="app-header">
-              <div class="app-icon chat">💬</div>
-              <span class="app-name">Chat</span>
-            </div>
-            <div class="app-body">
-              <div class="mini-chat-msg">
-                <div class="mini-chat-avatar"></div>
-                <div class="mini-chat-bubble">Hey! Check out jsonos</div>
-              </div>
-              <div class="mini-chat-msg you">
-                <div class="mini-chat-avatar you"></div>
-                <div class="mini-chat-bubble">This is amazing!</div>
-              </div>
-              <div class="mini-chat-msg">
-                <div class="mini-chat-avatar"></div>
-                <div class="mini-chat-bubble">Right? And it's all your data</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- How it works -->
-    <section class="section">
-      <div class="section-header">
-        <div class="section-label">How it works</div>
-        <h2>Three lines to liftoff</h2>
-        <p class="section-subtitle">
-          From zero to a full web OS in seconds. No backend required.
-        </p>
-      </div>
-
-      <div class="steps">
-        <div class="step">
-          <div class="step-number">1</div>
-          <h3>Point to your data</h3>
-          <p>Connect to a Solid pod, local files, or any JSON-LD endpoint</p>
-        </div>
-        <div class="step">
-          <div class="step-number">2</div>
-          <h3>Import jsonos</h3>
-          <p>One import. Zero config. Works in any modern browser or Node.js</p>
-        </div>
-        <div class="step">
-          <div class="step-number">3</div>
-          <h3>Build anything</h3>
-          <p>Read, write, and watch your data. Apps sync automatically</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- Features -->
-    <section class="section">
-      <div class="section-header">
-        <div class="section-label">Features</div>
-        <h2>Everything you need</h2>
-        <p class="section-subtitle">
-          A complete toolkit for building decentralized applications
-        </p>
-      </div>
-
-      <div class="features-grid">
-        <div class="feature-card">
-          <div class="feature-icon">🔗</div>
-          <h3>Linked Data Native</h3>
-          <p>Built for JSON-LD from the ground up. Automatic context handling, predicate expansion, and format detection.</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon">🌐</div>
-          <h3>True Data Ownership</h3>
-          <p>Your data lives in your pod. Apps come to your data, not the other way around.</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon">🔄</div>
-          <h3>Format Agnostic</h3>
-          <p>Read any Linked Data format. The Preserve + Layer pattern keeps original data intact.</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon">⚡</div>
-          <h3>Zero Dependencies</h3>
-          <p>Under 5KB gzipped. No build step required. Just import and go.</p>
-        </div>
-      </div>
-
-      <!-- Code Examples -->
-      <div class="code-section">
-        <div class="section-header">
-          <div class="section-label">Developer Experience</div>
-          <h2>Elegant by design</h2>
-        </div>
-
-        <div class="code-preview">
-          <div class="code-header">
-            <span class="code-dot red"></span>
-            <span class="code-dot yellow"></span>
-            <span class="code-dot green"></span>
-            <span class="code-title">app.js</span>
-          </div>
-          <pre><span class="code-keyword">import</span> os <span class="code-keyword">from</span> <span class="code-string">'jsonos'</span>;
-
-<span class="code-comment">// Fetch tasks from Alice's pod</span>
-<span class="code-keyword">const</span> tasks = <span class="code-keyword">await</span> os.read(<span class="code-string">'https://alice.solidweb.org/tasks.json'</span>);
-
-<span class="code-comment">// Render them</span>
-os.render(tasks);
-
-<span class="code-comment">// Make a change</span>
-tasks.push({ <span class="code-property">title</span>: <span class="code-string">'Learn jsonos'</span>, <span class="code-property">done</span>: <span class="code-keyword">false</span> });
-
-<span class="code-comment">// Save to your pod</span>
-<span class="code-keyword">await</span> os.write(<span class="code-string">'/tasks.json'</span>, tasks);</pre>
-        </div>
-      </div>
-    </section>
-
-    <!-- CTA -->
-    <section class="cta">
-      <h2>Ready to build the future?</h2>
-      <p>Join the decentralized web. Start building with jsonos today.</p>
-      <div class="cta-buttons">
-        <a href="https://github.com/json-os/jsonos#getting-started" class="btn btn-primary btn-large">
-          Get Started
-        </a>
-        <a href="https://github.com/json-os" class="btn btn-secondary btn-large">
-          View on GitHub
-        </a>
-      </div>
-    </section>
-  </main>
-
-  <footer>
-    <p>
-      Made with care by the <a href="https://github.com/json-os">json-os</a> community.
-      Licensed under <a href="https://github.com/json-os/jsonos/blob/main/LICENSE">AGPL-3.0</a>.
+    <h1>The JSON <span>Operating System</span></h1>
+    <p class="tagline">
+      <strong>Own your data.</strong> Build your apps. Run anywhere.<br>
+      A complete web OS powered by JSON-LD and the decentralized web.
     </p>
-  </footer>
+    <div class="hero-buttons">
+      <a href="/browser/" class="btn btn-primary">Launch Browser</a>
+      <a href="/examples/" class="btn btn-secondary">See Examples</a>
+    </div>
+  </div>
+</section>
+
+<section class="products">
+  <div class="products-inner">
+    <h2>Three ways to experience jsonos</h2>
+    <p class="subtitle">Full browser, schema.org examples, or npm package</p>
+
+    <div class="products-grid">
+      <a href="/browser/" class="product-card browser">
+        <div class="product-icon">🌐</div>
+        <h3>Full Browser</h3>
+        <p>Complete data browser. View any Solid pod, WebID, or RDF resource. Built on the JSS stack.</p>
+        <span class="product-link">Launch browser &rarr;</span>
+      </a>
+
+      <a href="/examples/" class="product-card examples">
+        <div class="product-icon">✨</div>
+        <h3>Schema.org Panes</h3>
+        <p>20 beautiful renderers for JSON-LD. Person, Event, Recipe, Product, and more. Zero build step.</p>
+        <span class="product-link">View examples &rarr;</span>
+      </a>
+
+      <a href="https://www.npmjs.com/package/jsonos" class="product-card npm">
+        <div class="product-icon">📦</div>
+        <h3>npm Package</h3>
+        <p>Tiny core library. Read, write, render JSON-LD data. Works with any Solid pod or HTTP server.</p>
+        <span class="product-link">npm install jsonos &rarr;</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<section class="how">
+  <div class="how-inner">
+    <h2>How it works</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <h3>Point to your data</h3>
+        <p>Connect to a Solid pod, local files, or any JSON-LD endpoint</p>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <h3>Import jsonos</h3>
+        <p>One import. Zero config. Works in any modern browser</p>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <h3>Build anything</h3>
+        <p>Read, write, and render your data. Apps sync automatically</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="code-section">
+  <div class="code-inner">
+    <h2>Simple, elegant API</h2>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-dot red"></span>
+        <span class="code-dot yellow"></span>
+        <span class="code-dot green"></span>
+        <span class="code-title">app.js</span>
+      </div>
+      <pre><span class="kw">import</span> os <span class="kw">from</span> <span class="str">'jsonos'</span>;
+
+<span class="cmt">// Read tasks from a Solid pod</span>
+<span class="kw">const</span> tasks = <span class="kw">await</span> os.read(<span class="str">'https://alice.solidweb.org/tasks.json'</span>);
+
+<span class="cmt">// Add a new task</span>
+tasks.push({ <span class="prop">title</span>: <span class="str">'Learn jsonos'</span>, <span class="prop">done</span>: <span class="kw">false</span> });
+
+<span class="cmt">// Save to your pod</span>
+<span class="kw">await</span> os.write(<span class="str">'/tasks.json'</span>, tasks);</pre>
+    </div>
+  </div>
+</section>
+
+<section class="features">
+  <div class="features-inner">
+    <h2>Built for the decentralized web</h2>
+    <div class="features-grid">
+      <div class="feature">
+        <div class="feature-icon">🔗</div>
+        <h3>Linked Data Native</h3>
+        <p>Built for JSON-LD from the ground up. Automatic context handling and format detection.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">🏠</div>
+        <h3>True Data Ownership</h3>
+        <p>Your data lives in your pod. Apps come to your data, not the other way around.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">🔄</div>
+        <h3>Preserve + Layer</h3>
+        <p>Read any format. Original data stays intact. Add your view layer on top.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">⚡</div>
+        <h3>Zero Dependencies</h3>
+        <p>Under 5KB gzipped. No build step required. Just import and go.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta">
+  <h2>Ready to own your data?</h2>
+  <p>Join the decentralized web. Start building with jsonos today.</p>
+  <div class="cta-buttons">
+    <a href="/browser/" class="btn btn-primary">Launch Browser</a>
+    <a href="https://github.com/json-os/jsonos#getting-started" class="btn btn-secondary">Get Started</a>
+  </div>
+</section>
+
+<footer>
+  <p>
+    <a href="https://github.com/json-os">json-os</a> &middot;
+    <a href="/browser/">Browser</a> &middot;
+    <a href="/examples/">Examples</a> &middot;
+    <a href="https://github.com/json-os/jsonos#readme">Docs</a>
+  </p>
+</footer>
+
 </body>
 </html>
