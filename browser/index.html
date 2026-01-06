@@ -371,7 +371,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   const outliner = panes.getOutliner(dom)
 
-  async function go(uri) {
+  function go(uri) {
     if (!uri) uri = uriField.value.trim()
     if (!uri) return
 
@@ -387,49 +387,13 @@ document.addEventListener('DOMContentLoaded', function() {
     window.history.replaceState({}, '', `${location.origin}${location.pathname}?${params}`)
     document.title = `jsonos - ${uri}`
 
-    // Try to extract JSON-LD data island from HTML pages
-    // Only for .html URLs to avoid unnecessary fetches
-    let subject = null
-    let gotDataIsland = false
-    const isHtmlUrl = uri.includes('.html')
+    const subject = $rdf.sym(uri)
 
-    if (isHtmlUrl) {
-      try {
-        const controller = new AbortController()
-        const timeout = setTimeout(() => controller.abort(), 2000)
-
-        const res = await fetch(uri, { signal: controller.signal })
-        clearTimeout(timeout)
-
-        const contentType = res.headers.get('content-type') || ''
-
-        if (contentType.includes('text/html')) {
-          const html = await res.text()
-          const doc = new DOMParser().parseFromString(html, 'text/html')
-          const jsonLdScript = doc.querySelector('script[type="application/ld+json"]')
-
-          if (jsonLdScript) {
-            console.log('[browser] Found JSON-LD data island in HTML')
-            const data = JSON.parse(jsonLdScript.textContent)
-            subject = window.solidShim.parseJsonLdToStore(data, uri, store)
-            gotDataIsland = true
-            console.log('[browser] Parsed JSON-LD, subject:', subject.value)
-          }
-        }
-      } catch (err) {
-        console.warn('[browser] Could not extract JSON-LD from HTML:', err.message)
-      }
-    }
-
-    // Fallback to URI as subject
-    if (!subject) {
-      subject = $rdf.sym(uri)
-    }
-
-    loadingEl.classList.remove('active')
-    browserEl.style.display = 'block'
-    // If we got data island, don't let outliner re-fetch (4th param = true = noReload)
-    outliner.GotoSubject(subject, true, undefined, gotDataIsland, undefined)
+    setTimeout(() => {
+      loadingEl.classList.remove('active')
+      browserEl.style.display = 'block'
+      outliner.GotoSubject(subject, true, undefined, true, undefined)
+    }, 100)
 
     updateLoginArea()
   }
