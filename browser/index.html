@@ -388,25 +388,37 @@ document.addEventListener('DOMContentLoaded', function() {
     document.title = `jsonos - ${uri}`
 
     // Try to extract JSON-LD data island from HTML pages
+    // Only for .html URLs to avoid unnecessary fetches
     let subject = null
-    try {
-      const res = await fetch(uri)
-      const contentType = res.headers.get('content-type') || ''
+    let gotDataIsland = false
+    const isHtmlUrl = uri.includes('.html')
 
-      if (contentType.includes('text/html')) {
-        const html = await res.text()
-        const doc = new DOMParser().parseFromString(html, 'text/html')
-        const jsonLdScript = doc.querySelector('script[type="application/ld+json"]')
+    if (isHtmlUrl) {
+      try {
+        const controller = new AbortController()
+        const timeout = setTimeout(() => controller.abort(), 2000)
 
-        if (jsonLdScript) {
-          console.log('[browser] Found JSON-LD data island in HTML')
-          const data = JSON.parse(jsonLdScript.textContent)
-          subject = window.solidShim.parseJsonLdToStore(data, uri, store)
-          console.log('[browser] Parsed JSON-LD, subject:', subject.value)
+        const res = await fetch(uri, { signal: controller.signal })
+        clearTimeout(timeout)
+
+        const contentType = res.headers.get('content-type') || ''
+
+        if (contentType.includes('text/html')) {
+          const html = await res.text()
+          const doc = new DOMParser().parseFromString(html, 'text/html')
+          const jsonLdScript = doc.querySelector('script[type="application/ld+json"]')
+
+          if (jsonLdScript) {
+            console.log('[browser] Found JSON-LD data island in HTML')
+            const data = JSON.parse(jsonLdScript.textContent)
+            subject = window.solidShim.parseJsonLdToStore(data, uri, store)
+            gotDataIsland = true
+            console.log('[browser] Parsed JSON-LD, subject:', subject.value)
+          }
         }
+      } catch (err) {
+        console.warn('[browser] Could not extract JSON-LD from HTML:', err.message)
       }
-    } catch (err) {
-      console.warn('[browser] Could not extract JSON-LD from HTML:', err.message)
     }
 
     // Fallback to URI as subject
@@ -414,11 +426,10 @@ document.addEventListener('DOMContentLoaded', function() {
       subject = $rdf.sym(uri)
     }
 
-    setTimeout(() => {
-      loadingEl.classList.remove('active')
-      browserEl.style.display = 'block'
-      outliner.GotoSubject(subject, true, undefined, true, undefined)
-    }, 100)
+    loadingEl.classList.remove('active')
+    browserEl.style.display = 'block'
+    // If we got data island, don't let outliner re-fetch (4th param = true = noReload)
+    outliner.GotoSubject(subject, true, undefined, gotDataIsland, undefined)
 
     updateLoginArea()
   }
