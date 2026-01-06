@@ -219,39 +219,209 @@
   </div>
 </div>
 
-<h2>Writing a Pane</h2>
+<h2>Create Your Own Pane</h2>
 
-<p>Panes are ES modules with a <code>render</code> function:</p>
+<p>Panes are ES modules that transform RDF data into DOM elements. Here's everything you need to build one.</p>
 
-<pre><code><span class="comment">// src/panes/person.js</span>
+<h3>Full Pane Template</h3>
+
+<pre><code><span class="comment">// my-pane.js - Complete pane structure</span>
 export default {
-  name: 'personPane',
+  <span class="comment">// Required: unique name</span>
+  name: 'myCustomPane',
 
-  render(subject, context) {
+  <span class="comment">// Optional: icon (data URI or URL)</span>
+  icon: 'data:image/svg+xml;base64,...',
+
+  <span class="comment">// Optional: label function for tab/menu display</span>
+  label: function(subject, context) {
     const store = context.session.store;
-    const dom = context.dom;
     const SCHEMA = $rdf.Namespace('http://schema.org/');
 
-    <span class="comment">// Read from RDF store</span>
-    const name = store.anyValue(subject, SCHEMA('name'));
-    const image = store.any(subject, SCHEMA('image'));
+    <span class="comment">// Return string if this pane handles this type, null otherwise</span>
+    const types = store.findTypeURIs(subject);
+    if (types[SCHEMA('Person').uri]) {
+      return 'Person';
+    }
+    return null;
+  },
 
-    <span class="comment">// Build DOM</span>
+  <span class="comment">// Required: render function</span>
+  render: function(subject, context) {
+    const store = context.session.store;
+    const dom = context.dom;
+
+    <span class="comment">// Build and return a DOM element</span>
     const div = dom.createElement('div');
-    div.innerHTML = `&lt;h1&gt;${name}&lt;/h1&gt;`;
-
+    div.textContent = 'Hello from my pane!';
     return div;
   }
 };</code></pre>
 
-<h3>Store API</h3>
+<h3>The Context Object</h3>
+
+<p>The <code>context</code> parameter gives you everything you need:</p>
 
 <table>
-  <tr><th>Method</th><th>Returns</th><th>Example</th></tr>
-  <tr><td><code>store.anyValue(s, p)</code></td><td>String or null</td><td>Get name as text</td></tr>
-  <tr><td><code>store.any(s, p)</code></td><td>Node or null</td><td>Get linked resource</td></tr>
-  <tr><td><code>store.each(s, p)</code></td><td>Array of nodes</td><td>Get all values</td></tr>
+  <tr><th>Property</th><th>Description</th></tr>
+  <tr><td><code>context.session.store</code></td><td>The RDF store with your parsed JSON-LD data</td></tr>
+  <tr><td><code>context.dom</code></td><td>The document object for creating elements</td></tr>
+  <tr><td><code>context.session</code></td><td>Session info (logged-in user, etc.)</td></tr>
 </table>
+
+<h3>Reading Data from the Store</h3>
+
+<p>Use <code>$rdf.Namespace</code> to create vocabulary helpers:</p>
+
+<pre><code>const SCHEMA = $rdf.Namespace('http://schema.org/');
+const FOAF = $rdf.Namespace('http://xmlns.com/foaf/0.1/');
+const RDF = $rdf.Namespace('http://www.w3.org/1999/02/22-rdf-syntax-ns#');</code></pre>
+
+<h3>Store API Reference</h3>
+
+<table>
+  <tr><th>Method</th><th>Returns</th><th>Use Case</th></tr>
+  <tr><td><code>store.anyValue(subject, predicate)</code></td><td>String or null</td><td>Get a single text value</td></tr>
+  <tr><td><code>store.any(subject, predicate)</code></td><td>Node or null</td><td>Get a linked resource or literal</td></tr>
+  <tr><td><code>store.each(subject, predicate)</code></td><td>Array of Nodes</td><td>Get all values (e.g., multiple authors)</td></tr>
+  <tr><td><code>store.findTypeURIs(subject)</code></td><td>Object of type URIs</td><td>Check what types a subject has</td></tr>
+  <tr><td><code>node.uri</code></td><td>String</td><td>Get URI from a NamedNode</td></tr>
+  <tr><td><code>node.value</code></td><td>String</td><td>Get value from a Literal or URI string</td></tr>
+</table>
+
+<h3>Complete Example: Recipe Pane</h3>
+
+<pre><code><span class="comment">// recipe-pane.js</span>
+export default {
+  name: 'recipePane',
+
+  render: function(subject, context) {
+    const store = context.session.store;
+    const dom = context.dom;
+    const SCHEMA = $rdf.Namespace('http://schema.org/');
+
+    <span class="comment">// Read properties</span>
+    const name = store.anyValue(subject, SCHEMA('name'));
+    const description = store.anyValue(subject, SCHEMA('description'));
+    const image = store.any(subject, SCHEMA('image'));
+    const prepTime = store.anyValue(subject, SCHEMA('prepTime'));
+    const cookTime = store.anyValue(subject, SCHEMA('cookTime'));
+
+    <span class="comment">// Get all ingredients (array)</span>
+    const ingredients = store.each(subject, SCHEMA('recipeIngredient'));
+
+    <span class="comment">// Get all instructions (array)</span>
+    const instructions = store.each(subject, SCHEMA('recipeInstructions'));
+
+    <span class="comment">// Build the UI</span>
+    const div = dom.createElement('div');
+    div.style.cssText = `
+      font-family: system-ui, sans-serif;
+      max-width: 600px;
+      padding: 2rem;
+    `;
+
+    <span class="comment">// Header with image</span>
+    if (image) {
+      const img = dom.createElement('img');
+      img.src = image.uri || image.value;
+      img.style.cssText = 'width: 100%; border-radius: 12px; margin-bottom: 1rem;';
+      div.appendChild(img);
+    }
+
+    <span class="comment">// Title</span>
+    const h1 = dom.createElement('h1');
+    h1.textContent = name || 'Untitled Recipe';
+    h1.style.cssText = 'margin: 0 0 0.5rem; color: #1e293b;';
+    div.appendChild(h1);
+
+    <span class="comment">// Description</span>
+    if (description) {
+      const p = dom.createElement('p');
+      p.textContent = description;
+      p.style.cssText = 'color: #64748b; margin-bottom: 1.5rem;';
+      div.appendChild(p);
+    }
+
+    <span class="comment">// Time info</span>
+    if (prepTime || cookTime) {
+      const timeDiv = dom.createElement('div');
+      timeDiv.style.cssText = 'display: flex; gap: 1rem; margin-bottom: 1.5rem;';
+
+      if (prepTime) {
+        const prep = dom.createElement('span');
+        prep.textContent = '⏱️ Prep: ' + formatDuration(prepTime);
+        timeDiv.appendChild(prep);
+      }
+      if (cookTime) {
+        const cook = dom.createElement('span');
+        cook.textContent = '🍳 Cook: ' + formatDuration(cookTime);
+        timeDiv.appendChild(cook);
+      }
+      div.appendChild(timeDiv);
+    }
+
+    <span class="comment">// Ingredients list</span>
+    if (ingredients.length > 0) {
+      const h2 = dom.createElement('h2');
+      h2.textContent = 'Ingredients';
+      h2.style.cssText = 'font-size: 1.25rem; margin: 1.5rem 0 0.75rem;';
+      div.appendChild(h2);
+
+      const ul = dom.createElement('ul');
+      ul.style.cssText = 'padding-left: 1.5rem;';
+      ingredients.forEach(ing => {
+        const li = dom.createElement('li');
+        li.textContent = ing.value;
+        ul.appendChild(li);
+      });
+      div.appendChild(ul);
+    }
+
+    <span class="comment">// Instructions</span>
+    if (instructions.length > 0) {
+      const h2 = dom.createElement('h2');
+      h2.textContent = 'Instructions';
+      h2.style.cssText = 'font-size: 1.25rem; margin: 1.5rem 0 0.75rem;';
+      div.appendChild(h2);
+
+      const ol = dom.createElement('ol');
+      ol.style.cssText = 'padding-left: 1.5rem;';
+      instructions.forEach(step => {
+        const li = dom.createElement('li');
+        li.textContent = step.value;
+        li.style.cssText = 'margin-bottom: 0.5rem;';
+        ol.appendChild(li);
+      });
+      div.appendChild(ol);
+    }
+
+    return div;
+  }
+};
+
+<span class="comment">// Helper: Parse ISO duration (PT30M -> "30 min")</span>
+function formatDuration(iso) {
+  const match = iso.match(/PT(?:(\d+)H)?(?:(\d+)M)?/);
+  if (!match) return iso;
+  const h = match[1] ? match[1] + 'h ' : '';
+  const m = match[2] ? match[2] + 'min' : '';
+  return h + m || iso;
+}</code></pre>
+
+<h3>Tips</h3>
+
+<ul style="padding-left: 1.5rem; margin: 1rem 0;">
+  <li><strong>Use <code>dom.createElement</code></strong> instead of <code>document.createElement</code> for compatibility</li>
+  <li><strong>Style with <code>element.style.cssText</code></strong> for inline styles, or create a <code>&lt;style&gt;</code> element</li>
+  <li><strong>Check for null values</strong> - not all properties will be present</li>
+  <li><strong>Use <code>.uri</code> for links</strong>, <code>.value</code> for text content</li>
+  <li><strong>Test in the Live Editor</strong> - instant feedback as you code</li>
+</ul>
+
+<div class="key-point">
+  <strong>Pro tip:</strong> Look at the <a href="https://github.com/json-os/json-os.github.io/tree/gh-pages/examples/src/panes">existing panes</a> for more patterns and examples.
+</div>
 
 <h2>Try It Live</h2>
 
