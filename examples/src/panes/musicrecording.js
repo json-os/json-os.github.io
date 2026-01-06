@@ -329,11 +329,3 @@ export default {
     return div
   }
 }
-
-if (typeof panes !== 'undefined' && panes.register) {
-  panes.register(musicPane)
-}
-
-if (typeof window !== 'undefined') {
-  window.SchemaMusicRecordingPane = musicPane
-}

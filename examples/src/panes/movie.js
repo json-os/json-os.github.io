@@ -381,11 +381,3 @@ export default {
     return div
   }
 }
-
-if (typeof panes !== 'undefined' && panes.register) {
-  panes.register(moviePane)
-}
-
-if (typeof window !== 'undefined') {
-  window.SchemaMoviePane = moviePane
-}

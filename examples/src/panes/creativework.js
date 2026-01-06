@@ -325,11 +325,3 @@ export default {
     return div
   }
 }
-
-if (typeof panes !== 'undefined' && panes.register) {
-  panes.register(creativeWorkPane)
-}
-
-if (typeof window !== 'undefined') {
-  window.SchemaCreativeWorkPane = creativeWorkPane
-}

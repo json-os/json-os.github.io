@@ -320,11 +320,3 @@ export default {
     return div
   }
 }
-
-if (typeof panes !== 'undefined' && panes.register) {
-  panes.register(coursePane)
-}
-
-if (typeof window !== 'undefined') {
-  window.SchemaCoursePane = coursePane
-}

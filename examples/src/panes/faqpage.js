@@ -204,11 +204,3 @@ export default {
     return div
   }
 }
-
-if (typeof panes !== 'undefined' && panes.register) {
-  panes.register(faqPane)
-}
-
-if (typeof window !== 'undefined') {
-  window.SchemaFAQPagePane = faqPane
-}

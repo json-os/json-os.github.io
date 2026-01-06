@@ -279,11 +279,3 @@ export default {
     return div
   }
 }
-
-if (typeof panes !== 'undefined' && panes.register) {
-  panes.register(productPane)
-}
-
-if (typeof window !== 'undefined') {
-  window.SchemaProductPane = productPane
-}

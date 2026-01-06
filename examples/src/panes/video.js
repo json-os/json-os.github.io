@@ -252,11 +252,3 @@ export default {
     return div
   }
 }
-
-if (typeof panes !== 'undefined' && panes.register) {
-  panes.register(videoPane)
-}
-
-if (typeof window !== 'undefined') {
-  window.SchemaVideoPane = videoPane
-}

@@ -303,11 +303,3 @@ export default {
     return div
   }
 }
-
-if (typeof panes !== 'undefined' && panes.register) {
-  panes.register(bookPane)
-}
-
-if (typeof window !== 'undefined') {
-  window.SchemaBookPane = bookPane
-}

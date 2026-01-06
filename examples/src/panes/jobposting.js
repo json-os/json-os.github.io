@@ -404,11 +404,3 @@ export default {
     return div
   }
 }
-
-if (typeof panes !== 'undefined' && panes.register) {
-  panes.register(jobPostingPane)
-}
-
-if (typeof window !== 'undefined') {
-  window.SchemaJobPostingPane = jobPostingPane
-}

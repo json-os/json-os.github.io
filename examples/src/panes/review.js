@@ -211,11 +211,3 @@ export default {
     return div
   }
 }
-
-if (typeof panes !== 'undefined' && panes.register) {
-  panes.register(reviewPane)
-}
-
-if (typeof window !== 'undefined') {
-  window.SchemaReviewPane = reviewPane
-}
