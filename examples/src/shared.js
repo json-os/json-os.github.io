@@ -202,7 +202,7 @@ const Shared = {
     // 3. Load toolbar
     await this.loadScript('src/toolbar.js');
 
-    // 4. Load pane if specified
+    // 4. Load pane if specified, or use already registered pane
     let paneRenderer = null;
     if (panePath) {
       await this.loadScript(panePath);
@@ -210,6 +210,12 @@ const Shared = {
       const paneName = panePath.split('/').pop().replace('.js', '');
       if (this.panes[paneName]) {
         paneRenderer = this.panes[paneName].render;
+      }
+    } else {
+      // Check if any pane was already registered (inline registration)
+      const registeredPanes = Object.keys(this.panes);
+      if (registeredPanes.length > 0) {
+        paneRenderer = this.panes[registeredPanes[0]].render;
       }
     }
 
