@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tim Berners-Lee - Composite Profile</title>
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+      padding: 2rem;
+    }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+    }
+  </style>
+</head>
+<body>
+
+<div class="container" id="profile"></div>
+
+<script type="application/ld+json">
+{
+  "@context": {"schema": "http://schema.org/"},
+  "@id": "#timbl",
+  "@type": "schema:Person",
+  "@view": "https://jsonos.com/examples/src/panes/person-composite.js",
+  "schema:name": "Tim Berners-Lee",
+  "schema:jobTitle": "CoFounder and CTO",
+  "schema:worksFor": {
+    "@type": "schema:Organization",
+    "schema:name": "Inrupt Inc"
+  },
+  "schema:description": "Inventor of the World Wide Web. Director of W3C. Founder of the Web Foundation. Leading the Solid project to re-decentralize the web and give people control over their data.",
+  "schema:image": "https://www.w3.org/People/Berners-Lee/2017-image-600.jpeg",
+  "schema:url": "https://www.w3.org/People/Berners-Lee/",
+  "schema:email": "timbl@w3.org",
+  "schema:sameAs": [
+    "https://github.com/timbl",
+    "https://twitter.com/timberners_lee",
+    "https://www.linkedin.com/in/timbl"
+  ],
+  "schema:knowsLanguage": ["English", "French"],
+  "schema:address": {
+    "@type": "schema:PostalAddress",
+    "schema:addressLocality": "Cambridge",
+    "schema:addressRegion": "MA"
+  }
+}
+</script>
+
+<script src="https://unpkg.com/solid-shim/dist/mashlib.min.js"></script>
+
+<script type="module">
+  const pane = await import('./src/panes/person-composite.js').then(m => m.default)
+
+  const jsonLdScript = document.querySelector('script[type="application/ld+json"]')
+  const data = JSON.parse(jsonLdScript.textContent)
+
+  const baseUri = window.location.href.split('#')[0]
+  const store = $rdf.graph()
+  const subject = window.solidShim.parseJsonLdToStore(data, baseUri, store)
+
+  const context = {
+    dom: document,
+    session: { store }
+  }
+
+  const rendered = pane.render(subject, context)
+  document.getElementById('profile').appendChild(rendered)
+</script>
+
+</body>
+</html>
