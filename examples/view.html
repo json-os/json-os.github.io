@@ -160,12 +160,30 @@
     </div>
   </div>
 
-  <h2>How It Works in jsonos</h2>
-  <p>When jsonos encounters <code>@view</code>, it:</p>
+  <h2>One Line</h2>
+  <p>With <a href="https://www.npmjs.com/package/solid-shim">solid-shim</a>, rendering @view is one line:</p>
+
+  <pre><span class="comment">&lt;!-- Your self-describing data --&gt;</span>
+&lt;script type=<span class="string">"application/ld+json"</span>&gt;
+{
+  <span class="key">"@type"</span>: <span class="string">"schema:Person"</span>,
+  <span class="highlight">"@view"</span>: <span class="string">"https://jsonos.com/examples/src/panes/person.js"</span>,
+  <span class="key">"schema:name"</span>: <span class="string">"Marie Curie"</span>
+}
+&lt;/script&gt;
+
+<span class="comment">&lt;!-- solid-shim auto-renders when @view is present --&gt;</span>
+&lt;script src=<span class="string">"https://unpkg.com/solid-shim/dist/mashlib.min.js"</span>&gt;&lt;/script&gt;</pre>
+
+  <p>That's it. The presence of <code>@view</code> triggers automatic rendering.</p>
+
+  <h2>How It Works</h2>
+  <p>When solid-shim encounters <code>@view</code>, it:</p>
   <ol style="color: #94a3b8; padding-left: 1.5rem; margin: 1rem 0;">
-    <li>Loads the module from the @view URL</li>
-    <li>Calls its <code>render(subject, context)</code> function</li>
-    <li>Falls back to @type detection if @view fails</li>
+    <li>Parses the JSON-LD into an RDF store</li>
+    <li>Loads the pane module from the @view URL</li>
+    <li>Calls <code>render(subject, context)</code></li>
+    <li>Falls back gracefully if @view fails</li>
   </ol>
 
   <pre><span class="comment">// Pane module structure (ES Module)</span>
