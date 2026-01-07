@@ -136,6 +136,13 @@ export default {
         margin: 6px 8px 6px 0 !important;
         display: inline-block !important;
       }
+      /* Chat button card - push button to bottom */
+      .personCompositeContent > div > div > div:has(button):not([data-testid]) {
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: flex-end !important;
+        padding-bottom: 20px !important;
+      }
       .personCompositeContent input[type="button"]:hover,
       .personCompositeContent button:hover {
         background: #c7d2fe !important;
