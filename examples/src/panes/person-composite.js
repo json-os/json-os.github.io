@@ -69,68 +69,99 @@ export default {
     // === MODERN STYLES FOR MASHLIB CONTENT ===
     const style = dom.createElement('style')
     style.textContent = `
-      /* Photos */
+      /* Main layout */
+      .personCompositeContent {
+        font-family: 'Inter', -apple-system, sans-serif;
+        line-height: 1.5;
+        color: #374151;
+        padding: 20px !important;
+      }
+      /* Smaller min column size for 2-column layout */
+      .personCompositeContent > div > div {
+        --auto-grid-min-size: 18rem !important;
+      }
+      /* Strip card styling from sections */
+      .personCompositeContent > div > div {
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+        margin: 0 !important;
+        padding: 4px 0 !important;
+      }
+      /* Photo - left side */
       .personCompositeContent img[src^="http"] {
-        max-width: 120px !important;
-        max-height: 120px !important;
+        width: 140px !important;
+        height: 140px !important;
         border-radius: 12px !important;
         object-fit: cover;
         box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        float: left;
+        margin: 0 20px 12px 0 !important;
       }
-      /* QR codes */
+      /* QR codes - bigger */
       .personCompositeContent .QRCode,
       .personCompositeContent .QRCode svg {
-        max-width: 80px !important;
-        max-height: 80px !important;
+        width: 100px !important;
+        height: 100px !important;
+        max-width: 100px !important;
+        max-height: 100px !important;
       }
-      /* Links */
+      /* Links - name prominent */
       .personCompositeContent a {
-        color: #5865f2 !important;
+        color: #1e293b !important;
         text-decoration: none !important;
+        font-weight: 600 !important;
+        font-size: 1.1rem !important;
       }
       .personCompositeContent a:hover {
-        text-decoration: underline !important;
+        color: #5865f2 !important;
       }
-      /* Buttons */
+      /* All buttons inline together */
       .personCompositeContent input[type="button"],
       .personCompositeContent button {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+        background: #5865f2 !important;
         color: white !important;
         border: none !important;
-        padding: 8px 16px !important;
+        padding: 10px 20px !important;
         border-radius: 8px !important;
         font-weight: 600 !important;
-        font-size: 0.85rem !important;
+        font-size: 0.9rem !important;
         cursor: pointer !important;
-        box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
-        margin: 4px !important;
+        margin: 6px 8px 6px 0 !important;
+        display: inline-block !important;
       }
-      /* Headers */
+      .personCompositeContent input[type="button"]:hover,
+      .personCompositeContent button:hover {
+        background: #4752c4 !important;
+      }
+      /* Headers - subtle section dividers */
       .personCompositeContent h1,
       .personCompositeContent h2,
       .personCompositeContent h3 {
-        color: #1e293b !important;
+        color: #94a3b8 !important;
         font-weight: 600 !important;
+        font-size: 0.75rem !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.5px !important;
+        margin: 16px 0 8px 0 !important;
+        width: 100% !important;
+        flex-basis: 100% !important;
       }
-      /* Tables - cleaner */
+      /* Tables */
       .personCompositeContent table {
         border-collapse: collapse;
         font-size: 0.9rem;
       }
       .personCompositeContent td,
       .personCompositeContent th {
-        padding: 8px 12px !important;
-        border-bottom: 1px solid #f1f5f9 !important;
+        padding: 6px 12px 6px 0 !important;
+        border: none !important;
         vertical-align: top;
       }
-      .personCompositeContent tr:hover td {
-        background: #f8fafc;
-      }
-      /* General text */
-      .personCompositeContent {
-        font-family: 'Inter', -apple-system, sans-serif;
-        line-height: 1.5;
-        color: #374151;
+      /* Hide br */
+      .personCompositeContent br {
+        display: none !important;
       }
     `
     container.appendChild(style)
