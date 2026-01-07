@@ -99,13 +99,18 @@ export default {
         float: left;
         margin: 0 20px 12px 0 !important;
       }
-      /* QR codes - bigger */
-      .personCompositeContent .QRCode,
+      /* QR codes - bigger, centered, soft purple */
+      .personCompositeContent .QRCode {
+        width: 100px !important;
+        height: 100px !important;
+        margin: 0 auto 20px auto !important;
+      }
       .personCompositeContent .QRCode svg {
         width: 100px !important;
         height: 100px !important;
-        max-width: 100px !important;
-        max-height: 100px !important;
+      }
+      .personCompositeContent .QRCode svg path[stroke] {
+        stroke: #8b5cf6 !important;
       }
       /* Links - name prominent */
       .personCompositeContent a {
@@ -117,12 +122,12 @@ export default {
       .personCompositeContent a:hover {
         color: #5865f2 !important;
       }
-      /* All buttons inline together */
+      /* All buttons - softer style */
       .personCompositeContent input[type="button"],
       .personCompositeContent button {
-        background: #5865f2 !important;
-        color: white !important;
-        border: none !important;
+        background: #e0e7ff !important;
+        color: #4338ca !important;
+        border: 1px solid #c7d2fe !important;
         padding: 10px 20px !important;
         border-radius: 8px !important;
         font-weight: 600 !important;
@@ -133,7 +138,7 @@ export default {
       }
       .personCompositeContent input[type="button"]:hover,
       .personCompositeContent button:hover {
-        background: #4752c4 !important;
+        background: #c7d2fe !important;
       }
       /* Headers - subtle section dividers */
       .personCompositeContent h1,
@@ -163,8 +168,57 @@ export default {
       .personCompositeContent br {
         display: none !important;
       }
+      /* Hide JSS badge */
+      .personCompositeContent span[style*="absolute"][style*="bottom"] {
+        display: none !important;
+      }
+      /* Tighter grid gap */
+      .personCompositeContent > div > div[style*="grid"] {
+        grid-gap: 1rem !important;
+        gap: 1rem !important;
+      }
     `
     container.appendChild(style)
+
+    // Post-render cleanup
+    setTimeout(() => {
+      // Keep Stuff section (don't remove it)
+
+      // Adjust button text
+      const allButtons = container.querySelectorAll('button')
+      allButtons.forEach(btn => {
+        if (btn.textContent.includes('LOGIN TO ADD')) btn.textContent = 'ADD FRIEND'
+        if (btn.textContent.includes('CHAT WITH')) btn.textContent = 'CHAT WITH ME'
+      })
+
+      // Change "Stuff" to "My Stuff"
+      const stuffHeader = container.querySelector('[data-testid="stuff"] h3')
+      if (stuffHeader && stuffHeader.textContent.trim() === 'Stuff') {
+        stuffHeader.textContent = 'My Stuff'
+      }
+
+      // Move ADD FRIEND button beneath the photo
+      const profileCard = container.querySelector('[data-testid="profile-card"]')
+      const photo = profileCard?.querySelector('img')
+      const addFriendBtn = Array.from(allButtons).find(b => b.textContent === 'ADD FRIEND')
+
+      if (photo && addFriendBtn) {
+        // Create wrapper for photo + button
+        const wrapper = document.createElement('div')
+        wrapper.style.cssText = 'display: inline-block; text-align: center; vertical-align: top; float: left; margin-right: 16px;'
+        photo.parentNode.insertBefore(wrapper, photo)
+        wrapper.appendChild(photo)
+        photo.style.float = 'none'
+        photo.style.marginRight = '0'
+
+        // Move button below photo
+        addFriendBtn.style.marginTop = '8px'
+        addFriendBtn.style.display = 'block'
+        addFriendBtn.style.width = '100%'
+        wrapper.appendChild(addFriendBtn)
+      }
+
+    }, 100)
 
     // === TAB BAR ===
     const tabBar = dom.createElement('div')
