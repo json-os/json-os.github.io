@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Medical Lab Results - MedicalTest</title>
+  <style>
+    body { margin: 0; font-family: system-ui, sans-serif; background: #f8fafc; }
+  </style>
+</head>
+<body>
+
+<script type="application/ld+json">
+{
+  "@context": {
+    "schema": "http://schema.org/"
+  },
+  "@id": "#lab-panel",
+  "@type": "schema:MedicalTestPanel",
+  "@view": "https://jsonos.com/examples/src/panes/medicaltest.js",
+  "schema:name": "Complete Blood Count (CBC)",
+  "schema:description": "Routine blood panel measuring key health indicators",
+  "schema:dateCreated": "2024-01-15",
+  "schema:provider": {
+    "@type": "schema:MedicalOrganization",
+    "schema:name": "City Medical Lab"
+  },
+  "schema:subTest": [
+    {
+      "@type": "schema:MedicalTest",
+      "schema:name": "White Blood Cell Count",
+      "schema:alternateName": "WBC",
+      "schema:usedToDiagnose": "Infection, immune disorders",
+      "schema:result": "7.2 K/uL",
+      "schema:normalRange": "4.5-11.0 K/uL",
+      "schema:status": "normal"
+    },
+    {
+      "@type": "schema:MedicalTest",
+      "schema:name": "Red Blood Cell Count",
+      "schema:alternateName": "RBC",
+      "schema:usedToDiagnose": "Anemia, polycythemia",
+      "schema:result": "4.8 M/uL",
+      "schema:normalRange": "4.0-5.5 M/uL",
+      "schema:status": "normal"
+    },
+    {
+      "@type": "schema:MedicalTest",
+      "schema:name": "Hemoglobin",
+      "schema:alternateName": "HGB",
+      "schema:usedToDiagnose": "Anemia, dehydration",
+      "schema:result": "11.8 g/dL",
+      "schema:normalRange": "12.0-16.0 g/dL",
+      "schema:status": "low"
+    },
+    {
+      "@type": "schema:MedicalTest",
+      "schema:name": "Platelet Count",
+      "schema:alternateName": "PLT",
+      "schema:usedToDiagnose": "Bleeding disorders",
+      "schema:result": "245 K/uL",
+      "schema:normalRange": "150-400 K/uL",
+      "schema:status": "normal"
+    },
+    {
+      "@type": "schema:MedicalTest",
+      "schema:name": "Fasting Glucose",
+      "schema:alternateName": "GLU",
+      "schema:usedToDiagnose": "Diabetes, hypoglycemia",
+      "schema:result": "118 mg/dL",
+      "schema:normalRange": "70-100 mg/dL",
+      "schema:status": "high"
+    }
+  ]
+}
+</script>
+
+<script src="https://unpkg.com/solid-shim/dist/mashlib.min.js"></script>
+
+</body>
+</html>
