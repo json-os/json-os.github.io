@@ -49,7 +49,7 @@ That's it. The page renders a styled person card.
 | Field | Purpose | Example |
 |-------|---------|---------|
 | `@id` | Fragment identifier | `"#me"`, `"#event"`, `"#recipe"` |
-| `@view` | URL to pane JS module | `"https://jsonos.com/examples/src/panes/person.js"` |
+| `@view` | Absolute URL to pane JS module | `"https://jsonos.com/examples/src/panes/person.js"` |
 
 ### Property Conventions
 
@@ -194,6 +194,7 @@ export default {
 
 ### Pane Rules
 
+- `@view` **must be an absolute URL** (mashlib loads from CDN, so `import()` can't resolve relative paths against the page)
 - All styling via `style.cssText` (no external stylesheets)
 - Set `div.className` to prevent duplicate rendering (checked in `label()`)
 - Use `dom.createElement()` not `innerHTML` for security
