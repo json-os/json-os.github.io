@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <!-- AI Agents: integration guide and pane API at /SKILL.md -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>jsonos - The JSON Operating System</title>
   <meta name="description" content="The JSON Operating System. Own your data. Build your apps. Run anywhere.">
@@ -18,6 +19,28 @@
   <meta name="twitter:title" content="jsonos - The JSON Operating System">
   <meta name="twitter:description" content="Own your data. Build your apps. Run anywhere.">
   <meta name="twitter:image" content="https://jsonos.com/og-image.png">
+
+  <!-- Structured data: describes this software for agents and search engines -->
+  <script type="application/ld+json">
+  {
+    "@context": { "schema": "http://schema.org/" },
+    "@type": "schema:SoftwareApplication",
+    "schema:name": "jsonos",
+    "schema:description": "Renders JSON-LD as beautiful UI using @view panes. Add schema.org data to HTML, get a rich interactive view instantly.",
+    "schema:url": { "@id": "https://jsonos.com" },
+    "schema:applicationCategory": "DeveloperApplication",
+    "schema:operatingSystem": "Web",
+    "schema:offers": {
+      "@type": "schema:Offer",
+      "schema:price": "0",
+      "schema:priceCurrency": "USD"
+    },
+    "schema:documentation": { "@id": "https://jsonos.com/SKILL.md" },
+    "schema:codeRepository": { "@id": "https://github.com/json-os" },
+    "schema:installUrl": { "@id": "https://www.npmjs.com/package/solid-shim" }
+  }
+  </script>
+
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -607,7 +630,8 @@
     <a href="https://github.com/json-os">json-os</a> &middot;
     <a href="/browser/">Browser</a> &middot;
     <a href="/examples/">Examples</a> &middot;
-    <a href="/examples/view.html">@view</a>
+    <a href="/examples/view.html">@view</a> &middot;
+    <a href="/SKILL.md">SKILL.md</a>
   </p>
 </footer>
 
